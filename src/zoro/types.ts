@@ -40,3 +40,16 @@ export type EpisodeInfo = {
   title: string | null;
   href: string | null;
 };
+
+export type SubServers = {
+  severId: number | null;
+  serverName: string | null;
+};
+export type DubServers = SubServers;
+export type RawServers = SubServers;
+export type ScrappedServers = {
+  sub: SubServers[];
+  dub: DubServers[];
+  raw: RawServers[];
+  episodeNumber: number | null;
+};

@@ -1,7 +1,7 @@
 ///
 
 import * as cheerio from "cheerio";
-import type { Anime, AnimeInfo, EpisodeInfo } from "./types";
+import type { Anime, AnimeInfo, EpisodeInfo, ScrappedServers } from "./types";
 
 export function extractSearchResults(
   $: cheerio.CheerioAPI,
@@ -220,4 +220,44 @@ export function extractEpisodesList(
       error: error instanceof Error ? error.message : "Unable to scrape",
     };
   }
+}
+
+export function extractServerData($: cheerio.CheerioAPI) {
+  const servers: ScrappedServers = {
+    sub: [],
+    dub: [],
+    raw: [],
+    episodeNumber: 0,
+  };
+  const subSelector: cheerio.SelectorType =
+    ".ps_-block.ps_-block-sub.servers-sub .ps__-list .server-item";
+  const dubSelector: cheerio.SelectorType =
+    ".ps_-block.ps_-block-sub.servers-dub .ps__-list .server-item";
+  const rawSelector: cheerio.SelectorType =
+    ".ps_-block.ps_-block-sub.servers-raw .ps__-list .server-item";
+  const episodeNo = $(".content .server-notice")
+    ?.find("b")
+    ?.text()
+    .split(" ")
+    .pop();
+  servers.episodeNumber = Number(episodeNo) || null;
+  $(subSelector).each((_, element) => {
+    servers.sub.push({
+      severId: Number($(element)?.attr("data-server-id") || null),
+      serverName: $(element).find(".btn").text().trim() || null,
+    });
+  });
+  $(dubSelector).each((_, element) => {
+    servers.dub.push({
+      severId: Number($(element)?.attr("data-server-id") || null),
+      serverName: $(element)?.find(".btn")?.text().trim() || null,
+    });
+  });
+  $(rawSelector).each((_, element) => {
+    servers.dub.push({
+      severId: Number($(element)?.attr("data-server-id") || null),
+      serverName: $(element)?.find(".btn")?.text().trim() || null,
+    });
+  });
+  return servers;
 }
