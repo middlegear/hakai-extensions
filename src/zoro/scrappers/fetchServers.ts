@@ -10,8 +10,8 @@ export async function fetchServers(episodeId: string) {
   }
 
   try {
+    console.time("start scrapping");
     const newId = episodeId.split("-").pop();
-    // console.log(newId);
 
     const response = await client.get(
       `${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`,
@@ -30,6 +30,8 @@ export async function fetchServers(episodeId: string) {
     console.log(serverdata);
   } catch (error) {
     throw new Error("No data");
+  } finally {
+    console.timeEnd("finish scraping");
   }
 }
 fetchServers("bleach-thousand-year-blood-war-arc-15665-episode-94563");

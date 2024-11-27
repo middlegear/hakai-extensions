@@ -33,10 +33,11 @@ export async function fetchAnimeInfo(animeId: string) {
       episodes: resEpisodes,
     };
     console.log(data);
-    console.timeEnd("finish scraping");
     return { data };
   } catch (error) {
     throw new Error("No anime info found");
+  } finally {
+    console.timeEnd("finish scraping");
   }
 }
 fetchAnimeInfo("bleach-thousand-year-blood-war-the-conflict-19322");

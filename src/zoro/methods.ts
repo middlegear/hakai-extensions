@@ -1,7 +1,13 @@
 ///
 
 import * as cheerio from "cheerio";
-import type { Anime, AnimeInfo, EpisodeInfo, ScrappedServers } from "./types";
+import type {
+  Anime,
+  AnimeInfo,
+  EpisodeInfo,
+  language,
+  ScrappedServers,
+} from "./types";
 
 export function extractSearchResults(
   $: cheerio.CheerioAPI,
@@ -244,20 +250,38 @@ export function extractServerData($: cheerio.CheerioAPI) {
   $(subSelector).each((_, element) => {
     servers.sub.push({
       severId: Number($(element)?.attr("data-server-id") || null),
-      serverName: $(element).find(".btn").text().trim() || null,
+      serverName: $(element).find(".btn").text().trim().toLowerCase() || null,
     });
   });
   $(dubSelector).each((_, element) => {
     servers.dub.push({
       severId: Number($(element)?.attr("data-server-id") || null),
-      serverName: $(element)?.find(".btn")?.text().trim() || null,
+      serverName: $(element)?.find(".btn")?.text().trim().toLowerCase() || null,
     });
   });
   $(rawSelector).each((_, element) => {
     servers.dub.push({
       severId: Number($(element)?.attr("data-server-id") || null),
-      serverName: $(element)?.find(".btn")?.text().trim() || null,
+      serverName: $(element)?.find(".btn")?.text().trim().toLowerCase() || null,
     });
   });
   return servers;
+}
+
+export function extractAnimeServerId(
+  $: cheerio.CheerioAPI,
+  servernumber: Number,
+  category: language
+) {
+  return (
+    $(`.ps_-block.ps_-block-sub.servers-${category} .ps__-list .server-item`)
+      ?.map((_, element) =>
+        $(element).attr("data-server-id") == `${servernumber}`
+          ? $(element)
+          : null
+      )
+      ?.get()
+      ?.at(0)
+      ?.attr("data-id") || null
+  );
 }
