@@ -1,7 +1,12 @@
 import { client } from "../../config/client";
-import { zoroBaseUrl } from "../../utils/zoroconstants";
-import { extractAnimeServerId } from "../methods";
-import { Dubbing, Servers, type AnimeServers, type language } from "../types";
+import { zoroBaseUrl } from "../zoroUtils/zoroconstants";
+import { extractAnimeServerId } from "../zoroUtils/scrapemethods";
+import {
+  Dubbing,
+  Servers,
+  type AnimeServers,
+  type language,
+} from "../zoroUtils/types";
 import * as cheerio from "cheerio";
 async function episodeSources(
   id: string,
@@ -53,13 +58,13 @@ async function episodeSources(
       /////
 
       const response = await client.get(
-        `${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`
-        // {
-        //   headers: {
-        //     "X-Requested-With": "XMLHttpRequest",
-        //     Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
-        //   },
-        // }
+        `${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`,
+        {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
+          },
+        }
       );
       console.log(response.data);
     } catch (error) {
@@ -71,11 +76,11 @@ async function episodeSources(
       };
     }
   } catch (error) {
-    throw new Error(" nothing ");
+    error instanceof Error ? error.message : "No data found";
   }
 }
 episodeSources(
   "bleach-thousand-year-blood-war-arc-15665-episode-94563",
-  Servers.StreamSB,
+  Servers.HD1,
   Dubbing.Dub
 );

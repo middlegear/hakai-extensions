@@ -1,7 +1,7 @@
 import { client } from "../../config/client";
-import { zoroBaseUrl } from "../../utils/zoroconstants";
+import { zoroBaseUrl } from "../zoroUtils/zoroconstants";
 import * as cheerio from "cheerio";
-import { extractServerData } from "../methods";
+import { extractServerData } from "../zoroUtils/scrapemethods";
 
 // fetching dubbing and subs happens here
 export async function fetchServers(episodeId: string) {

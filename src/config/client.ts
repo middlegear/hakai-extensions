@@ -1,10 +1,6 @@
 import axios from "axios";
 import { AxiosError, type AxiosRequestConfig } from "axios";
-import {
-  USER_AGENT_HEADER,
-  ACCEPT_ENCODING,
-  ACCEPT_HEADER,
-} from "../utils/zoroconstants";
+import { ACCEPT_HEADER, ACCEPT_ENCODING, USER_AGENT_HEADER } from "./constants";
 
 const axiosConfig: AxiosRequestConfig = {
   timeout: 5000,
