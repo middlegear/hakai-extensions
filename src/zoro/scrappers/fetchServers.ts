@@ -9,14 +9,17 @@ export async function fetchServers(episodeId: string) {
     throw new Error("An ID IS REQUIRED");
   }
 
-  // console.log(newId);
-  // ill need headers here add them later
   try {
     const newId = episodeId.split("-").pop();
+    // console.log(newId);
+
     const response = await client.get(
       `${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`,
       {
-        headers: {},
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
+        },
       }
     );
 
