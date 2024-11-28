@@ -1,8 +1,8 @@
-import { client } from "../../config/client";
-import { zoroSearch } from "../zoroUtils/zoroconstants";
+import { client } from "../../../config/client";
+import { zoroSearch } from "../utils/zoroconstants";
 
 import * as cheerio from "cheerio";
-import { extractSearchResults } from "../zoroUtils/methods";
+import { extractSearchResults } from "../utils/methods";
 
 export async function search(query: string, page?: number) {
   if (!query) {

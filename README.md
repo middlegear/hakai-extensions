@@ -4,3 +4,4 @@ the servers with their data id
 5=======>StreamSB
 
 /// make a roubust error handling
+//// scrape for anilist and malid in fetchepisodesrouces

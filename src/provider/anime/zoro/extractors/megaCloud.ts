@@ -2,7 +2,7 @@
 /// this has been copied from  https://github.com/ghoshRitesh12/aniwatch  thanks!
 import axios from "axios";
 import crypto from "crypto";
-import { USER_AGENT_HEADER } from "../../config/constants";
+import { USER_AGENT_HEADER } from "../../../config/constants";
 // https://megacloud.tv/embed-2/e-1/dBqCr5BcOhnD?k=1
 
 const megacloud = {

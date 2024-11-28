@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-import { USER_AGENT_HEADER } from "../../config/constants";
+import { USER_AGENT_HEADER } from "../../../config/constants";
 import type { Video } from "./types";
 
 class StreamSB {

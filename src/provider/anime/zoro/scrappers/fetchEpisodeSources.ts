@@ -1,16 +1,16 @@
-import { client } from "../../config/client";
-import { zoroBaseUrl } from "../zoroUtils/zoroconstants";
-import { extractAnimeServerId } from "../zoroUtils/methods";
+import { client } from "../../../config/client";
+import { zoroBaseUrl } from "../utils/zoroconstants";
+import { extractAnimeServerId } from "../utils/methods";
 import {
   Dubbing,
   Servers,
   type AnimeServers,
   type language,
-} from "../zoroUtils/types";
+} from "../utils/types";
 import * as cheerio from "cheerio";
 
 import MegaCloud from "../extractors/megaCloud";
-import { USER_AGENT_HEADER } from "../../config/constants";
+import { USER_AGENT_HEADER } from "../../../config/constants";
 import StreamSB from "../extractors/streamSb";
 import StreamTape from "../extractors/streamTape";
 export async function episodeSources(
