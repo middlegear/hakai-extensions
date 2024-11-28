@@ -1,6 +1,6 @@
 import { client } from "../../config/client";
 import { zoroBaseUrl } from "../zoroUtils/zoroconstants";
-import { extractAnimeServerId } from "../zoroUtils/scrapemethods";
+import { extractAnimeServerId } from "../zoroUtils/methods";
 import {
   Dubbing,
   Servers,
@@ -8,16 +8,31 @@ import {
   type language,
 } from "../zoroUtils/types";
 import * as cheerio from "cheerio";
+// import MegaCloud from "../extractors/megaCloud";
+import { USER_AGENT_HEADER } from "../../config/constants";
+
+import MegaCloud from "../extractors/megaCloud";
 async function episodeSources(
-  id: string,
+  episodeid: string,
   server: AnimeServers = Servers.HD1,
   language: language = Dubbing.Sub
 ) {
   ////IF THEID STARTS WITH HTTP S1
+  if (episodeid.startsWith("https")) {
+    const serverfetchUrl = new URL(episodeid);
+    switch (server) {
+      case Servers.HD1:
+      case Servers.HD2: {
+        return {
+          ...(await new MegaCloud().extract(serverfetchUrl)),
+        };
+      }
+    }
+  }
   //
   ////s2
   try {
-    const newId = id.split("-").pop();
+    const newId = episodeid.split("-").pop();
 
     const response = await client.get(
       `${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`,
@@ -54,10 +69,9 @@ async function episodeSources(
           break;
         }
       }
-
-      /////
-
-      const response = await client.get(
+      const {
+        data: { link },
+      } = await client.get(
         `${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`,
         {
           headers: {
@@ -66,7 +80,8 @@ async function episodeSources(
           },
         }
       );
-      console.log(response.data);
+      console.log(link, mediadataId);
+      return await episodeSources(link, server);
     } catch (error) {
       return {
         error:

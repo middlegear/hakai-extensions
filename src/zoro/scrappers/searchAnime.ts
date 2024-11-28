@@ -2,7 +2,7 @@ import { client } from "../../config/client";
 import { zoroSearch } from "../zoroUtils/zoroconstants";
 
 import * as cheerio from "cheerio";
-import { extractSearchResults } from "../zoroUtils/scrapemethods";
+import { extractSearchResults } from "../zoroUtils/methods";
 
 export async function search(query: string, page?: number) {
   if (!query) {
