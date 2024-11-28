@@ -31,5 +31,3 @@ export async function search(query: string, page?: number) {
     console.timeEnd("scraping time");
   }
 }
-search("bleach");
-console.log("Hello world");

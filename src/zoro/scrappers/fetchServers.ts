@@ -34,4 +34,3 @@ export async function fetchServers(episodeId: string) {
     console.timeEnd("finish scraping");
   }
 }
-fetchServers("bleach-thousand-year-blood-war-arc-15665-episode-94563");

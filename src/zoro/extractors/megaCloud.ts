@@ -1,8 +1,8 @@
 // @ts-nocheck
-/// this has been copied from  https://github.com/ghoshRitesh12/aniwatch
+/// this has been copied from  https://github.com/ghoshRitesh12/aniwatch  thanks!
 import axios from "axios";
 import crypto from "crypto";
-
+import { USER_AGENT_HEADER } from "../../config/constants";
 // https://megacloud.tv/embed-2/e-1/dBqCr5BcOhnD?k=1
 
 const megacloud = {
@@ -64,8 +64,7 @@ class MegaCloud {
           headers: {
             Accept: "*/*",
             "X-Requested-With": "XMLHttpRequest",
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "User-Agent": USER_AGENT_HEADER,
             Referer: videoUrl.href,
           },
         }
