@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
-import { subOrDub, type animeSearch, type pagination } from "./types";
+import {
+  subOrDub,
+  type AnimeInfo,
+  type animeSearch,
+  type EpisodeInfo,
+} from "./types";
 
 export function extractAnitakuSearchResults(
   selector: cheerio.SelectorType,
@@ -49,4 +54,92 @@ export function extractAnitakuSearchResults(
       error: error instanceof Error ? error.message : "Unable to scrap ",
     };
   }
+}
+export function anitaku_extractAnimeInfo(
+  $: cheerio.CheerioAPI,
+  selector: cheerio.SelectorType
+) {
+  try {
+    const animeInfo: AnimeInfo = {
+      id: null,
+      title: null,
+      altTitle: null,
+      type: null,
+      subOrDub: null,
+      posterImage: null,
+      description: null,
+      releaseDate: null,
+      currentStatus: null,
+    }; /// remember to scrape for genres its buggy
+
+    animeInfo.title =
+      $(selector)?.find("div.anime_info_body_bg > h1").text().trim() || null;
+    animeInfo.posterImage =
+      $(selector)?.find("div.anime_info_body_bg > img")?.attr("src") || null;
+    animeInfo.altTitle =
+      $(selector)
+        ?.find("div.anime_info_body_bg > p.type.other-name > a")
+        ?.attr("title") || null;
+    const animeIdselector = $(
+      "div.main_body > div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next > input#alias_anime.alias_anime"
+    )?.attr("value");
+    animeInfo.id = animeIdselector || null;
+    animeInfo.description =
+      $(selector)
+        ?.find("div.anime_info_body_bg > div.description")
+        ?.text()
+        ?.trim() || null;
+    animeInfo.releaseDate =
+      Number(
+        $(selector)
+          ?.find("div.anime_info_body_bg >  p:nth-child(8)")
+          ?.text()
+          ?.split(":")
+          ?.at(-1)
+          ?.trim()
+      ) || null;
+
+    animeInfo.currentStatus =
+      $(selector)
+        ?.find("div.anime_info_body_bg > p:nth-child(9) > a")
+        ?.text()
+        ?.trim() || null;
+    animeInfo.type =
+      $(selector)?.find("div.anime_info_body_bg > p.type > a")?.attr("title") ||
+      null;
+    animeInfo.subOrDub = animeIdselector?.toLowerCase()?.includes("dub")
+      ? subOrDub.DUB
+      : subOrDub.SUB || null;
+
+    const MovieId: cheerio.SelectorType =
+      "div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next";
+
+    const movieId =
+      Number($(MovieId).find("input#movie_id.movie_id").attr("value")) || null;
+
+    return {
+      animeInfo,
+      // movieId,
+    };
+  } catch (error) {}
+}
+
+///////why is it returning one element
+export function anitakuExtractEpisodes($: cheerio.CheerioAPI) {
+  const resEpisodes: EpisodeInfo[] = [];
+
+  const selector: cheerio.SelectorType = "ul#episode_related > li";
+  $(selector).each((_, element) => {
+    resEpisodes.push({
+      id: $(element)?.find("a")?.attr("href")?.split("/").at(1)?.trim() || null,
+      name: $(element).find("div.name").text().trim().toLowerCase(),
+      number:
+        Number(
+          $(element)?.find("a")?.attr("href")?.split("-").at(-1)?.trim()
+        ) || null,
+      category: $(element).find("div.cate").text().trim().toLowerCase(),
+    });
+  });
+
+  return resEpisodes.reverse();
 }
