@@ -4,6 +4,7 @@ import {
   type AnimeInfo,
   type animeSearch,
   type EpisodeInfo,
+  type Servers,
 } from "./types";
 
 export function extractAnitakuSearchResults(
@@ -124,7 +125,6 @@ export function anitaku_extractAnimeInfo(
   } catch (error) {}
 }
 
-///////why is it returning one element
 export function anitakuExtractEpisodes($: cheerio.CheerioAPI) {
   const resEpisodes: EpisodeInfo[] = [];
 
@@ -142,4 +142,23 @@ export function anitakuExtractEpisodes($: cheerio.CheerioAPI) {
   });
 
   return resEpisodes.reverse();
+}
+
+export function anitakuExtractServers(
+  $: cheerio.CheerioAPI,
+  selector: cheerio.SelectorType
+) {
+  const servers: Servers[] = [];
+  $(selector).each((_, element) => {
+    servers.push({
+      name:
+        $(element)
+          ?.find(" a ")
+          ?.text()
+          .trim()
+          .replace("Choose this server", " ") || null,
+      serverId: Number($(element).find("a").attr("rel")) || null,
+    });
+  });
+  return servers;
 }

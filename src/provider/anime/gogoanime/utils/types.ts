@@ -38,3 +38,7 @@ export type EpisodeInfo = {
 export type testing = {
   id: number | null;
 };
+export type Servers = {
+  name: string | null;
+  serverId: number | null;
+};
