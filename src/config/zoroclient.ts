@@ -11,6 +11,6 @@ const axiosConfig: AxiosRequestConfig = {
   },
 };
 
-const client = axios.create(axiosConfig);
+const zoroclient = axios.create(axiosConfig);
 
-export { client, AxiosError };
+export { zoroclient, AxiosError };

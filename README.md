@@ -5,3 +5,4 @@ the servers with their data id
 
 /// make a roubust error handling
 //// scrape for anilist and malid in fetchepisodesrouces
+should pages be strings | numbers

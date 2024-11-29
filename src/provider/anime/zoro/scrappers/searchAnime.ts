@@ -1,8 +1,8 @@
-import { client } from "../../../config/client";
-import { zoroSearch } from "../utils/zoroconstants";
+import { zoroSearch } from "../utils/constants";
 
 import * as cheerio from "cheerio";
 import { extractSearchResults } from "../utils/methods";
+import { zoroclient } from "../../../../config/zoroclient";
 
 export async function search(query: string, page?: number) {
   if (!query) {
@@ -15,7 +15,7 @@ export async function search(query: string, page?: number) {
   }
   try {
     console.time("scraping time");
-    const response = await client.get(
+    const response = await zoroclient.get(
       `${zoroSearch}?keyword=${query}&page=${page as number}`
     );
     const $data = cheerio.load(response.data);
