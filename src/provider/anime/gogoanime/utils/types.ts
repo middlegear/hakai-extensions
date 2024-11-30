@@ -42,3 +42,26 @@ export type Servers = {
   name: string | null;
   serverId: number | null;
 };
+export type Sources = {
+  serverId: number | null;
+  sourceUrl: string | null;
+};
+export type downloadUrl = {
+  downloadUrl: string | null;
+  iframe: null | string;
+};
+
+export enum anitakuServers {
+  Vidstreaming = "vidstreaming",
+  GogoServer = "gogo server",
+  StreamWish = "streamwish",
+  Doodstream = "doodstream",
+  VidHide = "videhide",
+}
+
+export type anitakuAnimeServers =
+  | "vidstreaming"
+  | "gogo server"
+  | "streamwish"
+  | "doodstream"
+  | "videhide";

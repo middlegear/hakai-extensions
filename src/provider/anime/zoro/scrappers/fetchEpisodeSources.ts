@@ -29,6 +29,7 @@ export async function episodeSources(
           ...(await new MegaCloud().extract(serverfetchUrl)),
         };
       }
+
       case Servers.StreamSB:
         return {
           headers: {

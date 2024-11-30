@@ -3,8 +3,10 @@ import {
   subOrDub,
   type AnimeInfo,
   type animeSearch,
+  type downloadUrl,
   type EpisodeInfo,
   type Servers,
+  type Sources,
 } from "./types";
 
 export function extractAnitakuSearchResults(
@@ -156,9 +158,28 @@ export function anitakuExtractServers(
           ?.find(" a ")
           ?.text()
           .trim()
-          .replace("Choose this server", " ") || null,
+          .replace("Choose this server", " ")
+          .toLowerCase() || null,
       serverId: Number($(element).find("a").attr("rel")) || null,
     });
   });
   return servers;
+}
+
+export function anitakuExtractDownloadSrc($: cheerio.CheerioAPI) {
+  const sources: downloadUrl = {
+    downloadUrl: null,
+    iframe: null,
+  };
+
+  sources.downloadUrl =
+    $("div.favorites_book > ul > li.dowloads").find("a").attr("href") || null;
+  sources.iframe =
+    $("div.anime_video_body_watch_items.load > div.play-video")
+      .find("iframe")
+      .attr("src") || null;
+
+  return {
+    sources,
+  };
 }
