@@ -1,16 +1,15 @@
-/// possible bugs dont know where to return the sources download link , undefined  or null cases in serverUrl
-
 import { anitakuClient } from "../../../../config/gogoanimeclient";
 import * as cheerio from "cheerio";
 import { anitakuBaseUrl } from "../utils/constants";
 
 import { anitakuServers, type anitakuAnimeServers } from "../utils/types";
-import { anitakuExtractDownloadSrc } from "../utils/methods";
+// import { anitakuExtractDownloadSrc } from "../utils/methods";
 
 ///
 export async function anitakuFetchSources(
   episodeId: string,
-  server: anitakuAnimeServers = anitakuServers.GogoServer
+  server: anitakuAnimeServers = anitakuServers.GogoServer,
+  downloadLink?: string
 ) {
   ////S1 segment works fine
   // if (episodeId.startsWith("https")) {
@@ -23,74 +22,83 @@ export async function anitakuFetchSources(
       headers: { Referer: `${anitakuBaseUrl}/` },
     });
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    const downloadUrl = anitakuExtractDownloadSrc(data$); //// what to do about this
 
-    let serverUrl: string | null;
+    let serverUrl: URL | null;
 
     try {
       switch (server) {
-        case anitakuServers.GogoServer:
-          serverUrl =
-            data$("div.anime_video_body > div.anime_muti_link > ul > li.vidcdn")
+        case anitakuServers.GogoServer: {
+          serverUrl = new URL(
+            `${data$(
+              "div.anime_video_body > div.anime_muti_link > ul > li.vidcdn"
+            )
               ?.find("a")
-              ?.attr("data-video") || null;
-
+              ?.attr("data-video")}`
+          );
           break;
-
+        }
         case anitakuServers.Doodstream: {
-          serverUrl =
-            data$(
+          serverUrl = new URL(
+            `${data$(
               "div.anime_video_body > div.anime_muti_link > ul > li.doodstream"
             )
               ?.find("a")
-              ?.attr("data-video") || null;
+              ?.attr("data-video")}`
+          );
           break;
         }
         case anitakuServers.StreamWish: {
-          serverUrl =
-            data$(
+          serverUrl = new URL(
+            `${data$(
               "div.anime_video_body > div.anime_muti_link > ul > li.streamwish"
             )
               ?.find("a")
-              ?.attr("data-video") || null;
+              ?.attr("data-video")}`
+          );
           break;
         }
         case anitakuServers.VidHide: {
-          serverUrl =
-            data$(
+          serverUrl = new URL(
+            `${data$(
               "div.anime_video_body > div.anime_muti_link > ul > li.vidhide"
             )
               ?.find("a")
-              ?.attr("data-video") || null;
+              ?.attr("data-video")}`
+          );
 
           break;
         }
-        /////this seems like the one default
+        // /////this seems like the one default
         case anitakuServers.Vidstreaming: {
-          serverUrl =
-            data$("div.anime_video_body > div.anime_muti_link > ul > li.anime")
+          serverUrl = new URL(
+            `${data$(
+              "div.anime_video_body > div.anime_muti_link > ul > li.anime"
+            )
               ?.find("a")
-              ?.attr("data-video") || null;
+              ?.attr("data-video")}`
+          );
           break;
         }
 
         default: {
-          serverUrl =
-            data$("div.anime_video_body_watch_items.load > div.play-video")
+          serverUrl = new URL(
+            `${data$("div.anime_video_body_watch_items.load > div.play-video")
               ?.find("iframe")
-              ?.attr("src") || null;
+              ?.attr("src")}`
+          );
           break;
         }
       }
 
-      ///works fine but i dont know what to do with error when null or undefined
-      if (serverUrl !== null && serverUrl !== undefined) {
-        // console.log(
-        //   "validated that serverUrl isnt null or undefined",
-        //   serverUrl
-        // );
-        return await anitakuFetchSources(serverUrl);
-      }
+      const downloadUrl = data$("div.favorites_book > ul > li.dowloads")
+        .find("a")
+        .attr("href");
+      //// dunno what to do with iframe
+      const iframe = data$("div.favorites_book > ul > li.dowloads")
+        .find("a")
+        .attr("href");
+
+      return await anitakuFetchSources(serverUrl.href, server, downloadUrl);
     } catch (error) {
       return {
         success: false,
