@@ -166,20 +166,20 @@ export function anitakuExtractServers(
   return servers;
 }
 
-export function anitakuExtractDownloadSrc($: cheerio.CheerioAPI) {
-  const sources: downloadUrl = {
-    downloadUrl: null,
-    iframe: null,
-  };
+// export function anitakuExtractDownloadSrc($: cheerio.CheerioAPI) {
+//   const sources: downloadUrl = {
+//     downloadUrl: null,
+//     iframe: null,
+//   };
 
-  sources.downloadUrl =
-    $("div.favorites_book > ul > li.dowloads").find("a").attr("href") || null;
-  sources.iframe =
-    $("div.anime_video_body_watch_items.load > div.play-video")
-      .find("iframe")
-      .attr("src") || null;
+//   sources.downloadUrl =
+//     $("div.favorites_book > ul > li.dowloads").find("a").attr("href") || null;
+//   sources.iframe =
+//     $("div.anime_video_body_watch_items.load > div.play-video")
+//       .find("iframe")
+//       .attr("src") || null;
 
-  return {
-    sources,
-  };
-}
+//   return {
+//     sources,
+//   };
+// }

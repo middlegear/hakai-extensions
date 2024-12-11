@@ -3,20 +3,27 @@ import * as cheerio from "cheerio";
 import { anitakuBaseUrl } from "../utils/constants";
 
 import { anitakuServers, type anitakuAnimeServers } from "../utils/types";
-// import { anitakuExtractDownloadSrc } from "../utils/methods";
 
-///
 export async function anitakuFetchSources(
   episodeId: string,
-  server: anitakuAnimeServers = anitakuServers.GogoServer,
+  server: anitakuAnimeServers = anitakuServers.Vidstreaming, /// defualt server
   downloadLink?: string
 ) {
+  if (!episodeId) {
+    throw new Error("Episode Id is required");
+  }
   ////S1 segment works fine
-  // if (episodeId.startsWith("https")) {
-  //   const serverID = new URL(episodeId);
-  //   return console.log("confirmed", serverID.href);
-  // }
+  if (episodeId.startsWith("https")) {
+    const serverID = new URL(episodeId);
+
+    switch (server) {
+      case anitakuServers.Doodstream: {
+      }
+    }
+    // return console.log("confirmed", serverID.href);
+  }
   try {
+    console.time();
     ////S2
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {
       headers: { Referer: `${anitakuBaseUrl}/` },
@@ -94,9 +101,8 @@ export async function anitakuFetchSources(
         .find("a")
         .attr("href");
       //// dunno what to do with iframe
-      const iframe = data$("div.favorites_book > ul > li.dowloads")
-        .find("a")
-        .attr("href");
+      const iframe = data$("div.play-video").find("iframe").attr("src") || null;
+      console.log(serverUrl.href);
 
       return await anitakuFetchSources(serverUrl.href, server, downloadUrl);
     } catch (error) {
@@ -113,6 +119,8 @@ export async function anitakuFetchSources(
           ? error.message
           : " no data check the episodeId and serverId ",
     };
+  } finally {
+    console.timeEnd();
   }
 }
 anitakuFetchSources("bleach-episode-1");

@@ -4,7 +4,7 @@ import {
   anitaku_ACCEPT_ENCODING_HEADER,
   anitaku_ACCEPT_HEADER,
   anitaku_USER_AGENT_HEADER,
-} from "../provider/anime/gogoanime/utils/constants";
+} from "../provider/Anime/Anitaku/utils/constants";
 
 const axiosConfig: AxiosRequestConfig = {
   headers: {
