@@ -2,8 +2,14 @@
 
 import axios from "axios";
 import { load, type CheerioAPI } from "cheerio";
-import type { Video } from "./types";
 
+type Video = {
+  url: string;
+  quality?: string;
+  isM3U8?: boolean;
+  size?: number;
+  [x: string]: unknown;
+};
 class StreamTape {
   // private serverName = "StreamTape";
   private sources: Video[] = [];

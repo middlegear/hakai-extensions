@@ -1,19 +1,17 @@
-import { zoroBaseUrl } from "../utils/constants";
-import { extractAnimeServerId } from "../utils/methods";
+import { zoroBaseUrl } from "../utils/hianimeconstants";
+import { extractAnimeServerId } from "../utils/hianimemethods";
 import {
   Dubbing,
   Servers,
   type AnimeServers,
   type language,
-} from "../utils/types";
+} from "../utils/hianimetypes";
 import * as cheerio from "cheerio";
 
-import MegaCloud from "../extractors/megaCloud";
+import { USER_AGENT_HEADER } from "../../../../config/headers";
 
-import StreamSB from "../extractors/streamSb";
-import StreamTape from "../extractors/streamTape";
-import { USER_AGENT_HEADER } from "../../../../config/constants";
-import { zoroclient } from "../../../../config/zoroclient";
+import { zoroClient } from "../../../../config";
+import { MegaCloud, StreamSB, StreamTape } from "../../extractors/hianime";
 export async function episodeSources(
   episodeid: string,
   server: AnimeServers = Servers.HD1,
@@ -52,7 +50,7 @@ export async function episodeSources(
     try {
       const newId = episodeid.split("-").pop();
 
-      const response = await zoroclient.get(
+      const response = await zoroClient.get(
         `${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`,
         {
           headers: {
@@ -89,7 +87,7 @@ export async function episodeSources(
         }
         const {
           data: { link },
-        } = await zoroclient.get(
+        } = await zoroClient.get(
           `${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`,
           {
             headers: {

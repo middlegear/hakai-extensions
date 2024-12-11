@@ -1,19 +1,19 @@
 import * as cheerio from "cheerio";
 
-import { extractAnimeInfo, extractEpisodesList } from "../utils/methods";
-import { zoroBaseUrl } from "../utils/constants";
-import { zoroclient } from "../../../../config/zoroclient";
+import { extractAnimeInfo, extractEpisodesList } from "../utils/hianimemethods";
+import { zoroBaseUrl } from "../utils/hianimeconstants";
+import { zoroClient } from "../../../../config";
 
 export async function fetchAnimeInfo(animeId: string) {
   if (!animeId) throw new Error("Provide an id ");
   try {
     console.time("scraping time");
-    const response = await zoroclient.get(`${zoroBaseUrl}/${animeId}`);
+    const response = await zoroClient.get(`${zoroBaseUrl}/${animeId}`);
     const $data: cheerio.CheerioAPI = cheerio.load(response.data);
 
     const resAnimeInfo = extractAnimeInfo($data);
     // console.log(response.data); /// request is successful
-    const episodesList = await zoroclient.get(
+    const episodesList = await zoroClient.get(
       `${zoroBaseUrl}/ajax/v2/episode/list/${animeId.split("-").pop()}`,
       {
         headers: {

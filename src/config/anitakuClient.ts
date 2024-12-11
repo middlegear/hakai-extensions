@@ -1,10 +1,10 @@
 import axios from "axios";
 import type { AxiosRequestConfig } from "axios";
 import {
-  anitaku_ACCEPT_ENCODING_HEADER,
-  anitaku_ACCEPT_HEADER,
   anitaku_USER_AGENT_HEADER,
-} from "../provider/Anime/Anitaku/utils/constants";
+  anitaku_ACCEPT_HEADER,
+  anitaku_ACCEPT_ENCODING_HEADER,
+} from "./index";
 
 const axiosConfig: AxiosRequestConfig = {
   headers: {

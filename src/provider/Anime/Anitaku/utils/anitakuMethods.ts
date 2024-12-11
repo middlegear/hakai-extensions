@@ -7,7 +7,7 @@ import {
   type EpisodeInfo,
   type Servers,
   type Sources,
-} from "./types";
+} from "./anitakuTypes";
 
 export function extractAnitakuSearchResults(
   selector: cheerio.SelectorType,

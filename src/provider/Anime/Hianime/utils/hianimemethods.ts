@@ -7,7 +7,7 @@ import type {
   EpisodeInfo,
   language,
   ScrappedServers,
-} from "./types";
+} from "./hianimetypes";
 
 export function extractSearchResults(
   $: cheerio.CheerioAPI,

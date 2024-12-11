@@ -2,9 +2,14 @@
 
 import axios from "axios";
 
-import type { Video } from "./types";
-import { USER_AGENT_HEADER } from "../../../../config/constants";
-
+import { USER_AGENT_HEADER } from "../../../../config/headers";
+type Video = {
+  url: string;
+  quality?: string;
+  isM3U8?: boolean;
+  size?: number;
+  [x: string]: unknown;
+};
 class StreamSB {
   // private serverName = "streamSB";
   private sources: Video[] = [];

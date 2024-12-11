@@ -1,7 +1,7 @@
-import { zoroBaseUrl } from "../utils/constants";
+import { zoroBaseUrl } from "../utils/hianimeconstants";
 import * as cheerio from "cheerio";
-import { extractServerData } from "../utils/methods";
-import { zoroclient } from "../../../../config/zoroclient";
+import { extractServerData } from "../utils/hianimemethods";
+import { zoroClient } from "../../../../config";
 
 // fetching dubbing and subs happens here
 export async function fetchServers(episodeId: string) {
@@ -13,7 +13,7 @@ export async function fetchServers(episodeId: string) {
     console.time("start scrapping");
     const newId = episodeId.split("-").pop();
 
-    const response = await zoroclient.get(
+    const response = await zoroClient.get(
       `${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`,
       {
         headers: {

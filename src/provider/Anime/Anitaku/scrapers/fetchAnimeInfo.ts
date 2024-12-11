@@ -1,17 +1,19 @@
-import { anitakuClient } from "../../../../config/gogoanimeclient";
+import { anitakuClient } from "../../../../config/anitakuClient";
 import {
-  anitaku_ACCEPT_ENCODING_HEADER,
-  anitaku_USER_AGENT_HEADER,
   anitakuAjaxLoadEpisodes,
   anitakuInfoUrl,
-} from "../utils/constants";
+} from "../utils/anitakuConstants";
 import * as cheerio from "cheerio";
 import {
   anitaku_extractAnimeInfo,
   anitakuExtractEpisodes,
-} from "../utils/methods";
+} from "../utils/anitakuMethods";
 import axios from "axios";
-import type { EpisodeInfo, testing } from "../utils/types";
+import type { EpisodeInfo, testing } from "../utils/anitakuTypes";
+import {
+  anitaku_USER_AGENT_HEADER,
+  anitaku_ACCEPT_ENCODING_HEADER,
+} from "../../../../config";
 export async function fetchAnimeInfo(animeId: string) {
   try {
     const response = await anitakuClient.get(`${anitakuInfoUrl}/${animeId}`);

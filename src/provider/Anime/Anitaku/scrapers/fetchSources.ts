@@ -1,8 +1,11 @@
-import { anitakuClient } from "../../../../config/gogoanimeclient";
+import { anitakuClient } from "../../../../config/anitakuClient";
 import * as cheerio from "cheerio";
-import { anitakuBaseUrl } from "../utils/constants";
+import { anitakuBaseUrl } from "../utils/anitakuConstants";
 
-import { anitakuServers, type anitakuAnimeServers } from "../utils/types";
+import {
+  anitakuServers,
+  type anitakuAnimeServers,
+} from "../utils/anitakuTypes";
 
 export async function anitakuFetchSources(
   episodeId: string,
