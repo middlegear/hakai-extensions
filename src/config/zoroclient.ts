@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AxiosError, type AxiosRequestConfig } from "axios";
-import { ACCEPT_HEADER, ACCEPT_ENCODING, USER_AGENT_HEADER } from "./index";
+import { ACCEPT_HEADER, ACCEPT_ENCODING, USER_AGENT_HEADER } from "./headers";
 
 const axiosConfig: AxiosRequestConfig = {
   timeout: 5000,
@@ -13,4 +13,4 @@ const axiosConfig: AxiosRequestConfig = {
 
 const zoroClient = axios.create(axiosConfig);
 
-export { zoroClient, AxiosError };
+export { zoroClient };

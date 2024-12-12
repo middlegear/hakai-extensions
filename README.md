@@ -1,8 +1,3 @@
-the servers with their data id
-1 =====> HD2
-4 =====> HD1
-5=======>StreamSB
-
 /// make a roubust error handling
 //// scrape for anilist and malid in fetchepisodesrouces
 should pages be strings | numbers
@@ -12,3 +7,5 @@ should pages be strings | numbers
 
 Addtional sites for scraping info check on theindex.moe
 AnimeZ
+
+delete garbage stuff like the clients config basically its clean up

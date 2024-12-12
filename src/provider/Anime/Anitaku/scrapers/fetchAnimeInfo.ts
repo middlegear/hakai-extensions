@@ -9,11 +9,11 @@ import {
   anitakuExtractEpisodes,
 } from "../utils/anitakuMethods";
 import axios from "axios";
-import type { EpisodeInfo, testing } from "../utils/anitakuTypes";
 import {
+  ACCEPT_ENCODING,
   anitaku_USER_AGENT_HEADER,
-  anitaku_ACCEPT_ENCODING_HEADER,
-} from "../../../../config";
+} from "../../../../config/headers";
+
 export async function fetchAnimeInfo(animeId: string) {
   try {
     const response = await anitakuClient.get(`${anitakuInfoUrl}/${animeId}`);
@@ -44,7 +44,7 @@ export async function fetchAnimeInfo(animeId: string) {
         headers: {
           accept: "text/html, */*; q=0.01",
           "User-Agent": anitaku_USER_AGENT_HEADER,
-          "Content-Encoding": anitaku_ACCEPT_ENCODING_HEADER,
+          "Content-Encoding": ACCEPT_ENCODING,
         },
       }
     );
