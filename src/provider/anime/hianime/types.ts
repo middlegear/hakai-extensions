@@ -12,12 +12,6 @@ export type Anime = {
     dub: number | null;
   };
 };
-export type scrappedAnime = {
-  anime: [];
-  hasNextPage: boolean;
-  totalPages: number;
-  currentPage: number;
-};
 
 export type AnimeInfo = {
   id: string | null;
@@ -72,3 +66,23 @@ export enum Dubbing {
   Sub = "sub",
   Raw = "raw",
 }
+export type scrappedAnime = {
+  success: boolean;
+  anime?: Anime[];
+  hasNextPage?: boolean;
+  totalPages?: number | null;
+  currentPage?: number | null;
+};
+export type Error = {
+  success: boolean;
+  error: string;
+};
+export type scrappedAnimeInfo = {
+  success: boolean;
+  animeInfo?: AnimeInfo;
+  episodes?: EpisodeInfo[];
+};
+// export type scrappedServerData = {
+//   success: boolean;
+//   servers: AnimeServers;
+// };

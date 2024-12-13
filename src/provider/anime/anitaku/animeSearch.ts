@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuSearchUrl } from "../../../utils/constants";
 import { extractAnitakuSearchResults } from "./methods";
-export async function getAnimeSearch(query: string, page: number = 1) {
+export async function searchAnime(query: string, page: number = 1) {
   try {
     if (!query) {
       throw new Error(" Search query is needed");
@@ -15,7 +15,7 @@ export async function getAnimeSearch(query: string, page: number = 1) {
       "div.last_episodes > ul.items > li";
 
     const searchData = extractAnitakuSearchResults(resSelector, data$);
-    console.log(searchData);
+    return searchData;
   } catch (error) {
     return {
       error:
@@ -25,4 +25,3 @@ export async function getAnimeSearch(query: string, page: number = 1) {
     };
   }
 }
-getAnimeSearch("bleach");

@@ -14,6 +14,11 @@ export enum subOrDub {
   SUB = "sub",
   DUB = "dub",
 }
+// export type pageInfo = {
+//   currentPage: number | null;
+//   hasNextPage: boolean | null;
+//   totalPages: number | null;
+// };
 
 export type AnimeInfo = {
   id: string | null;

@@ -8,98 +8,92 @@ import type {
   language,
   ScrappedServers,
 } from "./types";
+// import type { pageInfo } from "../anitaku/types";
 
 export function extractSearchResults(
   $: cheerio.CheerioAPI,
   selector: cheerio.SelectorType
 ) {
   const anime: Anime[] = [];
-  try {
-    $(selector).each((_, element) => {
-      const id = $(element)
-        .find(".film-detail .film-name .dynamic-name")
-        .attr("href")
-        ?.slice(1)
-        ?.split("?ref=search")
-        .at(0)
-        ?.trim();
 
-      anime.push({
-        id: id || null,
-        name:
-          $(element)
-            .find(".film-detail .film-name .dynamic-name")
-            .text()
-            .trim() || null,
-        japaneseName:
-          $(element)
-            .find(".film-detail .film-name .dynamic-name")
-            .attr("data-jname") || null,
-        posterImage:
-          $(element).find(" .film-poster .film-poster-img").attr("data-src") ||
-          null,
-        url:
-          $(element)
-            .find(".film-detail .film-name .dynamic-name")
-            .attr("href") || null,
-        duration:
-          $(element).find(".fd-infor .fdi-item.fdi-duration").text().trim() ||
-          null,
-        type:
-          $(element).find(".fd-infor .fdi-item:nth-of-type(1)").text().trim() ||
-          null,
-        rating:
-          $(element).find(".film-poster .tick.tick-rate").text().trim() || null,
-        episodes: {
-          sub: Number($(element).find(".film-poster .tick .tick-sub").text()),
-          dub: Number($(element).find(".film-poster .tick .tick-dub").text()),
-        },
-      });
+  $(selector).each((_, element) => {
+    const id = $(element)
+      .find(".film-detail .film-name .dynamic-name")
+      .attr("href")
+      ?.slice(1)
+      ?.split("?ref=search")
+      .at(0)
+      ?.trim();
+
+    anime.push({
+      id: id || null,
+      name:
+        $(element)
+          .find(".film-detail .film-name .dynamic-name")
+          .text()
+          .trim() || null,
+      japaneseName:
+        $(element)
+          .find(".film-detail .film-name .dynamic-name")
+          .attr("data-jname") || null,
+      posterImage:
+        $(element).find(" .film-poster .film-poster-img").attr("data-src") ||
+        null,
+      url:
+        $(element).find(".film-detail .film-name .dynamic-name").attr("href") ||
+        null,
+      duration:
+        $(element).find(".fd-infor .fdi-item.fdi-duration").text().trim() ||
+        null,
+      type:
+        $(element).find(".fd-infor .fdi-item:nth-of-type(1)").text().trim() ||
+        null,
+      rating:
+        $(element).find(".film-poster .tick.tick-rate").text().trim() || null,
+      episodes: {
+        sub: Number($(element).find(".film-poster .tick .tick-sub").text()),
+        dub: Number($(element).find(".film-poster .tick .tick-dub").text()),
+      },
     });
+  });
 
-    const paginationElement = $(".pre-pagination .pagination .page-item");
+  const paginationElement = $(".pre-pagination .pagination .page-item");
 
-    // hasNextPage = paginationElement.last().hasClass("active");
-    // totalPages = !hasNextPage
-    //   ? paginationElement
-    //       .last()
-    //       .find(".page-link")
-    //       .attr("href")
-    //       ?.split("page=")
-    //       .at(-1)
-    //   : Number(paginationElement.last().find(".page-link").text());
-    let currentPage, hasNextPage, totalPages;
-    hasNextPage =
-      ($(".pagination > li").length > 0 &&
-        $(".pagination li.active").length > 0 &&
-        !$(".pagination > li").last().hasClass("active")) ||
-      false;
-    currentPage =
-      Number($(paginationElement).find(".active .page-link").text().trim()) ||
-      1;
-    totalPages =
-      Number(
-        paginationElement
-          .find('a.page-link[title="Last"]')
-          .attr("href")
-          ?.split("page=")
-          .at(-1)
-      ) || 1;
+  // hasNextPage = paginationElement.last().hasClass("active");
+  // totalPages = !hasNextPage
+  //   ? paginationElement
+  //       .last()
+  //       .find(".page-link")
+  //       .attr("href")
+  //       ?.split("page=")
+  //       .at(-1)
+  //   : Number(paginationElement.last().find(".page-link").text());
 
-    const pageInfo = {
-      hasNextPage,
-      currentPage,
-      totalPages,
-    };
-    return {
-      pageInfo,
-      anime,
-    };
-  } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "unknown Error",
-    };
-  }
+  const hasNextPage: boolean =
+    ($(".pagination > li").length > 0 &&
+      $(".pagination li.active").length > 0 &&
+      !$(".pagination > li").last().hasClass("active")) ||
+    false;
+  const currentPage: number | null =
+    Number(
+      $(paginationElement).find(".active .page-link").text().trim() || 1
+    ) || null;
+  const totalPages: number | null =
+    Number(
+      paginationElement
+        .find('a.page-link[title="Last"]')
+        .attr("href")
+        ?.split("page=")
+        .at(-1) || 1
+    ) || null;
+
+  return {
+    success: true,
+    hasNextPage,
+    currentPage,
+    totalPages,
+    anime,
+  };
 }
 
 /////robust one by gpt
@@ -154,49 +148,44 @@ export function extractAnimeInfo($: cheerio.CheerioAPI) {
   };
   const selector: cheerio.SelectorType = ".ani_detail-stage .anis-content ";
   const section = $(selector);
-  try {
-    res.id =
-      section?.find(".film-buttons .btn")?.attr("href")?.split("/")?.at(-1) ||
-      null;
-    res.title =
-      $(selector)
-        ?.find(".anisc-detail .film-name.dynamic-name")
-        ?.text()
-        ?.trim() || null;
-    // res.AnilistId =
-    //   Number(JSON.parse($("body")?.find("#syncData")?.text()).anilist_id) ||
-    //   null;
-    // res.MalId =
-    //   Number(JSON.parse($("body")?.find("#syncData")?.text()).mal_id) || null;
-    const { mal_id, anilist_id } = JSON.parse($("#syncData").text().trim());
-    res.AnilistId = Number(anilist_id) || null;
-    res.MalId = Number(mal_id) || null;
-    res.posterImage =
-      section?.find(".film-poster .film-poster-img")?.attr("src") || null;
 
-    res.synopsis = section?.find(".anisc-info .text")?.text()?.trim() || null;
-    res.episodes.dub = Number(
-      section?.find(".tick .tick-item.tick-dub")?.text().trim() || null
-    );
-    res.episodes.sub = Number(
-      section?.find(".tick .tick-item.tick-sub")?.text().trim() || null
-    );
-    res.totalEpisodes = Number(
-      section?.find(".tick .tick-item.tick-eps")?.text().trim() ||
-        res.episodes.sub ||
-        null
-    );
-    res.type =
-      $("span.item").last().prev().prev().text().toUpperCase().trim() || null;
-    const duration = $("span.item").last().text().trim();
-    res.duration = parseInt(duration);
+  res.id =
+    section?.find(".film-buttons .btn")?.attr("href")?.split("/")?.at(-1) ||
+    null;
+  res.title =
+    $(selector)
+      ?.find(".anisc-detail .film-name.dynamic-name")
+      ?.text()
+      ?.trim() || null;
+  // res.AnilistId =
+  //   Number(JSON.parse($("body")?.find("#syncData")?.text()).anilist_id) ||
+  //   null;
+  // res.MalId =
+  //   Number(JSON.parse($("body")?.find("#syncData")?.text()).mal_id) || null;
+  const { mal_id, anilist_id } = JSON.parse($("#syncData").text().trim());
+  res.AnilistId = Number(anilist_id) || null;
+  res.MalId = Number(mal_id) || null;
+  res.posterImage =
+    section?.find(".film-poster .film-poster-img")?.attr("src") || null;
 
-    return res;
-  } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "Unable to scrap data",
-    };
-  }
+  res.synopsis = section?.find(".anisc-info .text")?.text()?.trim() || null;
+  res.episodes.dub = Number(
+    section?.find(".tick .tick-item.tick-dub")?.text().trim() || null
+  );
+  res.episodes.sub = Number(
+    section?.find(".tick .tick-item.tick-sub")?.text().trim() || null
+  );
+  res.totalEpisodes = Number(
+    section?.find(".tick .tick-item.tick-eps")?.text().trim() ||
+      res.episodes.sub ||
+      null
+  );
+  res.type =
+    $("span.item").last().prev().prev().text().toUpperCase().trim() || null;
+  const duration = $("span.item").last().text().trim();
+  res.duration = parseInt(duration);
+
+  return res;
 }
 
 export function extractEpisodesList(
@@ -204,28 +193,23 @@ export function extractEpisodesList(
   selector: cheerio.SelectorType
 ) {
   const resEpisodeList: EpisodeInfo[] = [];
-  try {
-    $(selector).each((_, element) => {
-      resEpisodeList.push({
-        episodeId:
-          $(element)
-            ?.attr("href")
-            ?.split("/")
-            ?.at(2)
-            ?.trim()
-            ?.replace("?ep=", "-episode-") || null,
-        title: $(element)?.attr("title")?.trim() || null,
-        number: Number($(element).attr("data-number")),
-        href: $(element)?.attr("href")?.split("/")?.at(2)?.trim() || null,
-      });
-    });
 
-    return resEpisodeList;
-  } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "Unable to scrape",
-    };
-  }
+  $(selector).each((_, element) => {
+    resEpisodeList.push({
+      episodeId:
+        $(element)
+          ?.attr("href")
+          ?.split("/")
+          ?.at(2)
+          ?.trim()
+          ?.replace("?ep=", "-episode-") || null,
+      title: $(element)?.attr("title")?.trim() || null,
+      number: Number($(element).attr("data-number")),
+      href: $(element)?.attr("href")?.split("/")?.at(2)?.trim() || null,
+    });
+  });
+
+  return resEpisodeList;
 }
 
 export function extractServerData($: cheerio.CheerioAPI) {

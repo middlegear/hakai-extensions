@@ -51,13 +51,16 @@ export async function fetchAnimeInfo(animeId: string) {
 
     const episodesData = anitakuExtractEpisodes(resHtmlEpisodes$);
 
-    // console.log(resAnimeInfo, episodesData);
     const resAnime = {
       resAnimeInfo,
       episodesData,
     };
-    console.log(resAnime);
-  } catch (error) {}
+    return resAnime;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Unknown Error",
+    };
+  }
 }
-fetchAnimeInfo("one-piece");
+
 /// remember to scrape for genres its buggy

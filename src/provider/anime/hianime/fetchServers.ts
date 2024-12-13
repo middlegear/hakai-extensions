@@ -2,15 +2,17 @@ import * as cheerio from "cheerio";
 import { zoroClient } from "../../../config";
 import { zoroBaseUrl } from "../../../utils/constants";
 import { extractServerData } from "./methods";
-
-// fetching dubbing and subs happens here
-export async function fetchServers(episodeId: string) {
-  if (!episodeId) {
-    throw new Error("An ID IS REQUIRED");
-  }
+import type { ScrappedServers, Error } from "./types";
+export async function fetchServers(
+  episodeId: string
+): Promise<ScrappedServers | Error> {
+  if (!episodeId)
+    return {
+      success: false,
+      error: "Provide an episodeId!",
+    };
 
   try {
-    console.time("start scrapping");
     const newId = episodeId.split("-").pop();
 
     const response = await zoroClient.get(
@@ -27,10 +29,11 @@ export async function fetchServers(episodeId: string) {
 
     const serverdata = extractServerData(res$);
 
-    console.log(serverdata);
+    return serverdata;
   } catch (error) {
-    throw new Error("No data");
-  } finally {
-    console.timeEnd("finish scraping");
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Internal Server Error",
+    };
   }
 }

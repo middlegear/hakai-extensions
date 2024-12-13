@@ -1,9 +1,10 @@
+/// extractors remaining
 import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuBaseUrl } from "../../../utils/constants";
 import { type anitakuAnimeServers, anitakuServers } from "./types";
 
-export async function anitakuFetchSources(
+export async function fetchEpisodeSources(
   episodeId: string,
   server: anitakuAnimeServers = anitakuServers.Vidstreaming, /// defualt server
   downloadLink?: string
@@ -22,7 +23,6 @@ export async function anitakuFetchSources(
     // return console.log("confirmed", serverID.href);
   }
   try {
-    console.time();
     ////S2
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {
       headers: { Referer: `${anitakuBaseUrl}/` },
@@ -101,9 +101,8 @@ export async function anitakuFetchSources(
         .attr("href");
       //// dunno what to do with iframe
       const iframe = data$("div.play-video").find("iframe").attr("src") || null;
-      console.log(serverUrl.href);
 
-      return await anitakuFetchSources(serverUrl.href, server, downloadUrl);
+      return await fetchEpisodeSources(serverUrl.href, server, downloadUrl);
     } catch (error) {
       return {
         success: false,
@@ -118,8 +117,5 @@ export async function anitakuFetchSources(
           ? error.message
           : " no data check the episodeId and serverId ",
     };
-  } finally {
-    console.timeEnd();
   }
 }
-anitakuFetchSources("bleach-episode-1");

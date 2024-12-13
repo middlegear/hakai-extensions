@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
-import { animeZBaseUrl } from "./constants";
 
 import type { animeInfo } from "./types";
-import { Dubbing } from "../hianime/utils/hianimetypes";
+import { animeZBaseUrl } from "../../../utils/constants";
+import { Dubbing } from "../hianime/types";
 
 export function extractAnimeZResults(
   $: cheerio.CheerioAPI,

@@ -1,3 +1,4 @@
+////extractors need fixing
 import * as cheerio from "cheerio";
 import { zoroClient } from "../../../config";
 import { USER_AGENT_HEADER } from "../../../config/headers";
@@ -6,7 +7,7 @@ import { zoroBaseUrl } from "../../../utils/constants";
 import { extractAnimeServerId } from "./methods";
 import { type AnimeServers, Servers, Dubbing, type language } from "./types";
 
-export async function episodeSources(
+export async function fetchEpisodeSources(
   episodeid: string,
   server: AnimeServers = Servers.HD1,
   language: language = Dubbing.Sub
@@ -91,7 +92,7 @@ export async function episodeSources(
           }
         );
         console.log(link, mediadataId);
-        return await episodeSources(link, server);
+        return await fetchEpisodeSources(link, server);
       } catch (error) {
         return {
           error:
