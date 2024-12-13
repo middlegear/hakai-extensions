@@ -1,8 +1,7 @@
-import { zoroSearch } from "../utils/hianimeconstants";
-
 import * as cheerio from "cheerio";
-import { extractSearchResults } from "../utils/hianimemethods";
-import { zoroClient } from "../../../../config";
+import { zoroClient } from "../../../config";
+import { zoroSearch } from "../../../utils/constants";
+import { extractSearchResults } from "./methods";
 
 export async function search(query: string, page?: number) {
   if (!query) {

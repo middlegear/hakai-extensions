@@ -1,7 +1,8 @@
 import * as cheerio from "cheerio";
 import { animeZBaseUrl } from "./constants";
-import { Dubbing } from "../../hianime/utils/hianimetypes";
+
 import type { animeInfo } from "./types";
+import { Dubbing } from "../hianime/utils/hianimetypes";
 
 export function extractAnimeZResults(
   $: cheerio.CheerioAPI,
@@ -37,7 +38,7 @@ export function extractAnimeZResults(
       });
     });
     let hasNextPage, totalPages, currentPage;
-    //// for total pages select the last list item and extract the number in pageNumber in  anchor  href
+
     const pageSelector: cheerio.SelectorType =
       " div.Bot.text-center > nav > ul.pagination";
     currentPage =

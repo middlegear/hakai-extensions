@@ -1,18 +1,16 @@
-import { anitakuClient } from "../../../../config/anitakuClient";
-import {
-  anitakuAjaxLoadEpisodes,
-  anitakuInfoUrl,
-} from "../utils/anitakuConstants";
 import * as cheerio from "cheerio";
-import {
-  anitaku_extractAnimeInfo,
-  anitakuExtractEpisodes,
-} from "../utils/anitakuMethods";
+
 import axios from "axios";
+import { anitakuClient } from "../../../config";
 import {
-  ACCEPT_ENCODING,
   anitaku_USER_AGENT_HEADER,
-} from "../../../../config/headers";
+  ACCEPT_ENCODING,
+} from "../../../config/headers";
+import {
+  anitakuInfoUrl,
+  anitakuAjaxLoadEpisodes,
+} from "../../../utils/constants";
+import { anitaku_extractAnimeInfo, anitakuExtractEpisodes } from "./methods";
 
 export async function fetchAnimeInfo(animeId: string) {
   try {

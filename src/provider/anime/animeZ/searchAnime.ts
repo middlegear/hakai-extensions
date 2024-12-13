@@ -1,8 +1,10 @@
-import { animeZClient } from "../../../../config";
-import { extractAnimeZResults } from "../utils/animeZmethods";
-import { animeZBaseUrl } from "../utils/constants";
 import * as cheerio from "cheerio";
+import { animeZClient } from "../../../config";
+
+import { extractAnimeZResults } from "./methods";
+import { animeZBaseUrl } from "../../../utils/constants";
 export async function searchAnime(query: string, page?: number) {
+  console.time();
   try {
     if (query === undefined) {
       throw new Error(" query cannot be empty");
@@ -13,7 +15,12 @@ export async function searchAnime(query: string, page?: number) {
     const response = await animeZClient.get(
       `${animeZBaseUrl}/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${encodeURIComponent(
         query
-      )}&&pageNum=${page}#pages`
+      )}&&pageNum=${page}#pages`,
+      {
+        headers: {
+          Referer: `${animeZBaseUrl}/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${query}&&pageNum=${page}`,
+        },
+      }
     );
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
     const selector: cheerio.SelectorType =
@@ -28,6 +35,8 @@ export async function searchAnime(query: string, page?: number) {
           ? error.message
           : "check the URL youre scraping from ",
     };
+  } finally {
+    console.timeEnd();
   }
 }
-searchAnime("blue");
+searchAnime("bleach");

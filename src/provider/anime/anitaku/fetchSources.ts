@@ -1,11 +1,7 @@
-import { anitakuClient } from "../../../../config/anitakuClient";
 import * as cheerio from "cheerio";
-import { anitakuBaseUrl } from "../utils/anitakuConstants";
-
-import {
-  anitakuServers,
-  type anitakuAnimeServers,
-} from "../utils/anitakuTypes";
+import { anitakuClient } from "../../../config";
+import { anitakuBaseUrl } from "../../../utils/constants";
+import { type anitakuAnimeServers, anitakuServers } from "./types";
 
 export async function anitakuFetchSources(
   episodeId: string,

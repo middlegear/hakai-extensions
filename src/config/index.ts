@@ -1,5 +1,3 @@
-import { zoroClient } from "./zoroclient";
-import { anitakuClient } from "./anitakuClient";
-import { animeZClient } from "./animeZClient";
+import { zoroClient, animeZClient, anitakuClient } from "./clients";
 
 export { zoroClient, anitakuClient, animeZClient };

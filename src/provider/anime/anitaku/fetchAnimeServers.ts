@@ -1,7 +1,8 @@
-import { anitakuBaseUrl } from "../utils/anitakuConstants";
 import * as cheerio from "cheerio";
-import { anitakuExtractServers } from "../utils/anitakuMethods";
-import { anitakuClient } from "../../../../config";
+import { anitakuClient } from "../../../config";
+import { anitakuBaseUrl } from "../../../utils/constants";
+import { anitakuExtractServers } from "./methods";
+
 export async function fetchAnimeServers(episodeId: string) {
   try {
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {

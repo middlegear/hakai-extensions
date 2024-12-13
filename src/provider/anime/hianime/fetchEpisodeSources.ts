@@ -1,17 +1,11 @@
-import { zoroBaseUrl } from "../utils/hianimeconstants";
-import { extractAnimeServerId } from "../utils/hianimemethods";
-import {
-  Dubbing,
-  Servers,
-  type AnimeServers,
-  type language,
-} from "../utils/hianimetypes";
 import * as cheerio from "cheerio";
+import { zoroClient } from "../../../config";
+import { USER_AGENT_HEADER } from "../../../config/headers";
+import { zoroBaseUrl } from "../../../utils/constants";
+// import { MegaCloud, StreamSB, StreamTape } from "../source-extractors/hianime";
+import { extractAnimeServerId } from "./methods";
+import { type AnimeServers, Servers, Dubbing, type language } from "./types";
 
-import { USER_AGENT_HEADER } from "../../../../config/headers";
-
-import { zoroClient } from "../../../../config";
-import { MegaCloud, StreamSB, StreamTape } from "../../extractors/hianime";
 export async function episodeSources(
   episodeid: string,
   server: AnimeServers = Servers.HD1,

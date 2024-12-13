@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
+import { zoroClient } from "../../../config";
 
-import { extractAnimeInfo, extractEpisodesList } from "../utils/hianimemethods";
-import { zoroBaseUrl } from "../utils/hianimeconstants";
-import { zoroClient } from "../../../../config";
+import { extractAnimeInfo, extractEpisodesList } from "./methods";
+import { zoroBaseUrl } from "../../../utils/constants";
 
 export async function fetchAnimeInfo(animeId: string) {
   if (!animeId) throw new Error("Provide an id ");

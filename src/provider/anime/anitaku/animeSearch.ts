@@ -1,8 +1,7 @@
-import { anitakuSearchUrl } from "../utils/anitakuConstants";
-
 import * as cheerio from "cheerio";
-import { extractAnitakuSearchResults } from "../utils/anitakuMethods";
-import { anitakuClient } from "../../../../config";
+import { anitakuClient } from "../../../config";
+import { anitakuSearchUrl } from "../../../utils/constants";
+import { extractAnitakuSearchResults } from "./methods";
 export async function getAnimeSearch(query: string, page: number = 1) {
   try {
     if (!query) {
