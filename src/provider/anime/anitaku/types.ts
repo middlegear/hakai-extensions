@@ -28,7 +28,6 @@ export type AnimeInfo = {
   subOrDub: string | null;
   description: string | null;
   releaseDate: number | null;
-
   currentStatus: string | null;
   type: string | null;
 };
@@ -40,9 +39,6 @@ export type EpisodeInfo = {
   name: string | null;
 };
 
-export type testing = {
-  id: number | null;
-};
 export type Servers = {
   name: string | null;
   serverId: number | null;
@@ -70,3 +66,19 @@ export type anitakuAnimeServers =
   | "streamwish"
   | "doodstream"
   | "videhide";
+
+export type scrappedSearch = {
+  success: boolean;
+  hasNextPage: boolean;
+  totalPages: number;
+  currentPage: number;
+  anime: animeSearch[];
+};
+export type scrappedAnimeInfo = {
+  success: boolean;
+  data: AnimeInfo;
+  episodes: EpisodeInfo[];
+};
+export type scrappedServers = {
+  server: Servers[];
+};

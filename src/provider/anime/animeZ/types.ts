@@ -5,3 +5,4 @@ export type animeInfo = {
   episodes: number | null;
   dub: string | null;
 };
+export type scrappedAnimeSearch = {};

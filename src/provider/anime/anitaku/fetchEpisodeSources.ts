@@ -1,4 +1,4 @@
-/// extractors remaining
+/// extractors remaining this will need lots of work
 import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuBaseUrl } from "../../../utils/constants";

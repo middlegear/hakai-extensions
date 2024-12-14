@@ -4,14 +4,15 @@ import { animeZClient } from "../../../config";
 import { extractAnimeZResults } from "./methods";
 import { animeZBaseUrl } from "../../../utils/constants";
 export async function searchAnime(query: string, page?: number) {
-  console.time();
+  if (!query)
+    return {
+      success: false,
+      error: "query cannot be empty",
+    };
+  if (page === undefined) {
+    page = 1;
+  }
   try {
-    if (query === undefined) {
-      throw new Error(" query cannot be empty");
-    }
-    if (page === undefined) {
-      page = 1;
-    }
     const response = await animeZClient.get(
       `${animeZBaseUrl}/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${encodeURIComponent(
         query
@@ -30,13 +31,12 @@ export async function searchAnime(query: string, page?: number) {
     console.log(data);
   } catch (error) {
     return {
+      success: false,
       error:
         error instanceof Error
           ? error.message
           : "check the URL youre scraping from ",
     };
-  } finally {
-    console.timeEnd();
   }
 }
 searchAnime("bleach");

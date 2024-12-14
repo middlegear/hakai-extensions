@@ -13,118 +13,104 @@ export function extractAnitakuSearchResults(
   selector: cheerio.SelectorType,
   $: cheerio.CheerioAPI
 ) {
-  try {
-    const resSearch: animeSearch[] = [];
-    $(selector).each((_, element) => {
-      resSearch.push({
-        id:
-          $(element)?.find("div.img > a")?.attr("href")?.split("/").pop() ||
-          null,
-        title: $(element)?.find("p.name > a")?.attr("title") || null,
-        posterImage: $(selector).find("div.img > a > img").attr("src") || null,
-        //   release_year: $(selector)?.find("li > p.released")?.text().trim() || null, find a fix laters
-        subOrDub: $(element)
-          .find("p.name > a")
-          .text()
-          .toLocaleLowerCase()
-          .includes("dub")
-          ? subOrDub.DUB
-          : subOrDub.SUB || null,
-      });
+  const resSearch: animeSearch[] = [];
+  $(selector).each((_, element) => {
+    resSearch.push({
+      id:
+        $(element)?.find("div.img > a")?.attr("href")?.split("/").pop() || null,
+      title: $(element)?.find("p.name > a")?.attr("title") || null,
+      posterImage: $(selector).find("div.img > a > img").attr("src") || null,
+      //   release_year: $(selector)?.find("li > p.released")?.text().trim() || null, find a fix laters
+      subOrDub: $(element)
+        .find("p.name > a")
+        .text()
+        .toLocaleLowerCase()
+        .includes("dub")
+        ? subOrDub.DUB
+        : subOrDub.SUB || null,
     });
+  });
 
-    const paginationSelector: cheerio.SelectorType =
-      "div.anime_name_pagination > div.pagination > ul.pagination-list > li ";
-    let hasNextPage, totalPages, currentPage;
-    hasNextPage =
-      ($(`${paginationSelector}`).next().length > 0 &&
-        $(paginationSelector).last().text().length > 0) ||
-      false;
-    currentPage =
-      Number(
-        $(`${paginationSelector}.selected`)?.find("a")?.attr("data-page")
-      ) || 1;
+  const paginationSelector: cheerio.SelectorType =
+    "div.anime_name_pagination > div.pagination > ul.pagination-list > li ";
 
-    totalPages = Number($(paginationSelector).last().text()) || 1;
-    const pageInfo = {
-      hasNextPage,
-      currentPage,
-      totalPages,
-    };
-    return { resSearch, pageInfo };
-  } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : "Unable to scrap ",
-    };
-  }
+  const hasNextPage: boolean =
+    ($(`${paginationSelector}`).next().length > 0 &&
+      $(paginationSelector).last().text().length > 0) ||
+    false;
+  const currentPage: number =
+    Number($(`${paginationSelector}.selected`)?.find("a")?.attr("data-page")) ||
+    1;
+
+  const totalPages: number = Number($(paginationSelector).last().text()) || 1;
+
+  return { hasNextPage, currentPage, totalPages, resSearch };
 }
 export function anitaku_extractAnimeInfo(
   $: cheerio.CheerioAPI,
   selector: cheerio.SelectorType
 ) {
-  try {
-    const animeInfo: AnimeInfo = {
-      id: null,
-      title: null,
-      altTitle: null,
-      type: null,
-      subOrDub: null,
-      posterImage: null,
-      description: null,
-      releaseDate: null,
-      currentStatus: null,
-    }; /// remember to scrape for genres its buggy
+  const animeInfo: AnimeInfo = {
+    id: null,
+    title: null,
+    altTitle: null,
+    type: null,
+    subOrDub: null,
+    posterImage: null,
+    description: null,
+    releaseDate: null,
+    currentStatus: null,
+  }; /// remember to scrape for genres its buggy
 
-    animeInfo.title =
-      $(selector)?.find("div.anime_info_body_bg > h1").text().trim() || null;
-    animeInfo.posterImage =
-      $(selector)?.find("div.anime_info_body_bg > img")?.attr("src") || null;
-    animeInfo.altTitle =
+  animeInfo.title =
+    $(selector)?.find("div.anime_info_body_bg > h1").text().trim() || null;
+  animeInfo.posterImage =
+    $(selector)?.find("div.anime_info_body_bg > img")?.attr("src") || null;
+  animeInfo.altTitle =
+    $(selector)
+      ?.find("div.anime_info_body_bg > p.type.other-name > a")
+      ?.attr("title") || null;
+  const animeIdselector = $(
+    "div.main_body > div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next > input#alias_anime.alias_anime"
+  )?.attr("value");
+  animeInfo.id = animeIdselector || null;
+  animeInfo.description =
+    $(selector)
+      ?.find("div.anime_info_body_bg > div.description")
+      ?.text()
+      ?.trim() || null;
+  animeInfo.releaseDate =
+    Number(
       $(selector)
-        ?.find("div.anime_info_body_bg > p.type.other-name > a")
-        ?.attr("title") || null;
-    const animeIdselector = $(
-      "div.main_body > div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next > input#alias_anime.alias_anime"
-    )?.attr("value");
-    animeInfo.id = animeIdselector || null;
-    animeInfo.description =
-      $(selector)
-        ?.find("div.anime_info_body_bg > div.description")
+        ?.find("div.anime_info_body_bg >  p:nth-child(8)")
         ?.text()
-        ?.trim() || null;
-    animeInfo.releaseDate =
-      Number(
-        $(selector)
-          ?.find("div.anime_info_body_bg >  p:nth-child(8)")
-          ?.text()
-          ?.split(":")
-          ?.at(-1)
-          ?.trim()
-      ) || null;
+        ?.split(":")
+        ?.at(-1)
+        ?.trim()
+    ) || null;
 
-    animeInfo.currentStatus =
-      $(selector)
-        ?.find("div.anime_info_body_bg > p:nth-child(9) > a")
-        ?.text()
-        ?.trim() || null;
-    animeInfo.type =
-      $(selector)?.find("div.anime_info_body_bg > p.type > a")?.attr("title") ||
-      null;
-    animeInfo.subOrDub = animeIdselector?.toLowerCase()?.includes("dub")
-      ? subOrDub.DUB
-      : subOrDub.SUB || null;
+  animeInfo.currentStatus =
+    $(selector)
+      ?.find("div.anime_info_body_bg > p:nth-child(9) > a")
+      ?.text()
+      ?.trim() || null;
+  animeInfo.type =
+    $(selector)?.find("div.anime_info_body_bg > p.type > a")?.attr("title") ||
+    null;
+  animeInfo.subOrDub = animeIdselector?.toLowerCase()?.includes("dub")
+    ? subOrDub.DUB
+    : subOrDub.SUB || null;
 
-    const MovieId: cheerio.SelectorType =
-      "div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next";
+  const MovieId: cheerio.SelectorType =
+    "div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next";
 
-    const movieId =
-      Number($(MovieId).find("input#movie_id.movie_id").attr("value")) || null;
+  const movieId =
+    Number($(MovieId).find("input#movie_id.movie_id").attr("value")) || null;
 
-    return {
-      animeInfo,
-      // movieId,
-    };
-  } catch (error) {}
+  return {
+    animeInfo,
+    // movieId,
+  };
 }
 
 export function anitakuExtractEpisodes($: cheerio.CheerioAPI) {

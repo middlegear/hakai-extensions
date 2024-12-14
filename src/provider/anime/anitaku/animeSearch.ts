@@ -2,11 +2,18 @@ import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuSearchUrl } from "../../../utils/constants";
 import { extractAnitakuSearchResults } from "./methods";
-export async function searchAnime(query: string, page: number = 1) {
+import type { scrappedSearch } from "./types";
+import type { Error } from "../hianime/types";
+export async function searchAnime(
+  query: string,
+  page: number = 1
+): Promise<scrappedSearch | Error> {
+  if (!query)
+    return {
+      success: false,
+      error: "Provide a query!",
+    };
   try {
-    if (!query) {
-      throw new Error(" Search query is needed");
-    }
     const response = await anitakuClient.get(
       `${anitakuSearchUrl}?keyword=${encodeURIComponent(query)}&page=${page}`
     );
@@ -14,10 +21,17 @@ export async function searchAnime(query: string, page: number = 1) {
     const resSelector: cheerio.SelectorType =
       "div.last_episodes > ul.items > li";
 
-    const searchData = extractAnitakuSearchResults(resSelector, data$);
-    return searchData;
+    const data = extractAnitakuSearchResults(resSelector, data$);
+    return {
+      success: true,
+      hasNextPage: data.hasNextPage,
+      currentPage: data.currentPage,
+      totalPages: data.totalPages,
+      anime: data.resSearch,
+    };
   } catch (error) {
     return {
+      success: false,
       error:
         error instanceof Error
           ? error.message

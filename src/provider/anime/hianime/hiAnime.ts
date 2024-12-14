@@ -48,4 +48,4 @@ class HiAnime {
     return fetchEpisodeSources(episodeId, server, dub);
   }
 }
-export default HiAnime;
+export { HiAnime };

@@ -11,8 +11,17 @@ import {
   anitakuAjaxLoadEpisodes,
 } from "../../../utils/constants";
 import { anitaku_extractAnimeInfo, anitakuExtractEpisodes } from "./methods";
+import type { scrappedAnimeInfo } from "./types";
+import type { Error } from "../hianime/types";
 
-export async function fetchAnimeInfo(animeId: string) {
+export async function fetchAnimeInfo(
+  animeId: string
+): Promise<scrappedAnimeInfo | Error> {
+  if (!animeId)
+    return {
+      success: false,
+      error: "Provide an AnimeId!",
+    };
   try {
     const response = await anitakuClient.get(`${anitakuInfoUrl}/${animeId}`);
     // console.log(response.data);
@@ -51,13 +60,17 @@ export async function fetchAnimeInfo(animeId: string) {
 
     const episodesData = anitakuExtractEpisodes(resHtmlEpisodes$);
 
-    const resAnime = {
-      resAnimeInfo,
-      episodesData,
+    // resAnimeInfo,
+    // episodesData,
+
+    return {
+      success: true,
+      data: resAnimeInfo.animeInfo,
+      episodes: episodesData,
     };
-    return resAnime;
   } catch (error) {
     return {
+      success: false,
       error: error instanceof Error ? error.message : "Unknown Error",
     };
   }

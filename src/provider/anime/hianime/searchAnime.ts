@@ -6,7 +6,7 @@ import type { scrappedAnime, Error } from "./types";
 
 export async function searchAnime(
   query: string,
-  page?: number
+  page: number = 1
 ): Promise<scrappedAnime | Error> {
   if (!query)
     return {

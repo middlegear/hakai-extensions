@@ -75,7 +75,7 @@ export type scrappedAnime = {
 };
 export type Error = {
   success: boolean;
-  error: string;
+  error?: string;
 };
 export type scrappedAnimeInfo = {
   success: boolean;
