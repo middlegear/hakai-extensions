@@ -11,7 +11,7 @@ export async function fetchServers(
   if (!episodeId)
     return {
       success: false,
-      error: "Provide an AnimeId",
+      error: "Provide an episodeId",
     };
   try {
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {

@@ -41,7 +41,7 @@ class Anitaku {
   async fetchSources(
     episodeId: string,
     server: anitakuServers = anitakuServers.Vidstreaming,
-    downloadLink: string
+    downloadLink?: string
   ) {
     return fetchEpisodeSources(episodeId, server, downloadLink);
   }

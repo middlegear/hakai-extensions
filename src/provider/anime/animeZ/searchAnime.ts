@@ -3,15 +3,13 @@ import { animeZClient } from "../../../config";
 
 import { extractAnimeZResults } from "./methods";
 import { animeZBaseUrl } from "../../../utils/constants";
-export async function searchAnime(query: string, page?: number) {
+export async function searchAnime(query: string, page: number = 1) {
   if (!query)
     return {
       success: false,
       error: "query cannot be empty",
     };
-  if (page === undefined) {
-    page = 1;
-  }
+
   try {
     const response = await animeZClient.get(
       `${animeZBaseUrl}/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${encodeURIComponent(
@@ -28,7 +26,8 @@ export async function searchAnime(query: string, page?: number) {
       "main > section > ul.MovieList.Rows.AX.A06.B04.C03.E20 > li.TPostMv";
 
     const data = extractAnimeZResults(data$, selector);
-    console.log(data);
+
+    return data;
   } catch (error) {
     return {
       success: false,
@@ -39,4 +38,3 @@ export async function searchAnime(query: string, page?: number) {
     };
   }
 }
-searchAnime("bleach");
