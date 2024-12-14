@@ -103,11 +103,7 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
     "ul#list_chapter_id_detail > li.wp-manga-chapter  ";
   $(episodesSelector).each((_, element) => {
     episodes.push({
-      id:
-        $(element)
-          .find("a")
-          .attr("href")
-          ?.replace(/^\/|\/$/g, "") || null,
+      id: $(element).find("a").attr("href")?.slice(1) || null,
 
       number: $(element).find("a").text().trim() || null,
       category: $(element).find("a").text().split("-").includes("Dub")

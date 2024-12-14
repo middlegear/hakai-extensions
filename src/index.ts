@@ -17,7 +17,12 @@ import { Anitaku } from "./provider/anime/anitaku/anitaku";
 
 ///
 
+// const o = new AnimeZ();
+// o.fetchInfo("bleach-thousandyear-blood-war-–-the-conflict-12505")
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
+
 const o = new AnimeZ();
-o.fetchInfo("/bleach-thousandyear-blood-war-–-the-conflict-12505")
+o.fetchSources("the-uninhabited-wonderland-12554/epi-27-192290/")
   .then((data) => console.log(data))
   .catch((err) => console.error(err));

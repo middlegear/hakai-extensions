@@ -1,5 +1,6 @@
 import { searchAnime } from "./searchAnime";
 import { fetchAnimeInfo } from "./fetchAnimeInfo";
+import { fetchSources } from "./fetchSources";
 class AnimeZ {
   /**
    *
@@ -13,6 +14,10 @@ class AnimeZ {
 
   async fetchInfo(animeId: string) {
     return fetchAnimeInfo(animeId);
+  }
+
+  async fetchSources(episodeId: string) {
+    return fetchSources(episodeId);
   }
 }
 export { AnimeZ };

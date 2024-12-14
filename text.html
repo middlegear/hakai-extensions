@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video player</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <script
+      src="https://assets.mediadelivery.net/jquery/jquery-3.7.1.min.js"
+      type="text/javascript"
+    ></script>
+    <script src="https://assets.mediadelivery.net/plyr/3.7.8.4-bn/plyr.polyfilled.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+    <link
+      href="https://assets.mediadelivery.net/plyr/3.7.8.4-bn/plyr.css"
+      rel="stylesheet"
+    />
+    <!--<link rel="stylesheet" href="https://assets.mediadelivery.net/plyr/3.7.8.4-bn/plyr.css"/>-->
+    <link href="https://assets.mediadelivery.net/rubik.css" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=rubik" rel="stylesheet" />
+    <style>
+      * {
+        user-select: none;
+        /* supported by Chrome and Opera */
+        -webkit-user-select: none;
+        /* Safari */
+        -khtml-user-select: none;
+        /* Konqueror HTML */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* Internet Explorer/Edge */
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      :root {
+        --plyr-color-main: #fa7de5;
+        --plyr-video-background: transparent;
+        --plyr-captions-background: none;
+        --plyr-captions-text-color: #fff;
+        --plyr-font-weight-regular: 600;
+        --plyr-font-weight-bold: 600;
+        --plyr-font-family: "rubik";
+        --webkit-text-track-display: none;
+        --plyr-font-size-xlarge: 30px;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        background-color: transparent;
+        font-family: "rubik", sans-serif;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+      }
+
+      .plyr__poster {
+        background-size: cover;
+      }
+
+      .plyr__control--overlaid {
+        background: #fa7de5;
+        box-shadow: #4a4a4a20 0 0 27px;
+      }
+
+      .plyr--video {
+        height: 100%;
+      }
+
+      .plyr--video .plyr__control.plyr__tab-focus,
+      .plyr--video .plyr__control:hover,
+      .plyr--video .plyr__control[aria-expanded="true"] {
+        background: #fa7de5;
+      }
+
+      .plyr__control.plyr__tab-focus {
+        box-shadow: 0 0 0 5px rgba(255, 0, 0, 0.5);
+      }
+
+      .plyr__menu__container
+        .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
+        background: #fa7de5;
+      }
+
+      [data-plyr="captions"].plyr__control {
+        /* border-bottom: solid 3px transparent;*/
+      }
+
+      [data-plyr="captions"].plyr__control--pressed {
+        /*border-bottom: solid 3px #FA7DE5;*/
+      }
+
+      /*.plyr__captions {
+            font-size: 20px;
+        }*/
+
+      @media (max-width: 479px) {
+        /*.plyr__captions {
+                font-size: 18px;
+            }*/
+        .plyr__captions .plyr__caption {
+          font-family: "Arial", sans-serif;
+          font-size: 13px !important;
+          font-weight: bold;
+          -webkit-text-stroke: 3px #4a5464;
+          -webkit-text-fill-color: white;
+          paint-order: stroke fill;
+        }
+      }
+
+      @media (min-width: 480px) {
+        /*.plyr__captions {
+                font-size: 18px;
+            }*/
+        .plyr__captions .plyr__caption {
+          font-family: "Arial", sans-serif;
+          font-size: 18px !important;
+          font-weight: bold;
+          -webkit-text-stroke: 1px #4a5464;
+          -webkit-text-fill-color: white;
+          paint-order: stroke fill;
+        }
+      }
+
+      @media (min-width: 768px) {
+        /*.plyr__captions {
+                font-size: 23px;
+            }*/
+        .plyr__captions .plyr__caption {
+          font-family: "Arial", sans-serif;
+          font-size: 22px !important;
+          font-weight: 400;
+          -webkit-text-stroke: 2px #4a5464;
+          -webkit-text-fill-color: white;
+          paint-order: stroke fill;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        /*.plyr__captions {
+                font-size: 26px;
+            }*/
+        .plyr__captions .plyr__caption {
+          font-size: 35px !important;
+          font-family: "Arial", sans-serif;
+          font-weight: 650;
+          -webkit-text-stroke: 4px #4a5464;
+          -webkit-text-fill-color: white;
+          paint-order: stroke fill;
+        }
+      }
+
+      .plyr__progress input {
+        border-radius: 0px !important;
+        -webkit-appearance: none;
+        background: transparent;
+      }
+
+      .plyr__progress input[value]::-webkit-progress-bar {
+        border-radius: 0px !important;
+      }
+
+      .plyr__progress input[value]::-webkit-progress-value {
+        border-radius: 0px !important;
+      }
+
+      .plyr audio,
+      .plyr iframe,
+      .plyr video {
+        max-height: 100vh;
+      }
+
+      .plyr__spacer {
+        width: 100%;
+      }
+
+      .plyr__progress__container {
+        position: absolute;
+        top: 14px;
+        left: 10px;
+        width: calc(100% - 24px);
+      }
+
+      @media (max-width: 480px) {
+        .plyr__progress__container {
+          top: -5px;
+        }
+
+        .plyr__volume {
+          position: relative;
+        }
+
+        .plyr__volume input[data-plyr="volume"] {
+          display: none;
+          height: 2rem;
+          position: absolute;
+          right: -3rem;
+          top: -1rem;
+          transform-origin: left;
+          transform: rotate(-90deg);
+        }
+
+        .plyr__volume:hover input[data-plyr="volume"],
+        .plyr__volume input[data-plyr="volume"]:hover {
+          display: block;
+        }
+      }
+
+      .wt-chart-active .ct-series-a .ct-area,
+      .ct-series-a .ct-slice-donut-solid,
+      .ct-series-a .ct-slice-pie {
+        fill: url(#gradient-active);
+      }
+
+      .ct-series-a .ct-area,
+      .ct-series-a .ct-slice-donut-solid,
+      .ct-series-a .ct-slice-pie {
+        fill: url(#gradient-a);
+      }
+
+      .ct-series-a .ct-bar,
+      .ct-series-a .ct-line,
+      .ct-series-a .ct-point,
+      .ct-series-a .ct-slice-donut {
+        stroke: #fa7de5;
+      }
+
+      .plyr__pb {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        z-index: 3;
+        margin-left: calc(var(--plyr-range-thumb-height, 13px) * -0.5);
+        margin-right: -6.5px;
+        margin-right: calc(var(--plyr-range-thumb-height, 13px) * -0.5);
+        width: calc(100% + 13px);
+        width: calc(100% + var(--plyr-range-thumb-height, 13px));
+      }
+
+      .plyr__preview-thumb {
+        bottom: 22px;
+        transition: bottom ease 0.1s;
+      }
+
+      .plyr__controls {
+        padding-top: 70px;
+      }
+
+      @media (min-width: 1280px) {
+        .plyr--full-ui.plyr--video .plyr__control--overlaid {
+          width: 60px;
+          height: 60px;
+        }
+
+        .plyr__control svg {
+          height: 21px;
+          width: 21px;
+        }
+      }
+
+      .plyr__control--overlaid svg {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .plyr__control--logo {
+        height: auto;
+        max-height: 23.5px;
+        position: absolute;
+        left: 44%;
+        top: 37px;
+        margin-left: -50px;
+      }
+
+      .plyr__tooltip--drag {
+        opacity: 1;
+        transform: translate(-50%) scale(1);
+      }
+
+      .plyr__controls__item[data-plyr="rewind"],
+      .plyr__controls__item[data-plyr="fast-forward"] {
+        padding: 4px;
+      }
+
+      .plyr__controls__item[data-plyr="rewind"] svg,
+      .plyr__controls__item[data-plyr="fast-forward"] svg {
+        height: 24px;
+        height: var(--plyr-control-icon-size, 24px);
+        pointer-events: none;
+        width: 24px;
+        width: var(--plyr-control-icon-size, 24px);
+      }
+
+      .plyr--full-ui ::-webkit-media-text-track-container {
+        display: var(--webkit-text-track-display);
+      }
+
+      .disable-poster-transition .plyr__poster {
+        transition: none;
+      }
+
+      /*workaround to fix safari bug with not showing video thumbnail:*/
+      .plyr__video-wrapper {
+        z-index: 0;
+      }
+
+      /* fix for vertical subtitles scrolling */
+      .plyr__menu__container > div {
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+
+      /* Fix for controls overlapping on small devices */
+      @media only screen and (max-width: 500px) {
+        /*.hide_mobile.plyr__spacer {
+                display: none
+            }*/
+      }
+
+      .plyr--is-ios .plyr__volume {
+        min-width: 32px;
+      }
+
+      /* Chromecast */
+      .chromecast-connected {
+        opacity: 1;
+      }
+
+      .chromecast-disconnected {
+        opacity: 0.5;
+      }
+
+      .error-message {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        text-align: center;
+        color: #ccc;
+        padding-top: 50px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container" id="video-container">
+      <video controls autoplay crossorigin playsinline>
+        <source
+          src="/anime/2024/11/07/playlist_672cbaa701ebb-1730984615_.m3u8"
+          type="application/x-mpegURL"
+        />
+      </video>
+    </div>
+    <input type="hidden" name="visited" id="visited" value="0" />
+    <script>
+      /*var video_start_time = document.getElementById("visited").value;
+    var video_start_time = Math.floor(video_start_time);
+    if (video_start_time > 0) {
+        if (confirm('Click "OK" to continue watching, Click "cancel" if you want to watch video again from the beginning?')) {
+
+        } else {
+            $('#visited').val(0);
+        }
+    }*/
+      /*var message = 'video_start_time@'+document.querySelector("#visited").value;
+    window.top.postMessage(message, '*');*/
+      /*(async () => {
+        var result1 = await confirm('Click "OK" to continue watching, Click "cancel" if you want to watch video again from the beginning?');
+        //console.log('confirm() result via promise: ', result1);
+        //alert(result1);
+        if(result1){
+            //get value from parent
+            window.addEventListener('video_start_time', function(event) {
+                var video_start_time = event.data;
+                $('#visited').val(video_start_time);
+            });
+            //alert(video_start_time);
+        }else{
+            $('#visited').val(0);
+        }
+    })();*/
+
+      /*window.addEventListener('message', function(event) {
+        if(event.data.type=='currentTime_player') {
+            var video_start_time = event.data.data.value;
+            $('#visited').val(video_start_time);
+        }
+    });*/
+
+      function setPlayerStartingPosition(player) {
+        player.on("enterfullscreen", (event) => {
+          screen.orientation.lock("landscape");
+        });
+        player.on("exitfullscreen", (event) => {
+          screen.orientation.lock("portrait");
+        });
+        $('<div class="plyr__controls__item plyr__spacer"></div>').insertBefore(
+          ".plyr__progress__container"
+        );
+        /*var video_start_time = document.getElementById("visited").value;
+        var video_start_time = Math.floor(video_start_time);
+        if (video_start_time > 0) {
+            player.on('loadeddata', function (event) {
+                var instance = event.detail.plyr;
+                if (video_start_time <= instance.duration) {
+                    instance.off('loadeddata', event);
+                    instance.currentTime = video_start_time;
+                }
+            });
+        }*/
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        const video = document.querySelector("video");
+        const source = video.getElementsByTagName("source")[0].src;
+        // For more options see: https://github.com/sampotts/plyr/#options
+        // captions.update is required for captions to work with hls.js
+        const defaultOptions = {
+          storage: {
+            enabled: true,
+            key: "plyr--lib-332723",
+          },
+          fullscreen: {
+            enabled: true,
+            fallback: true,
+            iosNative: true,
+          },
+          iconUrl: "https://assets.mediadelivery.net/plyr/3.7.3.2/plyr.svg",
+          captions: { active: true, update: true },
+          controls: [
+            "play",
+            "rewind",
+            "fast-forward",
+            "progress",
+            "current-time",
+            "duration",
+            "mute",
+            "volume",
+            "settings",
+            "pip",
+            "play-large",
+            "fullscreen",
+          ],
+          settings: ["captions", "quality", "speed", "loop", "audioTrack"],
+          speed: {
+            selected: 1,
+            options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 4],
+          },
+          i18n: {
+            restart: "Restart",
+            rewind: "Rewind {seektime}s",
+            play: "Play",
+            pause: "Pause",
+            fastForward: "Forward {seektime}s",
+            seek: "Seek",
+            seekLabel: "{currentTime} of {duration}",
+            played: "Played",
+            buffered: "Buffered",
+            currentTime: "Current time",
+            duration: "Duration",
+            volume: "Volume",
+            mute: "Mute",
+            unmute: "Unmute",
+            enableCaptions: "Enable captions",
+            disableCaptions: "Disable captions",
+            download: "Download",
+            enterFullscreen: "Enter fullscreen",
+            exitFullscreen: "Exit fullscreen",
+            frameTitle: "Player for {title}",
+            captions: "Captions",
+            settings: "Settings",
+            pip: "PIP",
+            menuBack: "Go back to previous menu",
+            speed: "Speed",
+            normal: "Normal",
+            quality: "Quality",
+            loop: "Loop",
+            start: "Start",
+            end: "End",
+            all: "All",
+            reset: "Reset",
+            disabled: "Disabled",
+            enabled: "Enabled",
+            advertisement: "Ad",
+            qualityBadge: {
+              2160: "4K",
+              1440: "HD",
+              1080: "HD",
+              720: "HD",
+              576: "SD",
+              480: "SD",
+            },
+          },
+        };
+        if (Hls.isSupported()) {
+          // For more Hls.js options, see https://github.com/dailymotion/hls.js
+          const hls = new Hls();
+          hls.loadSource(source);
+          // From the m3u8 playlist, hls parses the manifest and returns
+          // all available video qualities. This is important, in this approach,
+          // we will have one source on the Plyr player.
+          hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            // Transform available levels into an array of integers (height values).
+            const availableQualities = hls.levels.map((l) => l.height);
+            // Add new qualities to option
+            defaultOptions.quality = {
+              default: availableQualities[0],
+              options: availableQualities,
+              // this ensures Plyr to use Hls to update quality level
+              forced: true,
+              onChange: (e) => updateQuality(e),
+            };
+            // Initialize here
+            const player = new Plyr(video, defaultOptions);
+            /*player.on('timeupdate', () => {
+                    const currentTime_player = player.currentTime;
+                    window.parent.postMessage({
+                        type: "currentTime_player",
+                        data: {
+                            value: currentTime_player
+                        }
+                    }, '*');
+                    $('#visited').val(currentTime_player);
+                });*/
+            player.elements.captions.dir = "auto";
+            setPlayerStartingPosition(player);
+          });
+          hls.attachMedia(video);
+          window.hls = hls;
+          $("video").on(
+            "webkitbeginfullscreen webkitendfullscreen",
+            function (event) {
+              if (event.type === "webkitbeginfullscreen") {
+                document.documentElement.style.setProperty(
+                  "--webkit-text-track-display",
+                  "block"
+                );
+              } else {
+                document.documentElement.style.setProperty(
+                  "--webkit-text-track-display",
+                  "none"
+                );
+              }
+            }
+          );
+        } else {
+          // default options with no quality update in case Hls is not supported
+          const player = new Plyr(video, defaultOptions);
+          player.elements.captions.dir = "auto";
+          setPlayerStartingPosition(player);
+
+          $("video").on(
+            "webkitbeginfullscreen webkitendfullscreen",
+            function (event) {
+              if (event.type === "webkitbeginfullscreen") {
+                document.documentElement.style.setProperty(
+                  "--webkit-text-track-display",
+                  "block"
+                );
+              } else {
+                document.documentElement.style.setProperty(
+                  "--webkit-text-track-display",
+                  "none"
+                );
+              }
+            }
+          );
+        }
+
+        function updateQuality(newQuality) {
+          window.hls.levels.forEach((level, levelIndex) => {
+            if (level.height === newQuality) {
+              console.log("Found quality match with " + newQuality);
+              window.hls.currentLevel = levelIndex;
+            }
+          });
+        }
+      });
+      function checkRefresh() {
+        if (document.refreshForm.visited.value == "") {
+          // This is a fresh page load
+          document.refreshForm.visited.value = "1";
+          // You may want to add code here special for
+          // fresh page loads
+        } else {
+          // This is a page refresh
+          // Insert code here representing what to do on
+          // a refresh
+          alert(
+            "Xem lại từ đầu hoặc Tiếp tục xem: " +
+              $.cookie("currentTime_player")
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
