@@ -3,25 +3,20 @@ import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuBaseUrl } from "../../../utils/constants";
 import { type anitakuAnimeServers, anitakuServers } from "./types";
+import { GogoServer } from "../../source-extractors/gogoserver";
 
 export async function fetchEpisodeSources(
   episodeId: string,
-  server: anitakuAnimeServers = anitakuServers.Vidstreaming, /// defualt server
-  downloadLink?: string
+  server: anitakuAnimeServers /// defualt server
+  // downloadLink?: string
 ) {
   if (!episodeId) {
     throw new Error("Episode Id is required");
   }
   ////S1 segment works fine
-  if (episodeId.startsWith("https")) {
-    const serverID = new URL(episodeId);
-
-    switch (server) {
-      case anitakuServers.Doodstream: {
-      }
-    }
-    // return console.log("confirmed", serverID.href);
-  }
+  // if (episodeId.startsWith("https")) {
+  //   // return console.log("confirmed", serverID.href);
+  // }
   try {
     ////S2
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {
@@ -101,14 +96,38 @@ export async function fetchEpisodeSources(
         .attr("href");
       //// dunno what to do with iframe
       const iframe = data$("div.play-video").find("iframe").attr("src") || null;
+      // console.log(iframe);
 
-      return await fetchEpisodeSources(serverUrl.href, server, downloadUrl);
+      // return await fetchEpisodeSources(serverUrl.href, server);
     } catch (error) {
       return {
         success: false,
         error:
           error instanceof Error ? error.message : "Unable to find serverURL ",
       };
+    }
+    if (serverUrl.href != undefined && serverUrl.href != null) {
+      const serverID = new URL(serverUrl);
+
+      switch (server) {
+        case anitakuServers.GogoServer: {
+          const data = GogoServer(serverID);
+          return data;
+        }
+
+        case anitakuServers.Doodstream: {
+          console.log(server, " i have received the ref doodstream");
+          break;
+        }
+        case anitakuServers.VidHide: {
+          console.log(server, " i have received the ref vidhide");
+          break;
+        }
+        case anitakuServers.Vidstreaming: {
+          console.log(server, " i have received the ref Vidstreaming");
+          break;
+        }
+      }
     }
   } catch (error) {
     return {

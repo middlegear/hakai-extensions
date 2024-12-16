@@ -40,10 +40,10 @@ class Anitaku {
    */
   async fetchSources(
     episodeId: string,
-    server: anitakuServers = anitakuServers.Vidstreaming,
-    downloadLink?: string
+    server: anitakuServers = anitakuServers.GogoServer
+    // downloadLink?: string
   ) {
-    return fetchEpisodeSources(episodeId, server, downloadLink);
+    return fetchEpisodeSources(episodeId, server);
   }
 }
 

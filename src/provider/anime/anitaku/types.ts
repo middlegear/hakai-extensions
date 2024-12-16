@@ -42,6 +42,7 @@ export type EpisodeInfo = {
 export type Servers = {
   name: string | null;
   serverId: number | null;
+  href: string | null;
 };
 export type Sources = {
   serverId: number | null;

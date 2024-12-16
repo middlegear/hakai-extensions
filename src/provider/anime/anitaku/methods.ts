@@ -147,6 +147,7 @@ export function anitakuExtractServers(
           .replace("Choose this server", " ")
           .toLowerCase() || null,
       serverId: Number($(element).find("a").attr("rel")) || null,
+      href: $(element)?.find(" a ").attr("data-video") || null,
     });
   });
   return servers;
