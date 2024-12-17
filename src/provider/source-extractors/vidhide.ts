@@ -2,7 +2,7 @@ import { anitakuClient } from "../../config";
 // import * as cheerio from "cheerio";
 /// same script as streamwish works here too?
 export async function VidHide(videoUrl: URL) {
-  const sources = [];
+  const sources: { url: string; isM3U8: boolean }[] = [];
   try {
     const response = await anitakuClient.get(`${videoUrl.href}`, {
       headers: {
@@ -58,7 +58,7 @@ export async function VidHide(videoUrl: URL) {
         isM3U8: link.includes(".m3u8"),
       });
     });
-    console.log(sources);
+    return sources;
   } catch (error) {
     return {
       success: false,

@@ -2,7 +2,7 @@ import { anitakuClient } from "../../config";
 // import * as cheerio from "cheerio";
 
 export async function StreamWish(videoUrl: URL) {
-  const sources = [];
+  const sources: { quality: string; url: string; isM3U8: boolean }[] = [];
   try {
     const response = await anitakuClient.get(`${videoUrl.href}`, {
       headers: {
@@ -79,7 +79,7 @@ export async function StreamWish(videoUrl: URL) {
       });
       lastLink = link;
     });
-    console.log(sources);
+    return sources;
   } catch (error) {
     return {
       success: false,
