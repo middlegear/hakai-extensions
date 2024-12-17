@@ -1,7 +1,7 @@
 import { anitakuClient } from "../../config";
 // import * as cheerio from "cheerio";
-/// same script as streamwish works here too?
-export async function VidHide(videoUrl: URL) {
+
+export async function StreamWish(videoUrl: URL) {
   const sources = [];
   try {
     const response = await anitakuClient.get(`${videoUrl.href}`, {
@@ -44,19 +44,40 @@ export async function VidHide(videoUrl: URL) {
       console.log("No match found");
     }
     const links = p.match(/file:\s*"([^"]+\.m3u8[^"]*)"/) ?? [];
+    const subtitleMatches =
+      p?.match(
+        /{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g
+      ) ?? [];
+    // console.log(links, subtitleMatches);
 
-    // console.log(links);
-
+    const subtitles = subtitleMatches.map((sub) => {
+      const lang = sub?.match(/label:"([^"]+)"/)?.[1] ?? "";
+      const url = sub?.match(/file:"([^"]+)"/)?.[1] ?? "";
+      const kind = sub?.match(/kind:"([^"]+)"/)?.[1] ?? "";
+      if (kind.includes("thumbnail")) {
+        return {
+          lang: kind,
+          url: `https://streamwish.com${url}`,
+        };
+      }
+      return {
+        lang: lang,
+        url: url,
+      };
+    });
+    let lastLink: string | null = null;
     links.forEach((link: string) => {
       if (link.includes('file:"')) {
         link = link.replace('file:"', "").replace(new RegExp('"', "g"), "");
       }
       const linkParser = new URL(link);
-
+      linkParser.searchParams.set("i", "0.4");
       sources.push({
+        quality: lastLink! ? "backup" : "default",
         url: linkParser.href,
         isM3U8: link.includes(".m3u8"),
       });
+      lastLink = link;
     });
     console.log(sources);
   } catch (error) {

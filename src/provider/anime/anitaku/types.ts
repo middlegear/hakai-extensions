@@ -59,6 +59,7 @@ export enum anitakuServers {
   StreamWish = "streamwish",
   Doodstream = "doodstream",
   VidHide = "videhide",
+  MP4Upload = "mp4upload",
 }
 
 export type anitakuAnimeServers =
@@ -66,7 +67,8 @@ export type anitakuAnimeServers =
   | "gogo server"
   | "streamwish"
   | "doodstream"
-  | "videhide";
+  | "videhide"
+  | "mp4upload";
 
 export type scrappedSearch = {
   success: boolean;
@@ -82,4 +84,6 @@ export type scrappedAnimeInfo = {
 };
 export type scrappedServers = {
   server: Servers[];
+  download: string | null;
+  iframe: string | null;
 };

@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuBaseUrl } from "../../../utils/constants";
-import { anitakuExtractServers } from "./methods";
+import { anitakuExtractDownloadSrc, anitakuExtractServers } from "./methods";
 import type { scrappedServers } from "./types";
 import type { Error } from "../hianime/types";
 
@@ -23,9 +23,12 @@ export async function fetchServers(
       "div.anime_video_body > div.anime_muti_link > ul > li ";
 
     const data = anitakuExtractServers(data$, selector);
+    const dowloads = anitakuExtractDownloadSrc(data$);
     return {
       success: true,
       server: data,
+      download: dowloads.sources.downloadUrl,
+      iframe: dowloads.sources.iframe,
     };
   } catch (error) {
     return {

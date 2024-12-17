@@ -4,21 +4,19 @@ import { anitakuClient } from "../../../config";
 import { anitakuBaseUrl } from "../../../utils/constants";
 import { type anitakuAnimeServers, anitakuServers } from "./types";
 import { GogoServer } from "../../source-extractors/gogoserver";
+import { StreamWish } from "../../source-extractors/streamwish";
+import { VidHide } from "../../source-extractors/vidhide";
+import { MP4Upload } from "../../source-extractors/mp4upload";
 
 export async function fetchEpisodeSources(
   episodeId: string,
-  server: anitakuAnimeServers /// defualt server
-  // downloadLink?: string
+  server: anitakuAnimeServers
 ) {
   if (!episodeId) {
     throw new Error("Episode Id is required");
   }
-  ////S1 segment works fine
-  // if (episodeId.startsWith("https")) {
-  //   // return console.log("confirmed", serverID.href);
-  // }
+
   try {
-    ////S2
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {
       headers: { Referer: `${anitakuBaseUrl}/` },
     });
@@ -42,6 +40,16 @@ export async function fetchEpisodeSources(
           serverUrl = new URL(
             `${data$(
               "div.anime_video_body > div.anime_muti_link > ul > li.doodstream"
+            )
+              ?.find("a")
+              ?.attr("data-video")}`
+          );
+          break;
+        }
+        case anitakuServers.MP4Upload: {
+          serverUrl = new URL(
+            `${data$(
+              "div.anime_video_body > div.anime_muti_link > ul > li.mp4upload"
             )
               ?.find("a")
               ?.attr("data-video")}`
@@ -90,15 +98,6 @@ export async function fetchEpisodeSources(
           break;
         }
       }
-
-      const downloadUrl = data$("div.favorites_book > ul > li.dowloads")
-        .find("a")
-        .attr("href");
-      //// dunno what to do with iframe
-      const iframe = data$("div.play-video").find("iframe").attr("src") || null;
-      // console.log(iframe);
-
-      // return await fetchEpisodeSources(serverUrl.href, server);
     } catch (error) {
       return {
         success: false,
@@ -106,6 +105,7 @@ export async function fetchEpisodeSources(
           error instanceof Error ? error.message : "Unable to find serverURL ",
       };
     }
+
     if (serverUrl.href != undefined && serverUrl.href != null) {
       const serverID = new URL(serverUrl);
 
@@ -114,18 +114,29 @@ export async function fetchEpisodeSources(
           const data = GogoServer(serverID);
           return data;
         }
-
+        case anitakuServers.StreamWish: {
+          const data = StreamWish(serverID);
+          return data;
+        }
+        case anitakuServers.MP4Upload: {
+          const data = MP4Upload(serverID);
+          return data;
+        }
         case anitakuServers.Doodstream: {
-          console.log(server, " i have received the ref doodstream");
-          break;
+          return {
+            success: false,
+            reason: "Method not implemented embed the href buddy ",
+            href: serverID.href,
+          };
         }
         case anitakuServers.VidHide: {
-          console.log(server, " i have received the ref vidhide");
-          break;
+          const data = VidHide(serverID);
+          return data;
         }
-        case anitakuServers.Vidstreaming: {
-          console.log(server, " i have received the ref Vidstreaming");
-          break;
+        default: {
+          anitakuServers.Vidstreaming;
+          const data = GogoServer(serverID);
+          return data;
         }
       }
     }
