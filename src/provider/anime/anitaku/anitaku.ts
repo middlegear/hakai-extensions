@@ -41,7 +41,6 @@ class Anitaku {
   async fetchSources(
     episodeId: string,
     server: anitakuServers = anitakuServers.MP4Upload
-    // downloadLink?: string
   ) {
     return fetchEpisodeSources(episodeId, server);
   }

@@ -60,9 +60,6 @@ export async function fetchAnimeInfo(
 
     const episodesData = anitakuExtractEpisodes(resHtmlEpisodes$);
 
-    // resAnimeInfo,
-    // episodesData,
-
     return {
       success: true,
       data: resAnimeInfo.animeInfo,
