@@ -1,7 +1,7 @@
 export type Anime = {
   id: string | null;
   name: string | null;
-  japaneseName: string | null;
+  romanji: string | null;
   posterImage: string | null;
   url: string | null;
   duration: string | null;
@@ -68,7 +68,7 @@ export enum Dubbing {
 }
 export type scrappedAnime = {
   success: boolean;
-  anime?: Anime[];
+  anime: Anime[];
   hasNextPage?: boolean;
   totalPages?: number | null;
   currentPage?: number | null;

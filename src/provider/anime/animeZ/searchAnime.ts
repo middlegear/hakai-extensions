@@ -27,7 +27,12 @@ export async function searchAnime(query: string, page: number = 1) {
 
     const data = extractAnimeZResults(data$, selector);
 
-    return data;
+    return {
+      hasNextPage: data.hasNextPage,
+      totalPages: data.totalPages,
+      currentPage: data.currentPage,
+      anime: data.anime,
+    };
   } catch (error) {
     return {
       success: false,

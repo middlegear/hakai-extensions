@@ -70,13 +70,6 @@ export type anitakuAnimeServers =
   | "videhide"
   | "mp4upload";
 
-export type scrappedSearch = {
-  success: boolean;
-  hasNextPage: boolean;
-  totalPages: number;
-  currentPage: number;
-  anime: animeSearch[];
-};
 export type scrappedAnimeInfo = {
   success: boolean;
   data: AnimeInfo;

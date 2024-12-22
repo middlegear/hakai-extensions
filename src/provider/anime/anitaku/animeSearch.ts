@@ -2,12 +2,8 @@ import * as cheerio from "cheerio";
 import { anitakuClient } from "../../../config";
 import { anitakuSearchUrl } from "../../../utils/constants";
 import { extractAnitakuSearchResults } from "./methods";
-import type { scrappedSearch } from "./types";
-import type { Error } from "../hianime/types";
-export async function searchAnime(
-  query: string,
-  page: number = 1
-): Promise<scrappedSearch | Error> {
+
+export async function searchAnime(query: string, page: number = 1) {
   if (!query)
     return {
       success: false,

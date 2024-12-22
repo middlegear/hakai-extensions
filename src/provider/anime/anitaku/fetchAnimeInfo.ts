@@ -14,9 +14,7 @@ import { anitaku_extractAnimeInfo, anitakuExtractEpisodes } from "./methods";
 import type { scrappedAnimeInfo } from "./types";
 import type { Error } from "../hianime/types";
 
-export async function fetchAnimeInfo(
-  animeId: string
-): Promise<scrappedAnimeInfo | Error> {
+export async function fetchAnimeInfo(animeId: string) {
   if (!animeId)
     return {
       success: false,

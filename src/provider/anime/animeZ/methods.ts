@@ -9,9 +9,9 @@ export function extractAnimeZResults(
   selector: cheerio.SelectorType
 ) {
   try {
-    const animeInfo: anime[] = [];
+    const anime: anime[] = [];
     $(selector).each((_, element) => {
-      animeInfo.push({
+      anime.push({
         id: $(element).find("a").attr("href")?.split("/").at(1)?.trim() || null,
         title: $(element)?.find("a")?.attr("title") || null,
         posterImage:
@@ -66,7 +66,7 @@ export function extractAnimeZResults(
       hasNextPage,
       currentPage,
       totalPages,
-      animeInfo,
+      anime,
     };
   } catch (error) {
     return {
@@ -112,5 +112,8 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
     });
   });
   episodes.reverse();
-  return episodes;
+  return {
+    animeInfo,
+    episodes,
+  };
 }

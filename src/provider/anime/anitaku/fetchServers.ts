@@ -5,9 +5,7 @@ import { anitakuExtractDownloadSrc, anitakuExtractServers } from "./methods";
 import type { scrappedServers } from "./types";
 import type { Error } from "../hianime/types";
 
-export async function fetchServers(
-  episodeId: string
-): Promise<scrappedServers | Error> {
+export async function fetchServers(episodeId: string) {
   if (!episodeId)
     return {
       success: false,

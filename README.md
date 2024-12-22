@@ -10,3 +10,7 @@ should pages be strings | numbers
 cleanup : put functions on one ts file and create classes in another ts file with docs
 have a folder for the animename and everything related to it in the same folder
 streaming sources have their own folder in extractors and fix episodesources for megacloud
+///should be to lowercase the providers enums from the swithcases when mapping using infobyId
+for anilist and jikan it should be noted that there is search , fetchInfoBYid, animecharacters, fetchanimeACTORS ,trending(), seasons, ctegories in like mywebapp
+
+rework on the promise functions

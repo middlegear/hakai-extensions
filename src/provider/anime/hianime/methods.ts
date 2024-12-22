@@ -32,7 +32,7 @@ export function extractSearchResults(
           .find(".film-detail .film-name .dynamic-name")
           .text()
           .trim() || null,
-      japaneseName:
+      romanji:
         $(element)
           .find(".film-detail .film-name .dynamic-name")
           .attr("data-jname") || null,

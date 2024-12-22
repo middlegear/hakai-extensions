@@ -1,7 +1,6 @@
-///
-
 import axios from "axios";
 import { Filters, Season, TopAnime, TopAnimeFilter } from "./types";
+import type { AnimeInfo } from "./types";
 
 const jikanBaseUrl = "https://api.jikan.moe/v4";
 
@@ -13,10 +12,26 @@ export async function getInfoById(Id: number) {
     };
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${Id}`);
-
+    const res = data.data;
+    const animeInfo: AnimeInfo = {
+      malId: res.mal_id,
+      title: {
+        Romanji: res.title,
+        English: res.title_english,
+      },
+      image_jpg: res.images.jpg.large_image_url,
+      image_webp: res.images.webp.large_image_url,
+      trailer: res.trailer.embed_url,
+      type: res.type,
+      status: res.status,
+      duration: res.duration,
+      score: res.score,
+      synopsis: res.synopsis,
+      season: res.season,
+    };
     return {
       success: true,
-      data,
+      animeInfo,
     };
   } catch (error) {
     return {
@@ -25,7 +40,7 @@ export async function getInfoById(Id: number) {
     };
   }
 }
-
+///get anime characters need to implement actual characters
 export async function getCharacters(id: number) {
   if (!id)
     return {

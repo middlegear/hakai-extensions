@@ -4,10 +4,7 @@ import { zoroSearch } from "../../../utils/constants";
 import { extractSearchResults } from "./methods";
 import type { scrappedAnime, Error } from "./types";
 
-export async function searchAnime(
-  query: string,
-  page: number = 1
-): Promise<scrappedAnime | Error> {
+export async function searchAnime(query: string, page: number = 1) {
   if (!query)
     return {
       success: false,
@@ -29,7 +26,13 @@ export async function searchAnime(
     const data = extractSearchResults($data, searchSelector);
     // console.log(data);
 
-    return data;
+    return {
+      success: data.success,
+      hasNextPage: data.hasNextPage,
+      currentPage: data.currentPage,
+      totalPages: data.totalPages,
+      anime: data.anime,
+    };
   } catch (error) {
     return {
       success: false,

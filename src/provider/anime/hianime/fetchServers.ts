@@ -3,9 +3,7 @@ import { zoroClient } from "../../../config";
 import { zoroBaseUrl } from "../../../utils/constants";
 import { extractServerData } from "./methods";
 import type { ScrappedServers, Error } from "./types";
-export async function fetchServers(
-  episodeId: string
-): Promise<ScrappedServers | Error> {
+export async function fetchServers(episodeId: string) {
   if (!episodeId)
     return {
       success: false,

@@ -4,9 +4,7 @@ import { extractAnimeInfo, extractEpisodesList } from "./methods";
 import { zoroBaseUrl } from "../../../utils/constants";
 import type { Error, scrappedAnimeInfo } from "./types";
 
-export async function fetchAnimeInfo(
-  animeId: string
-): Promise<scrappedAnimeInfo | Error> {
+export async function fetchAnimeInfo(animeId: string) {
   if (!animeId)
     return {
       success: false,

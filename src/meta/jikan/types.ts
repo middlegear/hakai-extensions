@@ -1,3 +1,21 @@
+export type AnimeInfo = {
+  malId: number;
+  title: {
+    Romanji: string;
+    English: string;
+  };
+
+  image_webp: string;
+  image_jpg: string;
+  trailer: string;
+  type: string;
+  status: string;
+  duration: string;
+  score: number;
+  synopsis: string;
+  season: string;
+};
+
 export enum Filters {
   TV = "tv",
   Movie = "movie",
@@ -29,4 +47,9 @@ export enum TopAnimeFilter {
   Popularity = "bypopularity",
   Upcoming = "upcoming",
   Favourite = "favourite",
+}
+export enum Providers {
+  Anitaku = "anitaku",
+  AnimeZ = "animez",
+  HiAnime = "hianime",
 }
