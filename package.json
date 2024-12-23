@@ -16,6 +16,7 @@
     "@types/crypto-js": "^4.2.2",
     "axios": "^1.7.7",
     "cheerio": "^1.0.0",
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "fastest-levenshtein": "^1.0.16"
   }
 }

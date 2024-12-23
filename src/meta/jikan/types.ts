@@ -1,8 +1,8 @@
 export type AnimeInfo = {
   malId: number;
   title: {
-    Romanji: string;
-    English: string;
+    romanji: string;
+    english: string;
   };
 
   image_webp: string;

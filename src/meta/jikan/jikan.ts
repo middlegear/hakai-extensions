@@ -16,8 +16,8 @@ export async function getInfoById(Id: number) {
     const animeInfo: AnimeInfo = {
       malId: res.mal_id,
       title: {
-        Romanji: res.title,
-        English: res.title_english,
+        romanji: res.title,
+        english: res.title_english,
       },
       image_jpg: res.images.jpg.large_image_url,
       image_webp: res.images.webp.large_image_url,

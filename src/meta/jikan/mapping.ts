@@ -11,7 +11,7 @@ export async function getAnimeTitle(
 ) {
   try {
     const data = await getInfoById(id);
-    const englishTitle = data.animeInfo?.title.English as string;
+    const englishTitle = data.animeInfo?.title.english as string;
     // const Romanjititle = data.animeInfo?.title.Romanji as string;
     let resultProvider;
     switch (provider) {
