@@ -1,4 +1,4 @@
-import { searchAnime } from "./searchAnime";
+import { searchAnime, searchSuggestions } from "./searchAnime";
 import { fetchAnimeInfo } from "./fetchAnimeInfo";
 import { fetchSources } from "./fetchSources";
 class AnimeZ {
@@ -11,7 +11,9 @@ class AnimeZ {
   async search(query: string, page: number = 1) {
     return searchAnime(query, page);
   }
-
+  async searchSuggestions(query: string) {
+    return searchSuggestions(query);
+  }
   async fetchInfo(animeId: string) {
     return fetchAnimeInfo(animeId);
   }

@@ -4,6 +4,7 @@ type result = {
   animeId: string;
   name: string;
   romanji?: string;
+  alt?: string;
 };
 
 export type JikanTitle = {
@@ -111,44 +112,37 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
   const normalizedResults = results.map((item) => ({
     ...item,
     normalizedName: normalizetitle(item.name),
-    normalizedId: normalizetitle(item.animeId),
-    normalizeRomanji: normalizetitle(item.romanji as string),
+
+    normalizeAlts: normalizetitle(item.alt as string),
   }));
 
   const normalizedEnglish = normalizetitle(title.english || "");
   const normalizedRomanji = normalizetitle(title.romanji || "");
+  // const bestEnglishMatch = normalizedEnglish
+  //   ? closest(
+  //       normalizedEnglish,
+  //       normalizedResults.map((r) => r.normalizedName)
+  //     )
+  //   : null;
 
-  const bestEnglishMatch = normalizedEnglish
-    ? closest(
-        normalizedEnglish,
-        normalizedResults.map((r) => r.normalizedName)
-      )
-    : null;
+  // const bestRomanjiMatch = normalizedRomanji
+  //   ? closest(
+  //       normalizedRomanji,
+  //       normalizedResults.map((r) => r.normalizeAlts)
+  //     )
+  //   : null;
 
-  const bestRomanjiMatch = normalizedRomanji
-    ? closest(
-        normalizedRomanji,
-        normalizedResults.map((r) => r.normalizeRomanji)
-      )
-    : null;
-  const anime2 = normalizedResults.filter(
+  const matchalmost = normalizedResults.filter(
     (item) =>
-      item.normalizedName === (normalizedEnglish as string) ||
-      item.normalizeRomanji === (normalizedRomanji as string)
+      item.normalizedName === normalizedEnglish ||
+      item.normalizeAlts?.includes(normalizedRomanji)
   );
 
-  const anime = normalizedResults.find((item) =>
-    // item.normalizedName.includes(bestEnglishMatch as string) &&
-    item.normalizeRomanji.includes(normalizedRomanji as string)
+  const match = matchalmost.find(
+    (item) => item.normalizedName == normalizedEnglish
   );
-  const animeZ = {
-    id: anime?.animeId || "search on this site is broken",
-    title: anime?.name || "search on this site is broken",
-  };
 
   return {
-    animeZ,
-
-    // normalizedResults,
+    matchalmost: matchalmost,
   };
 }

@@ -33,6 +33,12 @@ export async function getAnimeTitle(
         const animeZ = new AnimeZ();
         try {
           const data = animeZ.search(englishTitle);
+          // resultProvider = (await data).anime?.searchSugestions?.map(
+          //   (item: any) => ({
+          //     animeId: item.id,
+          //     name: item.title,
+          //   })
+          // );
           resultProvider = (await data).anime?.map((item: any) => ({
             animeId: item.id,
             name: item.title,
