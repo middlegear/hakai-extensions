@@ -1,8 +1,8 @@
 import { closest } from "fastest-levenshtein";
-
+import Fuse from "fuse.js";
 type result = {
   animeId: string;
-  name: string;
+  name?: string;
   romanji?: string;
   alt?: string;
 };
@@ -12,12 +12,12 @@ export type JikanTitle = {
   english: string;
 };
 
-const normalizetitle = (title: string) => title?.toLowerCase().trim() || "";
+const normalizetitle = (title: string) => title?.toLowerCase().trim();
 
 export function anitakuTitle(title: JikanTitle, results: result[]) {
   const normalizedResults = results.map((item) => ({
     ...item,
-    normalizedName: normalizetitle(item.name),
+    normalizedName: normalizetitle(item.name as string),
   }));
 
   const normalizedEnglish = normalizetitle(title.english || "");
@@ -70,79 +70,59 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
 export function hianimeTitle(title: JikanTitle, results: result[]) {
   const normalizedResults = results.map((item) => ({
     ...item,
-    normalizedName: normalizetitle(item.name),
+    // normalizedName: normalizetitle(item.name),
     normalizeRomanji: normalizetitle(item.romanji as string),
   }));
 
-  const normalizedEnglish = normalizetitle(title.english || "");
+  // const normalizedEnglish = normalizetitle(title.english || "");
   const normalizedRomanji = normalizetitle(title.romanji || "");
-
-  const bestEnglishMatch = normalizedEnglish
-    ? closest(
-        normalizedEnglish,
-        normalizedResults.map((r) => r.normalizedName)
-      )
-    : null;
-
-  const bestRomanjiMatch = normalizedRomanji
-    ? closest(
-        normalizedRomanji,
-        normalizedResults.map((r) => r.normalizeRomanji)
-      )
-    : null;
-
-  // Filter matches
-  const zoro = normalizedResults.find(
-    (item) =>
-      item.normalizedName === bestEnglishMatch ||
-      item.normalizeRomanji === bestRomanjiMatch
-  );
-
-  const hiAnime = {
-    id: zoro?.animeId || null,
-    title: zoro?.name || null,
-    romanji: zoro?.romanji || null,
+  const fuseOptions = {
+    keys: ["normalizeRomanji"],
+    threshold: 0.3,
+    includeScore: true,
   };
 
+  const fuse = new Fuse(normalizedResults, fuseOptions);
+  const query = `${normalizedRomanji}`.trim();
+  const res = fuse.search(query);
+
+  const fuzzy = res.map((item) => ({
+    id: item.item.animeId,
+    name: item.item.name,
+    score: item.score,
+    index: item.refIndex,
+  }));
+
   return {
-    hiAnime,
+    hiAnime: fuzzy,
   };
 }
 export function animeZtitle(title: JikanTitle, results: result[]) {
+  const normalizedEnglish = normalizetitle(title.english || "");
+
   const normalizedResults = results.map((item) => ({
     ...item,
-    normalizedName: normalizetitle(item.name),
-
-    normalizeAlts: normalizetitle(item.alt as string),
+    normalizedName: normalizetitle(item.name as string),
   }));
 
-  const normalizedEnglish = normalizetitle(title.english || "");
-  const normalizedRomanji = normalizetitle(title.romanji || "");
-  // const bestEnglishMatch = normalizedEnglish
-  //   ? closest(
-  //       normalizedEnglish,
-  //       normalizedResults.map((r) => r.normalizedName)
-  //     )
-  //   : null;
-
-  // const bestRomanjiMatch = normalizedRomanji
-  //   ? closest(
-  //       normalizedRomanji,
-  //       normalizedResults.map((r) => r.normalizeAlts)
-  //     )
-  //   : null;
-
-  const matchalmost = normalizedResults.filter(
-    (item) =>
-      item.normalizedName === normalizedEnglish ||
-      item.normalizeAlts?.includes(normalizedRomanji)
-  );
-
-  const match = matchalmost.find(
-    (item) => item.normalizedName == normalizedEnglish
-  );
-
-  return {
-    matchalmost: matchalmost,
+  const fuseOptions = {
+    keys: ["name"],
+    threshold: 0.4,
+    includeScore: true,
+    ignoreLocation: true,
   };
+
+  const fuse = new Fuse(normalizedResults, fuseOptions);
+  const query = `${normalizedEnglish}`.trim();
+  const res = fuse.search(query);
+
+  const fuzzy = res.map((item) => ({
+    id: item.item.animeId,
+    name: item.item.name,
+    score: item.score,
+    index: item.refIndex,
+  }));
+
+  return { animeZ: fuzzy.at(0) };
 }
+// ,

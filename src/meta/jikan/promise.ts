@@ -118,30 +118,30 @@ export async function getAnimeTitle(id: number) {
       const anitakures = separatedResults.anitaku;
       const hianimeres = separatedResults.hiAnime;
       ////combine both data
-      const matchingAnimeZ = animeZResults.map((animeItem) => {
-        const matchingSuggestion = animeZSuggestionsResults.find(
-          (animesuggest) => animesuggest.animeId === animeItem.animeId
-        );
-        if (matchingSuggestion) {
-          return {
-            ...animeItem,
-            alt: matchingSuggestion.alt,
-          };
+      const matchingAnimeZ = animeZResults.map(
+        (animeItem: { animeId: any }) => {
+          const matchingSuggestion = animeZSuggestionsResults.find(
+            (animesuggest: { animeId: any }) =>
+              animesuggest.animeId === animeItem.animeId
+          );
+          if (matchingSuggestion) {
+            return {
+              ...animeItem,
+              alt: matchingSuggestion.alt || null,
+            };
+          }
+          return animeItem;
         }
-        return animeItem;
-      });
+      );
       const { gogoanime } = anitakuTitle(titles, anitakures);
       const { hiAnime } = hianimeTitle(titles, hianimeres);
-      const dat = animeZtitle(titles, matchingAnimeZ);
-      // console.log(dat.matchalmost.length);
+      const { animeZ } = animeZtitle(titles, matchingAnimeZ);
 
       return {
-        titles,
-        dat: dat.matchalmost,
+        data,
         gogoanime,
         hiAnime,
-
-        // matchingAnimeZ
+        animeZ,
       };
     };
 
