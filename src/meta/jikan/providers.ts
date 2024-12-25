@@ -10,7 +10,7 @@ import {
   type JikanTitle,
 } from "./levenshtein";
 
-export async function getAnimeTitle(id: number) {
+export async function getProviderId(id: number) {
   try {
     // Fetch anime info from Jikan API
     const data = await getInfoById(id);
@@ -151,6 +151,3 @@ export async function getAnimeTitle(id: number) {
     throw error;
   }
 }
-
-// Example usage
-// getAnimeTitle(56784).then(console.log).catch(console.error);

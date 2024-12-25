@@ -15,6 +15,124 @@ export type AnimeInfo = {
   synopsis: string;
   season: string;
 };
+export type seasonJikan = {
+  pagination: {
+    last_visible_page: 0;
+    has_next_page: true;
+    items: {
+      count: 0;
+      total: 0;
+      per_page: 0;
+    };
+  };
+  data: [
+    {
+      mal_id: 0;
+      images: {
+        jpg: {
+          large_image_url: "string";
+        };
+        webp: {
+          large_image_url: "string";
+        };
+      };
+      trailer: {
+        url: "string";
+        embed_url: "string";
+      };
+      approved: true;
+      titles: [
+        {
+          type: "string";
+          title: "string";
+        }
+      ];
+      title: "string";
+      title_english: "string";
+      title_japanese: "string";
+
+      type: "TV";
+      source: "string";
+      episodes: 0;
+      status: "Finished Airing";
+      airing: true;
+      aired: {
+        from: "string";
+        to: "string";
+      };
+      duration: "string";
+      rating: "G - All Ages";
+      score: 0;
+
+      synopsis: "string";
+
+      season: "summer";
+      year: 0;
+      broadcast: {
+        day: "string";
+        time: "string";
+        timezone: "string";
+        string: "string";
+      };
+      producers: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      licensors: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      studios: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      genres: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      explicit_genres: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      themes: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+      demographics: [
+        {
+          mal_id: 0;
+          type: "string";
+          name: "string";
+          url: "string";
+        }
+      ];
+    }
+  ];
+};
 
 export enum Filters {
   TV = "tv",
@@ -30,7 +148,7 @@ export enum Season {
   Spring = "spring",
   Summer = "summer",
 }
-export enum TopAnime {
+export enum AnimeType {
   TV = "tv",
   Movie = "movie",
   Ova = "ova",
@@ -42,7 +160,7 @@ export enum TopAnime {
   TV_Special = "tv_special",
 }
 
-export enum TopAnimeFilter {
+export enum AnimeStatusFilter {
   Airing = "airing",
   Popularity = "bypopularity",
   Upcoming = "upcoming",

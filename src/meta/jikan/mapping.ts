@@ -1,4 +1,3 @@
-import axios from "axios";
 import { getInfoById } from "./jikan";
 import { Providers } from "./types";
 import { AnimeZ } from "../../provider/anime/animeZ/animeZ";
@@ -28,17 +27,12 @@ export async function getAnimeTitle(
         }
 
         break;
-      } //////can ony scrape english titles
+      } //////can ony scrape english titles this needs promise all stuff and also search suggestions here
       case Providers.AnimeZ: {
         const animeZ = new AnimeZ();
         try {
           const data = animeZ.search(englishTitle);
-          // resultProvider = (await data).anime?.searchSugestions?.map(
-          //   (item: any) => ({
-          //     animeId: item.id,
-          //     name: item.title,
-          //   })
-          // );
+
           resultProvider = (await data).anime?.map((item: any) => ({
             animeId: item.id,
             name: item.title,

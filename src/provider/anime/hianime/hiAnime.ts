@@ -28,7 +28,7 @@ class HiAnime {
   /**
    *
    * @param episodeId unique id string
-   * @returns available servers and Episode number
+   * @returns available servers
    */
   async fetchEpisodeServers(episodeId: string) {
     return fetchServers(episodeId);

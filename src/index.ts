@@ -1,6 +1,6 @@
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-import { getAnimeTitle } from "./meta/jikan/promise";
+import { getProviderId } from "./meta/jikan/providers";
 import { AnimeZ } from "./provider/anime/animeZ/animeZ";
 
 // getCharacters(16498)
@@ -18,6 +18,6 @@ import { AnimeZ } from "./provider/anime/animeZ/animeZ";
 // import Meta from "./meta";
 // const anilist = new Meta.Anilist();
 // anilist.fetchInfo  56784 52635 59989 41467  52635  269  40028  48583  51535
-getAnimeTitle(41467)
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+// getProviderId(41467)
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));

@@ -34,13 +34,13 @@ class Anitaku {
   /**
    *
    * @param episodeId string
-   * @param server default is vidsteaming (optional)
+   * @param server default is Gogo server (optional)
    *
    * @returns streaming sources with a downloadURL
    */
   async fetchSources(
     episodeId: string,
-    server: anitakuServers = anitakuServers.MP4Upload
+    server: anitakuServers = anitakuServers.GogoServer
   ) {
     return fetchEpisodeSources(episodeId, server);
   }
