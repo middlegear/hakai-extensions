@@ -12,7 +12,7 @@ import { getProviderId } from "./providers";
 class Jikan {
   /**
    *
-   * @param query search query string
+   * @param query search query string. Required
    * @param page number default is  1 (optional)
    * @param limit sets the limit per page default is 25 (optional)
    * @param type  Enum: "tv" "movie" "ova" "special" "ona" "music" "cm" "pv" "tv_special". Available Anime types
@@ -29,7 +29,7 @@ class Jikan {
 
   /**
    *
-   * @param id number required
+   * @param id number. Required
    * @returns anime resource
    */
   async fetchInfo(id: number) {
@@ -37,7 +37,7 @@ class Jikan {
   }
   /**
    *
-   * @param id required MAL animeId
+   * @param id number MAL animeId.  Required
    * @returns mapped animeInfo(jikan) and animeIds to providers(anitaku,hiAnime,animeZ )
    */
   async fetchProviderId(id: number) {
@@ -46,7 +46,7 @@ class Jikan {
 
   /**
    *
-   * @param id number required
+   * @param id number.  Required
    * @returns anime characters resource
    */
 
@@ -73,7 +73,7 @@ class Jikan {
 
   /**
    *
-   * @param year number required
+   * @param year number. Required
    * @param season Enum: "winter", "fall","spring","summer" available season types. Required!
    * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types. Default ='tv' (optional)
    * @returns seasonal anime
