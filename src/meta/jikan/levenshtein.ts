@@ -94,7 +94,7 @@ export function hianimeTitle(title: JikanTitle, results: result[]) {
   }));
 
   return {
-    hiAnime: fuzzy,
+    hiAnime: fuzzy.at(0),
   };
 }
 export function animeZtitle(title: JikanTitle, results: result[]) {

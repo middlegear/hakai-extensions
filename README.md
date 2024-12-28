@@ -14,3 +14,5 @@ streaming sources have their own folder in extractors and fix episodesources for
 for anilist and jikan it should be noted that there is search , fetchInfoBYid, animecharacters, fetchanimeACTORS ,trending(), seasons, ctegories in like mywebapp
 
 rework on the promise functions
+
+anilist and jikan , tmdb all the providers should have the same response structure
