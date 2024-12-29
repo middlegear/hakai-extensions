@@ -5,9 +5,17 @@ import {
   airingQuery,
   popularAnimeQuery,
   seasonQuery,
+  characterQuery,
 } from "./queries";
 import { USER_AGENT_HEADER } from "../../config/headers";
-import { Format, MediaType, Seasons, Sort, Status } from "./types";
+import {
+  Charactersort,
+  Format,
+  MediaType,
+  Seasons,
+  Sort,
+  Status,
+} from "./types";
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = "https://anilist.co";
@@ -15,10 +23,10 @@ const Origin = "https://anilist.co";
 
 export async function searchAnime(
   search: string,
-  page: number = 1,
-  perPage: number = 25,
-  type: MediaType = MediaType.Anime,
-  isAdult: boolean = false
+  page: number,
+  perPage: number,
+  type: MediaType,
+  isAdult: boolean
 ) {
   if (!search) {
     return {
@@ -132,12 +140,12 @@ export async function fetchTopAiring(
 }
 
 export async function fetchPopular( /// format could specify fetch poplualr tv shows or movies
-  page: number = 1,
-  perPage: number = 25,
-  type: MediaType = MediaType.Anime,
-  format: Format = Format.TV, // here
-  isAdult: boolean = false,
-  sort: Sort = Sort.POPULARITY_DESC
+  page: number,
+  perPage: number,
+  type: MediaType,
+  format: Format,
+  isAdult: boolean,
+  sort: Sort
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -170,12 +178,12 @@ export async function fetchPopular( /// format could specify fetch poplualr tv s
 }
 
 export async function fetchTopRated(
-  page: number = 1,
-  perPage: number = 25,
-  type: MediaType = MediaType.Anime,
-  format?: Format,
-  isAdult: boolean = false,
-  sort: Sort = Sort.SCORE_DESC
+  page: number,
+  perPage: number,
+  isAdult: boolean,
+  type: MediaType,
+  sort: Sort,
+  format?: Format
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -262,4 +270,44 @@ export async function fetchSeason(
   }
 }
 
-export async function fetchAnimeCharacters() {}
+export async function fetchAnimeCharacters(
+  mediaId: number,
+  sort: Charactersort,
+  voiceActorsSort2: Charactersort
+) {
+  if (!mediaId) {
+    return {
+      success: false,
+      error: "Missing required parameter : mediaid!",
+    };
+  }
+
+  try {
+    const variables = { mediaId, sort, voiceActorsSort2 };
+    const response = await axios.post(
+      baseURL,
+      {
+        query: characterQuery,
+        variables,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": USER_AGENT_HEADER,
+          Origin: Origin,
+          Referer: Referer,
+        },
+      }
+    );
+    return {
+      success: true,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown err",
+    };
+  }
+}

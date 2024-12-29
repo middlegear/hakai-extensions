@@ -13,7 +13,7 @@ class Jikan {
   /**
    *
    * @param query search query string. Required
-   * @param page number default is  1 (optional)
+   * @param page number default = 1 (optional)
    * @param limit sets the limit per page default is 25 (optional)
    * @param type  Enum: "tv" "movie" "ova" "special" "ona" "music" "cm" "pv" "tv_special". Available Anime types
    * @returns search results for anime

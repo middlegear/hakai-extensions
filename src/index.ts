@@ -4,6 +4,7 @@ import { getProviderId } from "./meta/jikan/providers";
 import { AnimeZ } from "./provider/anime/animeZ/animeZ";
 import {
   fetchAnimeById,
+  fetchAnimeCharacters,
   fetchPopular,
   fetchSeason,
   fetchTopAiring,
@@ -18,7 +19,7 @@ import {
 // import { HiAnime } from "./provider/anime/hianime/hiAnime";
 // const anitaku = new AnimeZ();
 
-fetchPopular()
+fetchAnimeCharacters(269)
   .then((data) => console.log(data))
   .catch((err) => console.error(err));
 

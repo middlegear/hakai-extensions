@@ -12,6 +12,8 @@ export const fetchByIdQuery = `query ($id: Int ) {
     status
     description
     season
+    meanScore
+    averageScore
     duration
     coverImage {
       extraLarge
@@ -19,13 +21,13 @@ export const fetchByIdQuery = `query ($id: Int ) {
       medium
       color
     }
+    
     trailer {
       id
       site
       thumbnail
     }
-    meanScore
-    averageScore
+    
     genres
     bannerImage
   }
@@ -214,5 +216,41 @@ export const searchQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       meanScore
     }
     
+  }
+}`;
+
+export const characterQuery = `query Media($mediaId: Int, $sort: [CharacterSort], $voiceActorsSort2: [StaffSort]) {
+  Media(id: $mediaId) {
+    id
+    idMal
+    title {
+      romaji
+      english
+      native
+    }
+    characters(sort: $sort) {
+      edges {
+        role
+        node {
+          id
+          name {
+            full
+          }
+          image {
+            large
+          }
+        }
+        voiceActors(sort: $voiceActorsSort2) {
+          name {
+            full
+          }
+          image {
+            large
+            medium
+          }
+          languageV2
+        }
+      }
+    }
   }
 }`;

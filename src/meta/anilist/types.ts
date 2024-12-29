@@ -66,3 +66,12 @@ export enum Format {
   NOVEL = "NOVEL",
   ONE_SHOT = "ONE_SHOT",
 }
+export enum Charactersort {
+  ID = "ID",
+  ID_DESC = "ID_DESC",
+  ROLE_DESC = "ROLE_DESC",
+  SEARCH_MATCH = "SEARCH_MATCH",
+  FAVOURITES = "FAVOURITES",
+  FAVOURITES_DESC = "FAVOURITES_DESC",
+  RELEVANCE = "RELEVANCE",
+}
