@@ -1,24 +1,25 @@
-import { getInfoById } from "./jikan";
+import { fetchAnimeById } from "./anilist";
 import { Anitaku } from "../../provider/anime/anitaku/anitaku";
 import { AnimeZ } from "../../provider/anime/animeZ/animeZ";
 import { HiAnime } from "../../provider/anime/hianime/hiAnime";
 
 import {
-  animeZtitle,
-  anitakuTitle,
-  hianimeTitle,
-  type JikanTitle,
-} from "./stringsimilarity";
+  bestanimeZTitle,
+  bestAnitakuTitle,
+  bestHianimeTitle,
+} from "./stringSimilarity";
 
-export async function getProviderId(id: number) {
+export async function fetchProviderId(id: number) {
   try {
-    // Fetch anime info from Jikan API
-    const data = await getInfoById(id);
-    const englishTitle = data.animeInfo?.title?.english as string;
+    // Fetch anime info from Anilist  API
+    const data = await fetchAnimeById(id);
+    const titles = data.data?.Media?.title;
+    const englishTitle = titles.english;
+    const userPref = titles.userPreferred.split(" ").slice(0, 3).join(" ");
     const modifiedString = englishTitle?.split(":")?.at(0)?.trim();
-    const romanjiTitle = data.animeInfo?.title.romaji as string;
-    const titles = data.animeInfo?.title;
-    if (!titles) throw new Error("English title not found.");
+
+    if (!titles) throw new Error(" title not found.");
+    console.log(titles, userPref);
 
     // Providers' search functions
     const searchAnitaku = async (title: string) => {
@@ -90,13 +91,13 @@ export async function getProviderId(id: number) {
     // Fetch results from all providers
     const fetchProviderResults = async (
       modifiedString: string,
-      romanjiTitle: string
+      userPref: string
     ) => {
       const providerResults = await Promise.all([
-        searchAnitaku(romanjiTitle),
+        searchAnitaku(userPref),
         searchAnimeZ(modifiedString),
         searchAnimeZSuggestions(modifiedString),
-        searchHiAnime(romanjiTitle),
+        searchHiAnime(userPref),
       ]);
 
       const [
@@ -132,19 +133,19 @@ export async function getProviderId(id: number) {
           return animeItem;
         }
       );
-      const { gogoanime } = anitakuTitle(titles, anitakures);
-      const { hiAnime } = hianimeTitle(titles, hianimeres);
-      const { animeZ } = animeZtitle(titles, matchingAnimeZ);
+
+      const { gogoAnime } = bestAnitakuTitle(titles, anitakures);
+      const { hiAnime } = bestHianimeTitle(titles, hianimeres);
+      const { animeZ } = bestanimeZTitle(titles, matchingAnimeZ);
 
       return {
-        data,
-        gogoanime,
+        gogoAnime,
         hiAnime,
         animeZ,
       };
     };
 
-    return await fetchProviderResults(modifiedString as string, romanjiTitle);
+    return await fetchProviderResults(modifiedString as string, userPref);
   } catch (error) {
     console.error("Error in getAnimeTitle:", error);
     throw error;

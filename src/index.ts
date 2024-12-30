@@ -18,8 +18,8 @@ import {
 // import { Anitaku } from "./provider/anime/anitaku/anitaku";
 // import { HiAnime } from "./provider/anime/hianime/hiAnime";
 // const anitaku = new AnimeZ();
-
-fetchAnimeCharacters(269)
+import { fetchProviderId } from "./meta/anilist/fetchProviderId";
+fetchProviderId(163146)
   .then((data) => console.log(data))
   .catch((err) => console.error(err));
 
@@ -27,7 +27,7 @@ fetchAnimeCharacters(269)
 // const jikan = new Meta.Jikan();
 
 // // 56784 52635 59989 41467  52635  269  40028  48583  51535
-// jikan
-//   .fetchProviderId(41467)
+
+// getProviderId(41467)
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));

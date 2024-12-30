@@ -139,7 +139,7 @@ export async function fetchTopAiring(
   }
 }
 
-export async function fetchPopular( /// format could specify fetch poplualr tv shows or movies
+export async function fetchPopular(
   page: number,
   perPage: number,
   type: MediaType,

@@ -6,6 +6,7 @@ export const fetchByIdQuery = `query ($id: Int ) {
       romaji
       english
       native
+      userPreferred
     }
     type
     format

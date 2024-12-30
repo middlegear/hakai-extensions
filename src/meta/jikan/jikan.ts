@@ -36,7 +36,7 @@ export async function searchAnime(
       image_webp: item.images.webp.large_image_url,
       embedtrailer: item.trailer.embed_url,
       title: {
-        romanji: item.title,
+        romaji: item.title,
         english: item.title_english,
       },
       synopsis: item.synopsis,
@@ -78,7 +78,7 @@ export async function getInfoById(Id: number) {
     const animeInfo: AnimeInfo = {
       malId: res.mal_id,
       title: {
-        romanji: res.title,
+        romaji: res.title,
         english: res.title_english,
       },
       image_jpg: res.images.jpg.large_image_url,
@@ -152,7 +152,7 @@ export async function getCurrentSeason(
       image_webp: item.images.webp.large_image_url,
       embedtrailer: item.trailer.embed_url,
       title: {
-        romanji: item.title,
+        romaji: item.title,
         english: item.title_english,
       },
       synopsis: item.synopsis,
@@ -215,7 +215,7 @@ export async function getNextSeason(
       image_webp: item.images.webp.large_image_url,
       embedtrailer: item.trailer.embed_url,
       title: {
-        romanji: item.title,
+        romaji: item.title,
         english: item.title_english,
       },
       synopsis: item.synopsis,
@@ -280,7 +280,7 @@ export async function getSeason(
       image_webp: item.images.webp.large_image_url,
       embedtrailer: item.trailer.embed_url,
       title: {
-        romanji: item.title,
+        romaji: item.title,
         english: item.title_english,
       },
       synopsis: item.synopsis,
@@ -344,7 +344,7 @@ export async function getTopAnime(
       image_webp: item.images.webp.large_image_url,
       embedtrailer: item.trailer.embed_url,
       title: {
-        romanji: item.title,
+        romaji: item.title,
         english: item.title_english,
       },
       synopsis: item.synopsis,

@@ -47,7 +47,7 @@ class Anilist {
  * @param page  number default = 1 (optional)
  * @param perPage sets the limit per page default = 20 (optional)
 
- * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats
+ * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
 
  * @returns Airing anime resource
  */
@@ -66,15 +66,15 @@ class Anilist {
    *
    * @param page number default = 1 (optional)
    * @param perPage sets the limit per page default = 20 (optional)
-   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats
+   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats.Default = TV (Optional)
    *
-   * @returns Most Popular anime
+   * @returns Most Popular anime resource
    */
   async fetchMostPopular(
     page: number = 1,
     perPage: number = 20,
     type: MediaType = MediaType.Anime,
-    format: Format = Format.TV, // here
+    format: Format = Format.TV,
     isAdult: boolean = false,
     sort: Sort = Sort.POPULARITY_DESC
   ) {
@@ -84,7 +84,7 @@ class Anilist {
    * 
    * @param page number default = 1 (optional)
    * @param perPage sets the limit per page default = 20 (optional)
-   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats
+   * @param  @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
   
  
    * @returns top rated anime resource
@@ -93,7 +93,7 @@ class Anilist {
     page: number = 1,
     perPage: number = 25,
     type: MediaType = MediaType.Anime,
-    format?: Format,
+    format: Format = Format.TV,
     isAdult: boolean = false,
     sort: Sort = Sort.SCORE_DESC
   ) {
@@ -105,7 +105,7 @@ class Anilist {
    * @param page number default = 1 (optional)
    * @param perPage sets the limit per page default = 20 (optional)
 
-   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats
+   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
 
    * @param season Enum WINTER, SPRING, SUMMER, FALL. Required. Availabe anime seasons
    * @param seasonYear number .Required

@@ -1,7 +1,7 @@
 export type AnimeInfo = {
   malId: number;
   title: {
-    romanji: string;
+    romaji: string;
     english: string;
   };
 
