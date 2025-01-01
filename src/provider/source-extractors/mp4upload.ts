@@ -12,9 +12,7 @@ export async function MP4Upload(videoUrl: URL) {
         /type:\s*"(.*?)",\s*src:\s*"(https?:\/\/[^"]+)"/
       ); // Match type and src
       if (match) {
-        // console.log("Extracted Video Type:", match[1]); // Log the type (e.g., video/mp4)
-        // console.log("Extracted Video Source:", match[2]); // Log the URL
-        return { type: match[1], src: match[2] }; // Return or use the extracted values
+        return { type: match[1], src: match[2] };
       }
     } else {
       return {

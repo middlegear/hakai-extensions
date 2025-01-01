@@ -41,7 +41,33 @@ export async function GogoServer(videoUrl: URL) {
         iv: keys.iv,
       }).toString(CryptoJS.enc.Utf8);
 
-      return JSON.parse(decryptRes);
+      const res = JSON.parse(decryptRes);
+      const sources = {
+        source:
+          res?.source?.map(
+            (item: { file: string; label: string; type: string }) => ({
+              file: item.file,
+              label: item.label,
+              type: item.type,
+            })
+          ) || null,
+        alt:
+          res?.source_bk?.map(
+            (item: { file: string; label: string; type: string }) => ({
+              file: item.file,
+              label: item.label,
+              type: item.type,
+            })
+          ) || null,
+        subtitles:
+          res?.track?.tracks?.map((item: { file: any; kind: any }) => ({
+            file: item.file,
+            type: item.kind,
+          })) || null,
+
+        iframeLink: res.linkiframe || null,
+      };
+      return sources || null;
     } catch (error) {
       return {
         success: false,

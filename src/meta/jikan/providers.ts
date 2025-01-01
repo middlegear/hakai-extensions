@@ -116,6 +116,7 @@ export async function getProviderId(id: number) {
 
       const anitakures = separatedResults.anitaku;
       const hianimeres = separatedResults.hiAnime;
+
       ////combine both data
       const matchingAnimeZ = animeZResults.map(
         (animeItem: { animeId: any }) => {

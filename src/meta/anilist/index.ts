@@ -1,3 +1,4 @@
+import { getProviderId } from "../jikan/providers";
 import {
   fetchAnimeById,
   fetchTopAiring,
@@ -41,6 +42,14 @@ class Anilist {
    */
   async fetchInfo(id: number) {
     return fetchAnimeById(id);
+  }
+  /**
+   *
+   * @param id number AnilistId . Required
+   * @returns anime resource mapped to providers
+   */
+  async fetchMapping(id: number) {
+    return getProviderId(id);
   }
   /**
  * 

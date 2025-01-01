@@ -125,6 +125,7 @@ export async function fetchEpisodeSources(
         case anitakuServers.Doodstream: {
           return {
             success: false,
+            error: console.error("Avoid this source use Href "),
             reason: "Method not implemented embed the href buddy ",
             href: serverID.href,
           };

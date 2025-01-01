@@ -40,7 +40,7 @@ class Anitaku {
    */
   async fetchSources(
     episodeId: string,
-    server: anitakuServers = anitakuServers.GogoServer
+    server: anitakuServers = anitakuServers.MP4Upload
   ) {
     return fetchEpisodeSources(episodeId, server);
   }

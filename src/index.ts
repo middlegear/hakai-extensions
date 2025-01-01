@@ -2,6 +2,7 @@
 
 import { getProviderId } from "./meta/jikan/providers";
 import { AnimeZ } from "./provider/anime/animeZ/animeZ";
+import { Anitaku } from "./provider/anime/anitaku/anitaku";
 import {
   fetchAnimeById,
   fetchAnimeCharacters,
@@ -12,16 +13,20 @@ import {
   searchAnime,
 } from "./meta/anilist/anilist";
 // getCharacters(16498)
-//   .then((data) => console.log(data))
-//   .catch((err) => console.error(err));
+const anitaku = new Anitaku();
+
+anitaku
+  .fetchSources("bleach-sennen-kessen-hen-soukoku-tan-episode-8")
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
 
 // import { Anitaku } from "./provider/anime/anitaku/anitaku";
 // import { HiAnime } from "./provider/anime/hianime/hiAnime";
 // const anitaku = new AnimeZ();
-import { fetchProviderId } from "./meta/anilist/fetchProviderId";
-fetchProviderId(163146)
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+// import { fetchProviderId } from "./meta/anilist/fetchProviderId";
+// fetchProviderId(163146)
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
 
 // import Meta from "./meta";
 // const jikan = new Meta.Jikan();

@@ -9,14 +9,6 @@ export async function VidHide(videoUrl: URL) {
         Referer: "https://s3embtaku.pro/",
       },
     });
-    ///Me NOOB ive scraped the eval obfsucated stuff tried to execute it but failed idk why CTRL + C +V ill try sth with pupeteer later
-    // const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    // data$("script").each((i, script) => {
-    //   const scriptContent = data$(script).html();
-
-    //   if (scriptContent && scriptContent.includes("eval")) {
-    //   }
-    // });
 
     // Code adapted from Zenda-Cross (https://github.com/Zenda-Cross/vega-app/blob/main/src/lib/providers/multi/multiGetStream.ts)
     // Thank you to Zenda-Cross for the original implementation.
@@ -58,7 +50,15 @@ export async function VidHide(videoUrl: URL) {
         isM3U8: link.includes(".m3u8"),
       });
     });
-    return sources;
+    const newSources = {
+      source:
+        sources.map((item) => ({
+          file: item.url,
+
+          isM3u8: item.isM3U8,
+        })) || null,
+    };
+    return newSources;
   } catch (error) {
     return {
       success: false,

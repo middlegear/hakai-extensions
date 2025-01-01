@@ -1,22 +1,13 @@
 import { anitakuClient } from "../../config";
-// import * as cheerio from "cheerio";
 
 export async function StreamWish(videoUrl: URL) {
-  const sources: { quality: string; url: string; isM3U8: boolean }[] = [];
+  const sources: { type: string; file: string; isM3U8: boolean }[] = [];
   try {
     const response = await anitakuClient.get(`${videoUrl.href}`, {
       headers: {
         Referer: "https://s3embtaku.pro/",
       },
     });
-    ///Me NOOB ive scraped the eval obfsucated stuff tried to execute it but failed idk why CTRL + C +V ill try sth with pupeteer later
-    // const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    // data$("script").each((i, script) => {
-    //   const scriptContent = data$(script).html();
-
-    //   if (scriptContent && scriptContent.includes("eval")) {
-    //   }
-    // });
 
     // Code adapted from Zenda-Cross (https://github.com/Zenda-Cross/vega-app/blob/main/src/lib/providers/multi/multiGetStream.ts)
     // Thank you to Zenda-Cross for the original implementation.
@@ -73,13 +64,21 @@ export async function StreamWish(videoUrl: URL) {
       const linkParser = new URL(link);
       linkParser.searchParams.set("i", "0.4");
       sources.push({
-        quality: lastLink! ? "backup" : "default",
-        url: linkParser.href,
+        type: lastLink! ? "backup" : "default",
+        file: linkParser.href,
         isM3U8: link.includes(".m3u8"),
       });
       lastLink = link;
     });
-    return sources;
+    const newSources = {
+      source:
+        sources.map((item) => ({
+          file: item.file,
+          kind: item.type,
+          isM3u8: item.isM3U8,
+        })) || null,
+    };
+    return newSources;
   } catch (error) {
     return {
       success: false,

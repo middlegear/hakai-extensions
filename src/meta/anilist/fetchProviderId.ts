@@ -19,7 +19,7 @@ export async function fetchProviderId(id: number) {
     const modifiedString = englishTitle?.split(":")?.at(0)?.trim();
 
     if (!titles) throw new Error(" title not found.");
-    console.log(titles, userPref);
+    // console.log(titles, userPref);
 
     // Providers' search functions
     const searchAnitaku = async (title: string) => {
@@ -139,6 +139,7 @@ export async function fetchProviderId(id: number) {
       const { animeZ } = bestanimeZTitle(titles, matchingAnimeZ);
 
       return {
+        data,
         gogoAnime,
         hiAnime,
         animeZ,

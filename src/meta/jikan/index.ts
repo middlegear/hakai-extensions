@@ -38,9 +38,9 @@ class Jikan {
   /**
    *
    * @param id number MAL animeId.  Required
-   * @returns mapped animeInfo(jikan) and animeIds to providers(anitaku,hiAnime,animeZ )
+   * @returns anime resource mapped to providers
    */
-  async fetchProviderId(id: number) {
+  async fetchMapping(id: number) {
     return getProviderId(id);
   }
 
