@@ -1,9 +1,7 @@
 ////extractors need fixing
 import * as cheerio from "cheerio";
 import { zoroClient } from "../../../config";
-import { USER_AGENT_HEADER } from "../../../config/headers";
 import { zoroBaseUrl } from "../../../utils/constants";
-// import { MegaCloud, StreamSB, StreamTape } from "../source-extractors/hianime";
 import { extractAnimeServerId } from "./methods";
 import { type AnimeServers, Servers, Dubbing, type language } from "./types";
 
@@ -12,36 +10,6 @@ export async function fetchEpisodeSources(
   server: AnimeServers = Servers.HD1,
   language: language = Dubbing.Sub
 ) {
-  ////IF THEID STARTS WITH HTTP S1
-  // if (episodeid.startsWith("https")) {
-  //   const serverfetchUrl = new URL(episodeid);
-  //   switch (server) {
-  //     case Servers.HD1:
-  //     case Servers.HD2: {
-  //       return {
-  //         ...(await new MegaCloud().extract(serverfetchUrl)),
-  //       };
-  //     }
-
-  //     case Servers.StreamSB:
-  //       return {
-  //         headers: {
-  //           Referer: serverfetchUrl.href,
-  //           watchsb: "streamsb",
-  //           "User-Agent": USER_AGENT_HEADER,
-  //         },
-  //         sources: await new StreamSB().extract(serverfetchUrl, true),
-  //       };
-  //     case Servers.StreamTape:
-  //       return {
-  //         headers: {
-  //           Referer: serverfetchUrl.href,
-  //           "User-Agent": USER_AGENT_HEADER,
-  //         },
-  //         sources: await new StreamTape().extract(serverfetchUrl),
-  //       };
-  //   }
-  //S2
   try {
     const newId = episodeid.split("-").pop();
 
@@ -91,8 +59,7 @@ export async function fetchEpisodeSources(
           },
         }
       );
-      console.log(link, mediadataId, server);
-      // return await fetchEpisodeSources(link, server);
+      console.log(link, mediadataId);
     } catch (error) {
       return {
         error:

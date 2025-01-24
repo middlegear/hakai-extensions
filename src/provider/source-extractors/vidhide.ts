@@ -1,6 +1,4 @@
 import { anitakuClient } from "../../config";
-// import * as cheerio from "cheerio";
-/// same script as streamwish works here too?
 export async function VidHide(videoUrl: URL) {
   const sources: { url: string; isM3U8: boolean }[] = [];
   try {

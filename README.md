@@ -16,3 +16,7 @@ for anilist and jikan it should be noted that there is search , fetchInfoBYid, a
 rework on the promise functions
 
 anilist and jikan , tmdb all the providers should have the same response structure
+
+//// define the types where they are used
+lru cache
+have a global file types for streaming sources and formats for video
