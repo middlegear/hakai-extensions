@@ -3,12 +3,13 @@ import * as cheerio from "cheerio";
 import { zoroClient } from "../../../config";
 import { zoroBaseUrl } from "../../../utils/constants";
 import { extractAnimeServerId } from "./methods";
-import { type AnimeServers, Servers, Dubbing, type language } from "./types";
+import { Servers, Dubbing } from "./types";
+import { puppeteer } from "../../source-extractors/megaCloud/puppeteer";
 
 export async function fetchEpisodeSources(
   episodeid: string,
-  server: AnimeServers = Servers.HD1,
-  language: language = Dubbing.Sub
+  server: Servers,
+  language: Dubbing
 ) {
   try {
     const newId = episodeid.split("-").pop();
@@ -37,16 +38,16 @@ export async function fetchEpisodeSources(
           if (!mediadataId) throw new Error("HD2 not found");
           break;
         }
-        case Servers.StreamSB: {
-          mediadataId = extractAnimeServerId(datares$, 5, language);
-          if (!mediadataId) throw new Error("streamsb not found");
-          break;
-        }
-        case Servers.StreamTape: {
-          mediadataId = extractAnimeServerId(datares$, 3, language);
-          if (!mediadataId) throw new Error("streamtape not found");
-          break;
-        }
+        // case Servers.StreamSB: {
+        //   mediadataId = extractAnimeServerId(datares$, 5, language);
+        //   if (!mediadataId) throw new Error("streamsb not found");
+        //   break;
+        // }
+        // case Servers.StreamTape: {
+        //   mediadataId = extractAnimeServerId(datares$, 3, language);
+        //   if (!mediadataId) throw new Error("streamtape not found");
+        //   break;
+        // }
       }
       const {
         data: { link },
@@ -59,7 +60,11 @@ export async function fetchEpisodeSources(
           },
         }
       );
-      console.log(link, mediadataId);
+      // console.log(link, mediadataId); looks like a crude implementation
+      const id = link.split("/").at(-1);
+
+      const sources = puppeteer(id);
+      return sources;
     } catch (error) {
       return {
         error:

@@ -48,16 +48,10 @@ export type ScrappedServers = {
   episodeNumber: number | null;
 };
 
-export type AnimeServers =
-  | "hd-1"
-  | "hd-2"
-  | "megacloud"
-  | "streamsb"
-  | "streamtape";
 export enum Servers {
   HD1 = "hd-1",
-  StreamSB = "streamsb",
-  StreamTape = "streamtape",
+  // StreamSB = "streamsb",
+  // StreamTape = "streamtape",
   HD2 = "hd-2",
 }
 export type language = "sub" | "dub" | "raw";

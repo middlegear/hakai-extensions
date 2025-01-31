@@ -2,7 +2,7 @@ import { fetchAnimeInfo } from "./fetchAnimeInfo";
 import { fetchEpisodeSources } from "./fetchEpisodeSources";
 import { fetchServers } from "./fetchServers";
 import { searchAnime } from "./searchAnime";
-import type { Dubbing, Servers } from "./types";
+import { Dubbing, Servers } from "./types";
 
 class HiAnime {
   /**
@@ -42,8 +42,8 @@ class HiAnime {
    */
   async fetchSources(
     episodeId: string,
-    server?: Servers.HD1,
-    dub?: Dubbing.Sub
+    server: Servers = Servers.HD1,
+    dub: Dubbing = Dubbing.Sub
   ) {
     return fetchEpisodeSources(episodeId, server, dub);
   }

@@ -13,6 +13,7 @@ import {
   searchAnime,
 } from "./meta/anilist/anilist";
 import { HiAnime } from "./provider/anime/hianime/hiAnime";
+import { Dubbing, Servers } from "./provider/anime/hianime/types";
 // getCharacters(16498)
 // const anitaku = new Anitaku();
 
@@ -34,12 +35,25 @@ import { HiAnime } from "./provider/anime/hianime/hiAnime";
 
 // // 56784 52635 59989 41467  52635  269  40028  48583  51535
 
-getProviderId(41467)
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+// getProviderId(41467)
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
 
-// const hianime = new HiAnime();
+const hianime = new HiAnime();
 // hianime
 //   .fetchInfo("bleach-thousand-year-blood-war-the-conflict-19322")
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
+// hianime
+//   .fetchInfo("boruto-naruto-next-generations-8143")
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
+hianime
+  .fetchSources(
+    "boruto-naruto-next-generations-8143-episode-47159",
+    Servers.HD1,
+    Dubbing.Dub
+  )
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
+///boruto-naruto-next-generations-8143
