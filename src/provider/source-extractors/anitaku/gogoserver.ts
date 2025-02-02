@@ -1,23 +1,22 @@
-import CryptoJS from "crypto-js";
-import * as cheerio from "cheerio";
-
-import { anitakuClient } from "../../config";
+import CryptoJS from 'crypto-js';
+import * as cheerio from 'cheerio';
+import { anitakuClient } from '../../../config/clients';
 
 export async function GogoServer(videoUrl: URL) {
   const keys = {
-    key: CryptoJS.enc.Utf8.parse("37911490979715163134003223491201"),
-    iv: CryptoJS.enc.Utf8.parse("3134003223491201"),
-    secondKey: CryptoJS.enc.Utf8.parse("54674138327930866480207815084989"),
+    key: CryptoJS.enc.Utf8.parse('37911490979715163134003223491201'),
+    iv: CryptoJS.enc.Utf8.parse('3134003223491201'),
+    secondKey: CryptoJS.enc.Utf8.parse('54674138327930866480207815084989'),
   } as const;
 
   try {
     const res = await anitakuClient.get(`${videoUrl.href}`);
     const data$: cheerio.CheerioAPI = cheerio.load(res.data);
     const scriptVal = data$('script[data-name="episode"]').attr(
-      "data-value"
+      'data-value'
     ) as string;
 
-    const id = videoUrl.searchParams.get("id") ?? "";
+    const id = videoUrl.searchParams.get('id') ?? '';
 
     const encryptedKey = CryptoJS.AES.encrypt(id, keys.key, {
       iv: keys.iv,
@@ -31,7 +30,7 @@ export async function GogoServer(videoUrl: URL) {
         `${videoUrl.protocol}//${videoUrl.hostname}/encrypt-ajax.php?id=${encryptedKey}&alias=${id}&${token}`,
         {
           headers: {
-            "X-Requested-With": "XMLHttpRequest",
+            'X-Requested-With': 'XMLHttpRequest',
             Referer: videoUrl.href,
           },
         }
@@ -71,7 +70,7 @@ export async function GogoServer(videoUrl: URL) {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : " unkown stuff",
+        error: error instanceof Error ? error.message : ' unkown stuff',
       };
     }
   } catch (error) {
@@ -80,7 +79,7 @@ export async function GogoServer(videoUrl: URL) {
       error:
         error instanceof Error
           ? error.message
-          : "Check for valid videoUrl href",
+          : 'Check for valid videoUrl href',
     };
   }
 }

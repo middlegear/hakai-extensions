@@ -1,8 +1,8 @@
-import { getInfoById } from "./jikan";
-import { Providers } from "./types";
-import { AnimeZ } from "../../provider/anime/animeZ/animeZ";
-import { Anitaku } from "../../provider/anime/anitaku/anitaku";
-import { HiAnime } from "../../provider/anime/hianime/hiAnime";
+import { AnimeZ } from '../../provider/anime/animeZ';
+import { Anitaku } from '../../provider/anime/anitaku';
+import { HiAnime } from '../../provider/anime/hianime';
+import { getInfoById } from './jikan';
+import { Providers } from './types';
 
 export async function getAnimeTitle(
   id: number,

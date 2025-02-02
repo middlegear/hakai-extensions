@@ -1,16 +1,24 @@
 {
-  "name": "anime-extension",
-  "module": "index.ts",
-  "type": "module",
+  "name": "webscrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "start": "bun run src/index.ts"
+    "build": "tsup src/index.ts --format cjs ,esm --dts",
+    "lint": "tsc",
+    "start": "node dist/index.js",
+    "dev":  "pnpm lint && pnpm build && pnpm start"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.6.3"
+    "@types/node": "^22.13.0",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",

@@ -1,24 +1,24 @@
-import { getInfoById } from "./jikan";
-import { Anitaku } from "../../provider/anime/anitaku/anitaku";
-import { AnimeZ } from "../../provider/anime/animeZ/animeZ";
-import { HiAnime } from "../../provider/anime/hianime/hiAnime";
+import { getInfoById } from './jikan';
+import { Anitaku } from '../../provider/anime/anitaku';
+import { AnimeZ } from '../../provider/anime/animeZ';
+import { HiAnime } from '../../provider/anime/hianime';
 
 import {
   animeZtitle,
   anitakuTitle,
   hianimeTitle,
   type JikanTitle,
-} from "./stringsimilarity";
+} from './stringsimilarity';
 
 export async function getProviderId(id: number) {
   try {
     // Fetch anime info from Jikan API
     const data = await getInfoById(id);
     const englishTitle = data.animeInfo?.title?.english as string;
-    const modifiedString = englishTitle?.split(":")?.at(0)?.trim();
+    const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
     const romanjiTitle = data.animeInfo?.title.romaji as string;
     const titles = data.animeInfo?.title;
-    if (!titles) throw new Error("English title not found.");
+    if (!titles) throw new Error('English title not found.');
 
     // Providers' search functions
     const searchAnitaku = async (title: string) => {
@@ -32,7 +32,7 @@ export async function getProviderId(id: number) {
           })) || []
         );
       } catch (error) {
-        console.error("Error fetching from Anitaku:", error);
+        console.error('Error fetching from Anitaku:', error);
         return [];
       }
     };
@@ -48,7 +48,7 @@ export async function getProviderId(id: number) {
           })) || []
         );
       } catch (error) {
-        console.error("Error fetching from AnimeZ:", error);
+        console.error('Error fetching from AnimeZ:', error);
         return [];
       }
     };
@@ -61,11 +61,11 @@ export async function getProviderId(id: number) {
           result.anime?.map((item: any) => ({
             animeId: item.id,
             name: item.title,
-            alt: item.alternatives || "stubborn provider",
+            alt: item.alternatives || 'stubborn provider',
           })) || []
         );
       } catch (error) {
-        console.error("Error fetching from AnimeZ Suggestions:", error);
+        console.error('Error fetching from AnimeZ Suggestions:', error);
         return [];
       }
     };
@@ -82,7 +82,7 @@ export async function getProviderId(id: number) {
           })) || []
         );
       } catch (error) {
-        console.error("Error fetching from HiAnime:", error);
+        console.error('Error fetching from HiAnime:', error);
         return [];
       }
     };
@@ -147,7 +147,7 @@ export async function getProviderId(id: number) {
 
     return await fetchProviderResults(modifiedString as string, romanjiTitle);
   } catch (error) {
-    console.error("Error in getAnimeTitle:", error);
+    console.error('Error in getAnimeTitle:', error);
     throw error;
   }
 }

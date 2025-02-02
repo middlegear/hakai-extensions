@@ -1,13 +1,14 @@
-import { anitakuClient } from "../../config";
+import { anitakuClient } from '../../../config/clients';
+
 export async function MP4Upload(videoUrl: URL) {
   try {
     const { data } = await anitakuClient.get(`${videoUrl.href}`, {
       headers: {
-        Referer: "https://s3embtaku.pro/",
+        Referer: 'https://s3embtaku.pro/',
       },
     });
 
-    if (data.includes("player.src")) {
+    if (data.includes('player.src')) {
       const match = data.match(
         /type:\s*"(.*?)",\s*src:\s*"(https?:\/\/[^"]+)"/
       ); // Match type and src
@@ -17,13 +18,13 @@ export async function MP4Upload(videoUrl: URL) {
     } else {
       return {
         success: false,
-        error: Error instanceof Error ? Error.message : "No match found",
+        error: Error instanceof Error ? Error.message : 'No match found',
       };
     }
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Check URL href",
+      error: error instanceof Error ? error.message : 'Check URL href',
     };
   }
 }

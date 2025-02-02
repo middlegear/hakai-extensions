@@ -1,13 +1,14 @@
-import { getProviderId } from "../jikan/providers";
+import { getProviderId } from '../jikan/providers';
 import {
   fetchAnimeById,
-  fetchTopAiring,
-  searchAnime,
-  fetchPopular,
-  fetchTopRated,
-  fetchSeason,
   fetchAnimeCharacters,
-} from "./anilist";
+  fetchPopular,
+  fetchSeason,
+  fetchTopAiring,
+  fetchTopRated,
+  searchAnime,
+} from './anilist';
+
 import {
   Charactersort,
   Format,
@@ -15,7 +16,7 @@ import {
   Seasons,
   Sort,
   Status,
-} from "./types";
+} from './types';
 
 class Anilist {
   /**

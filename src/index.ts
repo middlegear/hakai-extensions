@@ -1,8 +1,8 @@
+////main file where everything gets exported
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-import { getProviderId } from "./meta/jikan/providers";
-import { AnimeZ } from "./provider/anime/animeZ/animeZ";
-import { Anitaku } from "./provider/anime/anitaku/anitaku";
+import { getProviderId } from './meta/jikan/providers';
+
 import {
   fetchAnimeById,
   fetchAnimeCharacters,
@@ -11,9 +11,10 @@ import {
   fetchTopAiring,
   fetchTopRated,
   searchAnime,
-} from "./meta/anilist/anilist";
-import { HiAnime } from "./provider/anime/hianime/hiAnime";
-import { Dubbing, Servers } from "./provider/anime/hianime/types";
+} from './meta/anilist/anilist';
+
+import { Dubbing, Servers } from './provider/anime/hianime/types';
+import { HiAnime } from './provider/anime/hianime';
 // getCharacters(16498)
 // const anitaku = new Anitaku();
 
@@ -50,10 +51,10 @@ const hianime = new HiAnime();
 //   .catch((err) => console.error(err));
 hianime
   .fetchSources(
-    "boruto-naruto-next-generations-8143-episode-47159",
+    'boruto-naruto-next-generations-8143-episode-47159',
     Servers.HD1,
     Dubbing.Dub
   )
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+  .then((data: any) => console.log(data))
+  .catch((err: any) => console.error(err));
 ///boruto-naruto-next-generations-8143

@@ -1,0 +1,11 @@
+# Ignore all .json files
+**/*.json
+
+# Ignore build and node_modules directories
+node_modules/
+dist/
+build/
+
+# Ignore specific files
+package-lock.json
+yarn.lock

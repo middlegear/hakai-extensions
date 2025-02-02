@@ -1,5 +1,5 @@
-import { Anilist } from "./anilist/anilist";
-import { Jikan } from "./jikan";
+import { Anilist } from './anilist';
+import { Jikan } from './jikan';
 class Meta {
   static Anilist = Anilist;
   static Jikan = Jikan;
