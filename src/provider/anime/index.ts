@@ -7,6 +7,11 @@ import {
   anitaku_USER_AGENT_HEADER,
   animeZ_USER_AGENT_HEADER,
 } from '../../config/headers';
+import { GogoServer } from '../../source-extractors/anitaku/gogoserver';
+import { MP4Upload } from '../../source-extractors/anitaku/mp4upload';
+import { StreamWish } from '../../source-extractors/anitaku/streamwish';
+import { VidHide } from '../../source-extractors/anitaku/vidhide';
+import { puppeteer } from '../../source-extractors/hianime/puppeteer';
 import {
   zoroBaseUrl,
   zoroSearch,
@@ -19,11 +24,6 @@ import {
 } from '../../utils/constants';
 
 ///
-import { GogoServer } from '../source-extractors/anitaku/gogoserver';
-import { MP4Upload } from '../source-extractors/anitaku/mp4upload';
-import { StreamWish } from '../source-extractors/anitaku/streamwish';
-import { VidHide } from '../source-extractors/anitaku/vidhide';
-import { puppeteer } from '../source-extractors/hianime/puppeteer';
 
 export {
   USER_AGENT_HEADER,

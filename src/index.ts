@@ -1,20 +1,19 @@
 ////main file where everything gets exported
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-import { getProviderId } from './meta/jikan/providers';
-
-import {
-  fetchAnimeById,
-  fetchAnimeCharacters,
-  fetchPopular,
-  fetchSeason,
-  fetchTopAiring,
-  fetchTopRated,
-  searchAnime,
-} from './meta/anilist/anilist';
+// import {
+//   fetchAnimeById,
+//   fetchAnimeCharacters,
+//   fetchPopular,
+//   fetchSeason,
+//   fetchTopAiring,
+//   fetchTopRated,
+//   searchAnime,
+// } from './meta/anilist/anilist';
 
 import { Dubbing, Servers } from './provider/anime/hianime/types';
 import { HiAnime } from './provider/anime/hianime';
+import { Anitaku } from './provider/anime/anitaku';
 // getCharacters(16498)
 // const anitaku = new Anitaku();
 
