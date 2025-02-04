@@ -6,24 +6,24 @@ import {
   anitakuExtractEpisodes,
   anitakuExtractServers,
   extractAnitakuSearchResults,
-} from './methods';
+} from './methods.js';
 
-import { type anitakuAnimeServers, anitakuServers } from './types';
+import { type anitakuAnimeServers, anitakuServers } from './types.js';
 
-import {
-  ACCEPT_ENCODING,
-  anitaku_USER_AGENT_HEADER,
-  anitakuAjaxLoadEpisodes,
-  anitakuBaseUrl,
-  anitakuClient,
-  anitakuInfoUrl,
-  anitakuSearchUrl,
-  GogoServer,
-  MP4Upload,
-  StreamWish,
-  VidHide,
-} from '..';
 import axios from 'axios';
+import {
+  anitakuClient,
+  anitakuSearchUrl,
+  anitakuInfoUrl,
+  anitakuAjaxLoadEpisodes,
+  anitaku_USER_AGENT_HEADER,
+  ACCEPT_ENCODING,
+  anitakuBaseUrl,
+  GogoServer,
+  StreamWish,
+  MP4Upload,
+  VidHide,
+} from '../../index.js';
 
 export async function searchAnime(query: string, page: number = 1) {
   if (!query)

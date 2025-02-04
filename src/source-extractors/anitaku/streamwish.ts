@@ -1,4 +1,4 @@
-import { anitakuClient } from '../../provider/anime';
+import { anitakuClient } from '../../provider/index.js';
 
 export async function StreamWish(videoUrl: URL) {
   const sources: { type: string; file: string; isM3U8: boolean }[] = [];

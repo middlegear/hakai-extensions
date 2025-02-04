@@ -1,13 +1,14 @@
 import * as cheerio from 'cheerio';
-import { Servers, Dubbing } from './types';
-import { zoroBaseUrl, zoroClient, zoroSearch } from '..';
+import { Servers, Dubbing } from './types.js';
+
 import {
   extractSearchResults,
   extractAnimeInfo,
   extractEpisodesList,
   extractServerData,
   extractAnimeServerId,
-} from './methods';
+} from './methods.js';
+import { zoroClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
 
 export async function searchAnime(query: string, page: number = 1) {
   if (!query)
@@ -174,9 +175,10 @@ export async function fetchEpisodeSources(
         }
       );
       // console.log(link, mediadataId); looks like a crude implementation
-      const id = link.split('/').at(-1);
-
-      const sources = puppeteer(id);
+      // const id = link.split('/').at(-1);
+      // console.log(link);
+      // const sources = puppeteer(id);
+      const sources = await new MegaCloud().extract(link);
       return sources;
     } catch (error) {
       return {
@@ -189,7 +191,4 @@ export async function fetchEpisodeSources(
   } catch (error) {
     error instanceof Error ? error.message : 'No data found';
   }
-}
-function puppeteer(id: any) {
-  throw new Error('Function not implemented.');
 }

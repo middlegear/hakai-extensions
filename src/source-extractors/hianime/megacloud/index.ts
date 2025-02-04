@@ -1,7 +1,10 @@
-import { getSources } from './megacloud.getsrcs';
+import { getSources } from './megacloud.getsrcs.js';
 // copied from consumet.ts thanks
 class MegaCloud {
-  async extract(embedIframeURL: URL, referer: string = 'https://hianime.to') {
+  async extract(
+    embedIframeURL: string,
+    referer: string = 'https://hianime.to'
+  ) {
     try {
       const extractedData = {
         subtitles: [],
@@ -16,7 +19,7 @@ class MegaCloud {
         sources: [],
       };
 
-      const resp = await getSources(embedIframeURL.href, referer);
+      const resp = await getSources(embedIframeURL, referer);
 
       if (!resp) return extractedData;
 

@@ -1,25 +1,27 @@
-import axios from "axios";
+import axios from 'axios';
+
 import {
-  searchQuery,
-  fetchByIdQuery,
   airingQuery,
-  popularAnimeQuery,
-  seasonQuery,
   characterQuery,
-} from "./queries";
-import { USER_AGENT_HEADER } from "../../config/headers";
+  fetchByIdQuery,
+  popularAnimeQuery,
+  searchQuery,
+  seasonQuery,
+} from './queries.js';
+
 import {
-  Charactersort,
-  Format,
   MediaType,
-  Seasons,
-  Sort,
+  Format,
   Status,
-} from "./types";
+  Sort,
+  Seasons,
+  Charactersort,
+} from './types.js';
+import { USER_AGENT_HEADER } from '../../index.js';
 
 const baseURL = `https://graphql.anilist.co`;
-const Referer = "https://anilist.co";
-const Origin = "https://anilist.co";
+const Referer = 'https://anilist.co';
+const Origin = 'https://anilist.co';
 
 export async function searchAnime(
   search: string,
@@ -31,7 +33,7 @@ export async function searchAnime(
   if (!search) {
     return {
       success: false,
-      error: "Missing required fields : search",
+      error: 'Missing required fields : search',
     };
   }
   try {
@@ -44,11 +46,11 @@ export async function searchAnime(
       },
       {
         headers: {
-          "User-Agent": USER_AGENT_HEADER,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Referer: "https://anilist.co",
-          Origin: "https://anilist.co",
+          'User-Agent': USER_AGENT_HEADER,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Referer: 'https://anilist.co',
+          Origin: 'https://anilist.co',
         },
       }
     );
@@ -59,7 +61,7 @@ export async function searchAnime(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -67,7 +69,7 @@ export async function fetchAnimeById(id: number) {
   if (!id) {
     return {
       success: false,
-      error: "Missing required parameter : id!",
+      error: 'Missing required parameter : id!',
     };
   }
   const variables = { id };
@@ -80,8 +82,8 @@ export async function fetchAnimeById(id: number) {
       },
       {
         headers: {
-          "User-Agent": USER_AGENT_HEADER,
-          Accept: "application/json",
+          'User-Agent': USER_AGENT_HEADER,
+          Accept: 'application/json',
           Referer: Referer,
           Origin: Origin,
         },
@@ -95,7 +97,7 @@ export async function fetchAnimeById(id: number) {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -119,9 +121,9 @@ export async function fetchTopAiring(
       },
       {
         headers: {
-          "User-Agent": USER_AGENT_HEADER,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+          'User-Agent': USER_AGENT_HEADER,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
           Origin: Origin,
           Referer: Referer,
         },
@@ -134,7 +136,7 @@ export async function fetchTopAiring(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -157,9 +159,9 @@ export async function fetchPopular(
       },
       {
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": USER_AGENT_HEADER,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
           Origin: Origin,
           Referer: Referer,
         },
@@ -172,7 +174,7 @@ export async function fetchPopular(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown err",
+      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -195,9 +197,9 @@ export async function fetchTopRated(
       },
       {
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": USER_AGENT_HEADER,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
           Origin: Origin,
           Referer: Referer,
         },
@@ -210,7 +212,7 @@ export async function fetchTopRated(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown err",
+      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -228,7 +230,7 @@ export async function fetchSeason(
   if (!season || !seasonYear) {
     return {
       success: false,
-      error: "Missing a required param : season | seasonYear",
+      error: 'Missing a required param : season | seasonYear',
     };
   }
   try {
@@ -250,9 +252,9 @@ export async function fetchSeason(
       },
       {
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": USER_AGENT_HEADER,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
           Origin: Origin,
           Referer: Referer,
         },
@@ -265,7 +267,7 @@ export async function fetchSeason(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown err",
+      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -278,7 +280,7 @@ export async function fetchAnimeCharacters(
   if (!mediaId) {
     return {
       success: false,
-      error: "Missing required parameter : mediaid!",
+      error: 'Missing required parameter : mediaid!',
     };
   }
 
@@ -292,9 +294,9 @@ export async function fetchAnimeCharacters(
       },
       {
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "User-Agent": USER_AGENT_HEADER,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
           Origin: Origin,
           Referer: Referer,
         },
@@ -307,7 +309,7 @@ export async function fetchAnimeCharacters(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown err",
+      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }

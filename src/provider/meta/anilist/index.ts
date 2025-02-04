@@ -1,4 +1,3 @@
-import { getProviderId } from '../jikan/providers';
 import {
   fetchAnimeById,
   fetchAnimeCharacters,
@@ -7,7 +6,8 @@ import {
   fetchTopAiring,
   fetchTopRated,
   searchAnime,
-} from './anilist';
+} from './anilist.js';
+import { fetchProviderId } from './fetchProviderId.js';
 
 import {
   Charactersort,
@@ -16,7 +16,7 @@ import {
   Seasons,
   Sort,
   Status,
-} from './types';
+} from './types.js';
 
 class Anilist {
   /**
@@ -50,7 +50,7 @@ class Anilist {
    * @returns anime resource mapped to providers
    */
   async fetchMapping(id: number) {
-    return getProviderId(id);
+    return fetchProviderId(id);
   }
   /**
  * 

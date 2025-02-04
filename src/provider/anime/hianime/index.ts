@@ -3,8 +3,8 @@ import {
   fetchEpisodeSources,
   fetchServers,
   searchAnime,
-} from './hiAnime';
-import { Dubbing, Servers } from './types';
+} from './hiAnime.js';
+import { Dubbing, Servers } from './types.js';
 
 class HiAnime {
   /**

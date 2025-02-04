@@ -1,13 +1,10 @@
-import { AnimeZ } from '../../provider/anime/animeZ';
-import { Anitaku } from '../../provider/anime/anitaku';
-import { HiAnime } from '../../provider/anime/hianime';
-import { fetchAnimeById } from './anilist';
-
+import { AnimeZ, Anitaku, HiAnime } from '../../index.js';
+import { fetchAnimeById } from './anilist.js';
 import {
-  bestanimeZTitle,
   bestAnitakuTitle,
   bestHianimeTitle,
-} from './stringSimilarity';
+  bestanimeZTitle,
+} from './stringSimilarity.js';
 
 export async function fetchProviderId(id: number) {
   try {

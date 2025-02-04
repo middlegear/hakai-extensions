@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "type": "module",
+  
   "scripts": {
-    "build": "tsup src/index.ts --format cjs ,esm --dts",
+    "build": "tsup",
     "lint": "tsc",
     "start": "node dist/index.js",
     "dev":  "pnpm lint && pnpm build && pnpm start"

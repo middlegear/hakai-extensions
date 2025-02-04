@@ -1,14 +1,12 @@
-import { getInfoById } from './jikan';
-import { Anitaku } from '../../provider/anime/anitaku';
-import { AnimeZ } from '../../provider/anime/animeZ';
-import { HiAnime } from '../../provider/anime/hianime';
+import { AnimeZ, Anitaku, HiAnime } from '../../index.js';
+import { getInfoById } from './jikan.js';
 
 import {
   animeZtitle,
   anitakuTitle,
   hianimeTitle,
   type JikanTitle,
-} from './stringsimilarity';
+} from './stringsimilarity.js';
 
 export async function getProviderId(id: number) {
   try {

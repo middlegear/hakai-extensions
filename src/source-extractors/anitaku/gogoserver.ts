@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 import * as cheerio from 'cheerio';
-import { anitakuClient } from '../../provider/anime';
+import { anitakuClient } from '../../config/clients.js';
 
 export async function GogoServer(videoUrl: URL) {
   const keys = {

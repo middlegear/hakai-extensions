@@ -1,10 +1,11 @@
 // solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
 // copied from consumet.ts thanks
-import { decoded_png } from './megacloud.decodedpng';
+// @ts-nocheck
+import { decoded_png } from './megacloud.decodedpng.js';
 import util from 'util';
 import CryptoJS from 'crypto-js';
 import { webcrypto } from 'crypto';
-import { USER_AGENT_HEADER } from '../../../config/headers';
+import { USER_AGENT_HEADER } from '../../../config/headers.js';
 
 const user_agent = USER_AGENT_HEADER;
 

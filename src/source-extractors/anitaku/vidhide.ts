@@ -1,4 +1,4 @@
-import { anitakuClient } from '../../provider/anime';
+import { anitakuClient } from '../../provider/index.js';
 
 export async function VidHide(videoUrl: URL) {
   const sources: { url: string; isM3U8: boolean }[] = [];

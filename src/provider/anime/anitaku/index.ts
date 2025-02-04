@@ -3,9 +3,9 @@ import {
   fetchEpisodeSources,
   fetchServers,
   searchAnime,
-} from './anitaku';
+} from './anitaku.js';
 
-import { anitakuServers } from './types';
+import { anitakuServers } from './types.js';
 
 class Anitaku {
   /**

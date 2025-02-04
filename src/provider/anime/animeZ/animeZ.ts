@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
-import { extractAnimeZResults, extractAnimeZInfo } from './methods';
-import { animeZBaseUrl, animeZClient } from '..';
+import { extractAnimeZResults, extractAnimeZInfo } from './methods.js';
+import { animeZBaseUrl, animeZClient } from '../../index.js';
 
 export async function searchAnime(query: string, page: number = 1) {
   if (!query)

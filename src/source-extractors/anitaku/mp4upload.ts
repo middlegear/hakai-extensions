@@ -1,4 +1,4 @@
-import { anitakuClient } from '../../provider/anime';
+import { anitakuClient } from '../../provider/index.js';
 
 export async function MP4Upload(videoUrl: URL) {
   try {

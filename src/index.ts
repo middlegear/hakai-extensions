@@ -1,19 +1,9 @@
 ////main file where everything gets exported
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-// import {
-//   fetchAnimeById,
-//   fetchAnimeCharacters,
-//   fetchPopular,
-//   fetchSeason,
-//   fetchTopAiring,
-//   fetchTopRated,
-//   searchAnime,
-// } from './meta/anilist/anilist';
+import { Servers, Dubbing } from './provider/anime/hianime/types.js';
+import { HiAnime } from './provider/index.js';
 
-import { Dubbing, Servers } from './provider/anime/hianime/types';
-import { HiAnime } from './provider/anime/hianime';
-import { Anitaku } from './provider/anime/anitaku';
 // getCharacters(16498)
 // const anitaku = new Anitaku();
 
@@ -22,15 +12,13 @@ import { Anitaku } from './provider/anime/anitaku';
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
 
-// import { Anitaku } from "./provider/anime/anitaku/anitaku";
-// import { HiAnime } from "./provider/anime/hianime/hiAnime";
+//
 // const anitaku = new AnimeZ();
 // import { fetchProviderId } from "./meta/anilist/fetchProviderId";
 // fetchProviderId(163146)
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
 
-// import Meta from "./meta";
 // const jikan = new Meta.Jikan();
 
 // // 56784 52635 59989 41467  52635  269  40028  48583  51535

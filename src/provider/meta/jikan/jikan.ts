@@ -1,9 +1,9 @@
-import axios from "axios";
-import { Filters, Season, AnimeType, AnimeStatusFilter } from "./types";
-import type { AnimeInfo } from "./types";
-import type { seasonJikan } from "./types";
+import axios from 'axios';
+import { Filters, Season, AnimeType, AnimeStatusFilter } from './types.js';
+import type { AnimeInfo } from './types.js';
+import type { seasonJikan } from './types.js';
 
-const jikanBaseUrl = "https://api.jikan.moe/v4";
+const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(
   query: string,
   page: number,
@@ -13,7 +13,7 @@ export async function searchAnime(
   if (!query)
     return {
       success: false,
-      error: "Missing required parameters: query",
+      error: 'Missing required parameters: query',
     };
   try {
     const { data } = await axios.get(
@@ -61,7 +61,7 @@ export async function searchAnime(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -70,7 +70,7 @@ export async function getInfoById(Id: number) {
   if (!Id)
     return {
       success: false,
-      error: "Missing required parameters: MAL_id",
+      error: 'Missing required parameters: MAL_id',
     };
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${Id}`);
@@ -98,7 +98,7 @@ export async function getInfoById(Id: number) {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -107,7 +107,7 @@ export async function getAnimeCharacters(id: number) {
   if (!id)
     return {
       success: false,
-      error: "Missing required parameters:MAL_id",
+      error: 'Missing required parameters:MAL_id',
     };
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${id}/characters`);
@@ -115,7 +115,7 @@ export async function getAnimeCharacters(id: number) {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -128,7 +128,7 @@ export async function getCurrentSeason(
   if (!filter) {
     return {
       success: false,
-      error: "Missing required parameters: filter",
+      error: 'Missing required parameters: filter',
     };
   }
   try {
@@ -177,7 +177,7 @@ export async function getCurrentSeason(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -190,7 +190,7 @@ export async function getNextSeason(
   if (!filter) {
     return {
       success: false,
-      error: "Missing required parameters: filter",
+      error: 'Missing required parameters: filter',
     };
   }
   try {
@@ -240,7 +240,7 @@ export async function getNextSeason(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -255,7 +255,7 @@ export async function getSeason(
   if (!year || !season || !filter) {
     return {
       success: false,
-      error: "Missing required parameters: year, season, or filter",
+      error: 'Missing required parameters: year, season, or filter',
     };
   }
   try {
@@ -305,7 +305,7 @@ export async function getSeason(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -319,7 +319,7 @@ export async function getTopAnime(
   if (!filter || !type) {
     return {
       success: false,
-      error: "Missing required parameters: year, season, or filter",
+      error: 'Missing required parameters: year, season, or filter',
     };
   }
   try {
@@ -369,7 +369,7 @@ export async function getTopAnime(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown Err",
+      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }

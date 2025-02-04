@@ -6,9 +6,9 @@ import {
   getSeason,
   getTopAnime,
   searchAnime,
-} from "./jikan";
-import { type AnimeStatusFilter, Filters, Season, AnimeType } from "./types";
-import { getProviderId } from "./providers";
+} from './jikan.js';
+import { type AnimeStatusFilter, Filters, Season, AnimeType } from './types.js';
+import { getProviderId } from './providers.js';
 class Jikan {
   /**
    *

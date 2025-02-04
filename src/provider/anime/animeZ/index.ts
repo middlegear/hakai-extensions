@@ -3,7 +3,7 @@ import {
   fetchSources,
   searchAnime,
   searchSuggestions,
-} from './animeZ';
+} from './animeZ.js';
 
 class AnimeZ {
   /**
