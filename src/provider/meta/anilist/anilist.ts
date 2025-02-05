@@ -9,6 +9,8 @@ import {
   seasonQuery,
 } from './queries.js';
 
+import { USER_AGENT_HEADER } from '../../index.js';
+
 import {
   MediaType,
   Format,
@@ -16,8 +18,7 @@ import {
   Sort,
   Seasons,
   Charactersort,
-} from './types.js';
-import { USER_AGENT_HEADER } from '../../index.js';
+} from '../../../types/anilist.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -54,9 +55,73 @@ export async function searchAnime(
         },
       }
     );
+
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image:
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+
+      bannerImage:
+        item.bannerImage ??
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      duration: item.duration,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate: item.startDate
+        ? new Date(
+            item.startDate.year,
+            item.startDate.month - 1,
+            item.startDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.endDate
+        ? new Date(
+            item.endDate.year,
+            item.endDate.month - 1,
+            item.endDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
+
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {
@@ -89,10 +154,59 @@ export async function fetchAnimeById(id: number) {
         },
       }
     );
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = {
+      malId: response.data.data.Page.media.idMal,
+      anilistId: response.data.data.Page.media.id,
+      image:
+        response.data.data.Page.media.coverImage.extraLarge ??
+        response.data.data.Page.media.coverImage.large ??
+        response.data.data.Page.media.coverImage.medium,
+
+      bannerImage:
+        response.data.data.Page.media.bannerImage ??
+        response.data.data.Page.media.coverImage.extraLarge ??
+        response.data.data.Page.media.coverImage.large ??
+        response.data.data.Page.media.coverImage.medium,
+      title: {
+        romaji:
+          response.data.data.Page.media.title.romaji ??
+          response.data.data.Page.media.title.userPreferred,
+        english: response.data.data.Page.media.title.english,
+        native: response.data.data.Page.media.title.native,
+      },
+      trailer: response.data.data.Page.media.trailer,
+      type: response.data.data.Page.media.type,
+      status: response.data.data.Page.media.status,
+      duration: response.data.data.Page.media.duration,
+      score:
+        response.data.data.Page.media.meanScore ??
+        response.data.data.Page.media.averageScore,
+      genres: response.data.data.Page.media.genres,
+      episodes: response.data.data.Page.media.episodes,
+      synopsis: response.data.data.Page.media.description,
+      season: response.data.data.Page.media.season,
+      studio:
+        response.data.data.Page.media.studios.nodes.length > 0
+          ? response.data.data.Page.media.studios.nodes[0].name
+          : null,
+      producers: response.data.data.Page.media.studios.nodes.map(
+        (item2: any) => item2.name
+      ),
+    };
 
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {
@@ -129,9 +243,71 @@ export async function fetchTopAiring(
         },
       }
     );
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image:
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+
+      bannerImage:
+        item.bannerImage ??
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      duration: item.duration,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate: item.startDate
+        ? new Date(
+            item.startDate.year,
+            item.startDate.month - 1,
+            item.startDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.endDate
+        ? new Date(
+            item.endDate.year,
+            item.endDate.month - 1,
+            item.endDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {
@@ -167,9 +343,71 @@ export async function fetchPopular(
         },
       }
     );
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image:
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+
+      bannerImage:
+        item.bannerImage ??
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      duration: item.duration,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate: item.startDate
+        ? new Date(
+            item.startDate.year,
+            item.startDate.month - 1,
+            item.startDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.endDate
+        ? new Date(
+            item.endDate.year,
+            item.endDate.month - 1,
+            item.endDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {
@@ -205,9 +443,71 @@ export async function fetchTopRated(
         },
       }
     );
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image:
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+
+      bannerImage:
+        item.bannerImage ??
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      duration: item.duration,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate: item.startDate
+        ? new Date(
+            item.startDate.year,
+            item.startDate.month - 1,
+            item.startDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.endDate
+        ? new Date(
+            item.endDate.year,
+            item.endDate.month - 1,
+            item.endDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {
@@ -260,9 +560,71 @@ export async function fetchSeason(
         },
       }
     );
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+
+    // const res = response.data.data.Page.media;
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image:
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+
+      bannerImage:
+        item.bannerImage ??
+        item.coverImage.extraLarge ??
+        item.coverImage.large ??
+        item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      duration: item.duration,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate: item.startDate
+        ? new Date(
+            item.startDate.year,
+            item.startDate.month - 1,
+            item.startDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.endDate
+        ? new Date(
+            item.endDate.year,
+            item.endDate.month - 1,
+            item.endDate.day
+          ).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
     return {
       success: true,
-      data: response.data.data,
+      pagination: pagination,
+      data: res,
     };
   } catch (error) {
     return {

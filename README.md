@@ -12,6 +12,23 @@ rework on the promise functions
 
 anilist and jikan , tmdb all the providers should have the same response structure
 
-//// define the types where they are used
 lru cache
+add have atypes folder for all ts files
 have a global file types for streaming sources and formats for video
+
+/FIX THE AIRING NS BROADCAST STUFF ON ANILIST AND JIKAN FOR NOW ITS SKIPPED
+
+find kitsu api and use for episode description and banner
+
+top airing for anilist has next episode airing
+while the rest of the queries have start and end dates
+
+make sure to do this in every anilist and jikan query
+return {
+success: true,
+pagination : pagination,
+data :res
+
+}
+
+in the end add some rankings

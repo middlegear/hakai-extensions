@@ -1,4 +1,12 @@
 import {
+  MediaType,
+  Format,
+  Status,
+  Sort,
+  Seasons,
+  Charactersort,
+} from '../../../types/anilist.js';
+import {
   fetchAnimeById,
   fetchAnimeCharacters,
   fetchPopular,
@@ -8,15 +16,6 @@ import {
   searchAnime,
 } from './anilist.js';
 import { fetchProviderId } from './fetchProviderId.js';
-
-import {
-  Charactersort,
-  Format,
-  MediaType,
-  Seasons,
-  Sort,
-  Status,
-} from './types.js';
 
 class Anilist {
   /**

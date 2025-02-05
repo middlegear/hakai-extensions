@@ -1,4 +1,10 @@
 import {
+  AnimeStatusFilter,
+  AnimeType,
+  Filters,
+  Season,
+} from '../../../types/jikan.js';
+import {
   getAnimeCharacters,
   getCurrentSeason,
   getInfoById,
@@ -7,7 +13,7 @@ import {
   getTopAnime,
   searchAnime,
 } from './jikan.js';
-import { type AnimeStatusFilter, Filters, Season, AnimeType } from './types.js';
+
 import { getProviderId } from './providers.js';
 class Jikan {
   /**
@@ -20,7 +26,7 @@ class Jikan {
    */
   async search(
     query: string,
-    page: number,
+    page: number = 1,
     limit: number = 25,
     type: AnimeType = AnimeType.TV
   ) {
@@ -76,14 +82,18 @@ class Jikan {
    * @param year number. Required
    * @param season Enum: "winter", "fall","spring","summer" available season types. Required!
    * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types. Default ='tv' (optional)
+   * @param page number default = 1 (optional)
+   * @param limit number default = 25 (optional)
    * @returns seasonal anime
    */
   async fetchSeason(
     year: number,
     season: Season,
-    filter: Filters = Filters.TV
+    filter: Filters = Filters.TV,
+    page: number = 1,
+    limit: number = 25
   ) {
-    return getSeason(year, season, filter);
+    return getSeason(year, season, filter, page, limit);
   }
   /**
    *
@@ -93,7 +103,7 @@ class Jikan {
    * @returns current seasonal anime
    */
   async fetchCurrentSeason(
-    filter: Filters.TV,
+    filter: Filters = Filters.TV,
     page: number = 1,
     limit: number = 25
   ) {
@@ -108,7 +118,7 @@ class Jikan {
    * @returns next season's anime
    */
   async fetchNextSeason(
-    filter: Filters.TV,
+    filter: Filters = Filters.TV,
     page: number = 1,
     limit: number = 25
   ) {

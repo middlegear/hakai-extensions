@@ -15,7 +15,7 @@ export async function getProviderId(id: number) {
     const englishTitle = data.animeInfo?.title?.english as string;
     const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
     const romanjiTitle = data.animeInfo?.title.romaji as string;
-    const titles = data.animeInfo?.title;
+    const titles = data?.animeInfo?.title;
     if (!titles) throw new Error('English title not found.');
 
     // Providers' search functions

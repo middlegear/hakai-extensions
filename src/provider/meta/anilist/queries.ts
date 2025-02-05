@@ -16,6 +16,7 @@ export const fetchByIdQuery = `query ($id: Int ) {
     meanScore
     averageScore
     duration
+    episodes
     coverImage {
       extraLarge
       large
@@ -31,6 +32,11 @@ export const fetchByIdQuery = `query ($id: Int ) {
     
     genres
     bannerImage
+    studios {
+        nodes {
+          name
+        }
+    }
   }
 }`;
 
@@ -48,6 +54,15 @@ export const airingQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       type
       format
       status
+      episodes
+      duration
+      season
+      genres
+      studios {
+        nodes {
+          name
+        }
+     }
       description
       startDate {
         year
@@ -73,13 +88,7 @@ export const airingQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       }
       averageScore
       meanScore
-      nextAiringEpisode {
-   
-        airingAt
       
-        episode
-       
-      }
     }
   }
 }`;
@@ -98,6 +107,15 @@ export const popularAnimeQuery = `query Query($page: Int, $perPage: Int, $type: 
       type
       format
       status
+      episodes
+      duration
+      season
+      genres
+      studios {
+        nodes {
+          name
+        }
+     }
       description
       startDate {
         year
@@ -141,6 +159,10 @@ export const seasonQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       type
       format
       status
+      episodes
+      duration
+      season
+      genres
       description
       startDate {
         year
@@ -166,11 +188,16 @@ export const seasonQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       }
       averageScore
       meanScore
+      studios {
+        nodes {
+          name
+        }
+      }
     }
   }
 }`;
 
-export const searchQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $isAdult: Boolean, $search: String) {
+export const searchQuery = `query Query($page: Int, $perPage: Int, $search: String, $type: MediaType, $isAdult: Boolean) {
   Page(page: $page, perPage: $perPage) {pageInfo {
       total
       perPage
@@ -178,9 +205,12 @@ export const searchQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       lastPage
       hasNextPage
     }
-    media(type: $type, isAdult: $isAdult, search: $search) {
+    media(search: $search, type: $type, isAdult: $isAdult) {
       id
       idMal
+      episodes
+      duration
+      season
       title {
         romaji
         english
@@ -189,6 +219,7 @@ export const searchQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       }
       type
       format
+      genres
       status
       description
       startDate {
@@ -215,6 +246,11 @@ export const searchQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       }
       averageScore
       meanScore
+      studios {
+        nodes {
+          name
+        }
+      }
     }
     
   }

@@ -1,4 +1,4 @@
-import { findBestMatch } from "string-similarity";
+import { findBestMatch } from 'string-similarity';
 
 type result = {
   animeId: string;
@@ -8,8 +8,8 @@ type result = {
 };
 
 export type JikanTitle = {
-  romaji: string;
-  english: string;
+  romaji: string | null;
+  english: string | null;
 };
 
 const normalizetitle = (title: string) => title?.toLowerCase().trim();
@@ -21,7 +21,7 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
     normalizedId: normalizetitle(item.animeId),
   }));
 
-  const normalizedRomanji = normalizetitle(title.romaji);
+  const normalizedRomanji = normalizetitle(title.romaji as string);
 
   const bestSubMatch =
     normalizedResults.length > 0
@@ -40,13 +40,13 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
       ? findBestMatch(
           normalizedRomanji,
           normalizedResults
-            .filter((item) => item.normalizedName.includes("dub"))
+            .filter((item) => item.normalizedName.includes('dub'))
             .map((item) => item.normalizedName)
         ) ||
         findBestMatch(
           normalizedRomanji,
           normalizedResults
-            .filter((item) => item.normalizedId.includes("dub"))
+            .filter((item) => item.normalizedId.includes('dub'))
             .map((item) => item.normalizedId)
         )
       : null;
@@ -92,8 +92,8 @@ export function hianimeTitle(title: JikanTitle, results: result[]) {
     normalizeRomanji: normalizetitle(item.romaji as string),
   }));
 
-  const normalizedEnglish = normalizetitle(title.english);
-  const normalizedRomanji = normalizetitle(title.romaji);
+  const normalizedEnglish = normalizetitle(title.english as string);
+  const normalizedRomanji = normalizetitle(title.romaji as string);
   const bestTitleMatch =
     normalizedResults.length > 0
       ? findBestMatch(
@@ -123,7 +123,7 @@ export function hianimeTitle(title: JikanTitle, results: result[]) {
   return { hiAnime };
 }
 export function animeZtitle(title: JikanTitle, results: result[]) {
-  const normalizedEnglish = normalizetitle(title.english);
+  const normalizedEnglish = normalizetitle(title.english as string);
 
   const normalizedResults = results.map((item) => ({
     ...item,
@@ -156,7 +156,7 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
     name: match?.name || null,
     alt:
       match?.alt ||
-      "Sometimes the anime provider Maybe Good, Sometimes Maybe Shit",
+      'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating,
   };
   return { animeZ };

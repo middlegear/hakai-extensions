@@ -1,7 +1,12 @@
 import axios from 'axios';
-import { Filters, Season, AnimeType, AnimeStatusFilter } from './types.js';
-import type { AnimeInfo } from './types.js';
-import type { seasonJikan } from './types.js';
+
+import {
+  AnimeStatusFilter,
+  AnimeType,
+  Filters,
+  Season,
+} from '../../../types/jikan.js';
+import { TINFO } from '../../../types/types.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(
@@ -19,38 +24,58 @@ export async function searchAnime(
     const { data } = await axios.get(
       `${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}&type=${type}`
     );
-    const res: seasonJikan = data;
+
     const pagination = {
-      hasNextPage: res.pagination.has_next_page,
-      lastPage: res.pagination.last_visible_page,
+      hasNextPage: data.pagination.has_next_page,
+      lastPage: data.pagination.last_visible_page,
       currentPage: page,
-      items: {
-        count: res.pagination.items.count,
-        total: res.pagination.items.total,
-        perPage: res.pagination.items.per_page,
-      },
+      total: data.pagination.items.total,
+      perPage: data.pagination.items.per_page,
     };
-    const search = res.data.map((item) => ({
+    const search = data.data.map((item: any) => ({
       malId: item.mal_id,
-      image_jpg: item.images.jpg.large_image_url,
-      image_webp: item.images.webp.large_image_url,
-      embedtrailer: item.trailer.embed_url,
       title: {
         romaji: item.title,
         english: item.title_english,
+        native: item.title_japanese,
       },
-      synopsis: item.synopsis,
+      image:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url,
+      episodes: item.episodes,
+
+      startDate: item.aired.prop.from
+        ? new Date(
+            item.aired.prop.from.year,
+            item.aired.prop.from.month - 1,
+            item.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.aired.prop.to
+        ? new Date(
+            item.aired.prop.to.year,
+            item.aired.prop.to.month - 1,
+            item.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
       type: item.type,
       status: item.status,
-      score: item.score,
-      episodes: item.episodes,
+      genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
-      airing: item.airing,
-      startedAiring: item.aired.from,
-      stoppedAiring: item.aired.to,
-      broadcast: item.broadcast,
-      genres: item.genres.map((item2) => item2.name),
-      studios: item.studios,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
       producers: item.producers,
     }));
 
@@ -74,22 +99,54 @@ export async function getInfoById(Id: number) {
     };
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${Id}`);
-    const res = data.data;
-    const animeInfo: AnimeInfo = {
-      malId: res.mal_id,
+
+    const animeInfo: TINFO = {
+      malId: data.data.mal_id,
       title: {
-        romaji: res.title,
-        english: res.title_english,
+        romaji: data.data.title,
+        english: data.data.title_english,
+        native: data.data.title_japanese,
       },
-      image_jpg: res.images.jpg.large_image_url,
-      image_webp: res.images.webp.large_image_url,
-      trailer: res.trailer.embed_url,
-      type: res.type,
-      status: res.status,
-      duration: res.duration,
-      score: res.score,
-      synopsis: res.synopsis,
-      season: res.season,
+      image:
+        data.data.images.jpg.large_image_url ??
+        data.data.images.webp.large_image_url,
+      bannerImage:
+        data.data.images.jpg.large_image_url ??
+        data.data.images.webp.large_image_url,
+      trailer: data.data.trailer.embed_url,
+      episodes: data.data.episodes,
+
+      startDate: data.data.aired.prop.from
+        ? new Date(
+            data.data.aired.prop.from.year,
+            data.data.aired.prop.from.month - 1,
+            data.data.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: data.data.aired.prop.to
+        ? new Date(
+            data.data.aired.prop.year,
+            data.data.aired.prop.month - 1,
+            data.data.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      type: data.data.type,
+      status: data.data.status,
+      genres: data.data.genres.map((item2: any) => item2.name),
+      duration: data.data.duration,
+      score: data.data.score,
+      synopsis: data.data.synopsis,
+      season: data.data.season,
+      studio: data.data.studios,
+      producers: data.data.producers,
     };
     return {
       success: true,
@@ -122,8 +179,8 @@ export async function getAnimeCharacters(id: number) {
 
 export async function getCurrentSeason(
   filter: Filters,
-  page: number = 1,
-  limit: number = 25
+  page: number,
+  limit: number
 ) {
   if (!filter) {
     return {
@@ -135,44 +192,65 @@ export async function getCurrentSeason(
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/now?filter=${filter}&?sfw&page=${page}&limit=${limit}`
     );
-    const res: seasonJikan = data;
+    const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
-      items: {
-        count: res.pagination.items.count,
-        total: res.pagination.items.total,
-        perPage: res.pagination.items.per_page,
-      },
+      total: res.pagination.items.total,
+      perPage: res.pagination.items.per_page,
     };
-    const currentSeason = res.data.map((item) => ({
+    const currentSeason = res.data.map((item: any) => ({
       malId: item.mal_id,
-      image_jpg: item.images.jpg.large_image_url,
-      image_webp: item.images.webp.large_image_url,
-      embedtrailer: item.trailer.embed_url,
       title: {
         romaji: item.title,
         english: item.title_english,
+        native: item.title_japanese,
       },
-      synopsis: item.synopsis,
+      image:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url,
+      episodes: item.episodes,
+
+      startDate: item.aired.prop.from
+        ? new Date(
+            item.aired.prop.from.year,
+            item.aired.prop.from.month - 1,
+            item.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.aired.prop.to
+        ? new Date(
+            item.aired.prop.to.year,
+            item.aired.prop.to.month - 1,
+            item.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
       type: item.type,
       status: item.status,
-      score: item.score,
-      episodes: item.episodes,
+      genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
-      airing: item.airing,
-      startedAiring: item.aired.from,
-      stoppedAiring: item.aired.to,
-      broadcast: item.broadcast,
-      genres: item.genres.map((item2) => item2.name),
-      studios: item.studios,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
       producers: item.producers,
     }));
 
     return {
-      pagination,
-      currentSeason,
+      success: true,
+      pagination: pagination,
+      data: currentSeason,
     };
   } catch (error) {
     return {
@@ -184,8 +262,8 @@ export async function getCurrentSeason(
 
 export async function getNextSeason(
   filter: Filters,
-  page: number = 1,
-  limit: number = 25
+  page: number,
+  limit: number
 ) {
   if (!filter) {
     return {
@@ -197,45 +275,66 @@ export async function getNextSeason(
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/upcoming?filter=${filter}&?sfw&page=${page}&limit=${limit}`
     );
-    const res: seasonJikan = data;
+    const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
-      items: {
-        count: res.pagination.items.count,
-        total: res.pagination.items.total,
-        perPage: res.pagination.items.per_page,
-      },
+      total: res.pagination.items.total,
+      perPage: res.pagination.items.per_page,
     };
 
-    const NextSeason = res.data.map((item) => ({
+    const NextSeason = res.data.map((item: any) => ({
       malId: item.mal_id,
-      image_jpg: item.images.jpg.large_image_url,
-      image_webp: item.images.webp.large_image_url,
-      embedtrailer: item.trailer.embed_url,
       title: {
         romaji: item.title,
         english: item.title_english,
+        native: item.title_japanese,
       },
-      synopsis: item.synopsis,
+      image:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url,
+      episodes: item.episodes,
+
+      startDate: item.aired.prop.from
+        ? new Date(
+            item.aired.prop.from.year,
+            item.aired.prop.from.month - 1,
+            item.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.aired.prop.to
+        ? new Date(
+            item.aired.prop.to.year,
+            item.aired.prop.to.month - 1,
+            item.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
       type: item.type,
       status: item.status,
-      score: item.score,
-      episodes: item.episodes,
+      genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
-      airing: item.airing,
-      startedAiring: item.aired.from,
-      stoppedAiring: item.aired.to,
-      broadcast: item.broadcast,
-      genres: item.genres.map((item2) => item2.name),
-      studios: item.studios,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
       producers: item.producers,
     }));
 
     return {
-      pagination,
-      NextSeason,
+      success: true,
+      pagination: pagination,
+      data: NextSeason,
     };
   } catch (error) {
     return {
@@ -249,8 +348,8 @@ export async function getSeason(
   year: number,
   season: Season,
   filter: Filters,
-  page: number = 1,
-  limit: number = 25
+  page: number,
+  limit: number
 ) {
   if (!year || !season || !filter) {
     return {
@@ -262,45 +361,66 @@ export async function getSeason(
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/${year}/${season}?filter=${filter}&?sfw&page=${page}&limit=${limit}`
     );
-    const res: seasonJikan = data;
+    const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
-      items: {
-        count: res.pagination.items.count,
-        total: res.pagination.items.total,
-        perPage: res.pagination.items.per_page,
-      },
+      total: res.pagination.items.total,
+      perPage: res.pagination.items.per_page,
     };
 
-    const Season = res.data.map((item) => ({
+    const Season = res.data.map((item: any) => ({
       malId: item.mal_id,
-      image_jpg: item.images.jpg.large_image_url,
-      image_webp: item.images.webp.large_image_url,
-      embedtrailer: item.trailer.embed_url,
       title: {
         romaji: item.title,
         english: item.title_english,
+        native: item.title_japanese,
       },
-      synopsis: item.synopsis,
+      image:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url,
+      episodes: item.episodes,
+
+      startDate: item.aired.prop.from
+        ? new Date(
+            item.aired.prop.from.year,
+            item.aired.prop.from.month - 1,
+            item.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.aired.prop.to
+        ? new Date(
+            item.aired.prop.to.year,
+            item.aired.prop.to.month - 1,
+            item.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
       type: item.type,
       status: item.status,
-      score: item.score,
-      episodes: item.episodes,
+      genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
-      airing: item.airing,
-      startedAiring: item.aired.from,
-      stoppedAiring: item.aired.to,
-      broadcast: item.broadcast,
-      genres: item.genres.map((item2) => item2.name),
-      studios: item.studios,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
       producers: item.producers,
     }));
 
     return {
-      pagination,
-      Season,
+      success: true,
+      pagination: pagination,
+      data: Season,
     };
   } catch (error) {
     return {
@@ -326,45 +446,67 @@ export async function getTopAnime(
     const { data } = await axios.get(
       `${jikanBaseUrl}/top/anime?filter=${filter}&type=${type}&?sfw&page=${page}&limit=${limit}`
     );
-    const res: seasonJikan = data;
+    const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
-      items: {
-        count: res.pagination.items.count,
-        total: res.pagination.items.total,
-        perPage: res.pagination.items.per_page,
-      },
+      total: res.pagination.items.total,
+      perPage: res.pagination.items.per_page,
     };
 
-    const topAnime = res.data.map((item) => ({
+    const topAnime = res.data.map((item: any) => ({
       malId: item.mal_id,
-      image_jpg: item.images.jpg.large_image_url,
-      image_webp: item.images.webp.large_image_url,
-      embedtrailer: item.trailer.embed_url,
       title: {
         romaji: item.title,
         english: item.title_english,
+        native: item.title_japanese,
       },
-      synopsis: item.synopsis,
+      image:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage:
+        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url,
+      episodes: item.episodes,
+
+      startDate: item.aired.prop.from
+        ? new Date(
+            item.aired.prop.from.year,
+            item.aired.prop.from.month - 1,
+            item.aired.prop.from.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+      endDate: item.aired.prop.to
+        ? new Date(
+            item.aired.prop.to.year,
+            item.aired.prop.to.month - 1,
+            item.aired.prop.to.day
+          ).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : null,
+
       type: item.type,
       status: item.status,
-      score: item.score,
-      episodes: item.episodes,
+      genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
-      airing: item.airing,
-      startedAiring: item.aired.from,
-      stoppedAiring: item.aired.to,
-      broadcast: item.broadcast,
-      genres: item.genres.map((item2) => item2.name),
-      studios: item.studios,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
       producers: item.producers,
     }));
 
     return {
-      pagination,
-      topAnime,
+      success: true,
+      pagination: pagination,
+      data: topAnime,
     };
   } catch (error) {
     return {

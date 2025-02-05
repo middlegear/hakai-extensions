@@ -10,9 +10,9 @@ export async function fetchProviderId(id: number) {
   try {
     // Fetch anime info from Anilist  API
     const data = await fetchAnimeById(id);
-    const titles = data.data?.Media?.title;
-    const englishTitle = titles.english;
-    const userPref = titles.userPreferred.split(' ').slice(0, 3).join(' ');
+    const titles = data.data?.title;
+    const englishTitle = titles?.english as string;
+    const userPref = titles?.romaji.split(' ').slice(0, 3).join(' ');
     const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
 
     if (!titles) throw new Error(' title not found.');
