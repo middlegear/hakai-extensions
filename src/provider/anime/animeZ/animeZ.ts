@@ -1,19 +1,25 @@
 import * as cheerio from 'cheerio';
-import { extractAnimeZResults, extractAnimeZInfo } from './methods.js';
+import {
+  animeZSearchResults,
+  animeZSearchSuggestions,
+  extractAnimeZInfo,
+  getEpisodes,
+} from './scraper.js';
 import { animeZBaseUrl, animeZClient } from '../../index.js';
+import { Dubbing } from '../hianime/types.js';
 
-export async function searchAnime(query: string, page: number = 1) {
+async function searchAnime(query: string, page: number) {
   if (!query)
     return {
       success: false,
-      error: 'query cannot be empty',
+      error: 'Missing required params : query',
     };
 
   try {
     const modifiedString = query
-      .replace(/season\s*\d+/gi, '') // Remove "season" and numbers after it
-      .replace(/[;:]/g, '') // Remove semicolons and colons
-      .replace(/\d+/g, '') // Remove all numbers
+      .replace(/season\s*\d+/gi, '')
+      .replace(/[;:]/g, '')
+      .replace(/\d+/g, '')
       .trim();
     const response = await animeZClient.get(
       `${animeZBaseUrl}/?act=search&f[status]=all&f[sortby]=lastest-chap&f[keyword]=${modifiedString}&&pageNum=${page}#pages`,
@@ -28,7 +34,7 @@ export async function searchAnime(query: string, page: number = 1) {
     const selector: cheerio.SelectorType =
       'main > section > ul.MovieList.Rows.AX.A06.B04.C03.E20 > li.TPostMv';
 
-    const data = extractAnimeZResults(data$, selector);
+    const data = animeZSearchResults(data$, selector);
 
     return {
       hasNextPage: data.hasNextPage,
@@ -46,17 +52,17 @@ export async function searchAnime(query: string, page: number = 1) {
     };
   }
 }
-export async function searchSuggestions(query: string) {
+async function searchSuggestions(query: string) {
   if (!query)
     return {
       success: false,
-      error: 'query cannot be empty',
+      error: 'Missing required params : query',
     };
   try {
     const modifiedString = query
-      .replace(/season\s*\d+/gi, '') // Remove "season" and numbers after it
-      .replace(/[;:]/g, '') // Remove semicolons and colons
-      .replace(/\d+/g, '') // Remove all numbers
+      .replace(/season\s*\d+/gi, '')
+      .replace(/[;:]/g, '')
+      .replace(/\d+/g, '')
       .trim();
 
     const res = await animeZClient.get(
@@ -69,28 +75,12 @@ export async function searchSuggestions(query: string) {
       }
     );
 
-    const $: cheerio.CheerioAPI = cheerio.load(res.data);
-
-    const suggestion: {
-      id: string | null;
-      title: string | null;
-      posterImage: string | null;
-      alternatives: string | null;
-    }[] = [];
-
-    $('li').each((_, element) => {
-      suggestion.push({
-        id: $(element).find('a').attr('href')?.split('/').at(1)?.trim() || null,
-        title: $(element)?.find('img')?.attr('alt') || null,
-        posterImage:
-          `${animeZBaseUrl}/${$(element).find('img').attr('src')}` || null,
-        alternatives:
-          $(element)?.find('h4 i').first().text().replace(/;|,/g, ',') || null,
-      });
-    });
+    const data$: cheerio.CheerioAPI = cheerio.load(res.data);
+    const data = animeZSearchSuggestions(data$);
 
     return {
-      anime: suggestion,
+      success: true,
+      data: data.anime,
     };
   } catch (error) {
     return {
@@ -102,9 +92,44 @@ export async function searchSuggestions(query: string) {
     };
   }
 }
+export async function matchingSearcResponse(query: string, page: number) {
+  try {
+    const response = await Promise.all([
+      searchAnime(query, page),
+      searchSuggestions(query),
+    ]);
+
+    const [search, suggestion] = response;
+
+    const matchingresults = search.anime?.map((animeItem) => {
+      const matchingSuggestion = suggestion.data?.find(
+        (animesuggestion) => animesuggestion.id === animeItem.id
+      );
+
+      return {
+        ...animeItem,
+        altName: matchingSuggestion?.altName || null,
+      };
+    });
+
+    return {
+      success: true,
+      hasNextPage: search.hasNextPage,
+      currentPage: search.currentPage,
+      totalPages: search.totalPages,
+      data: matchingresults,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown err',
+    };
+  }
+}
 
 export async function fetchAnimeInfo(animeId: string) {
-  if (!animeId) return { success: false, error: 'Provide an Id' };
+  if (!animeId)
+    return { success: false, error: ' Missing required params: Id' };
   try {
     const response = await animeZClient.get(`${animeZBaseUrl}/${animeId}`);
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
@@ -119,12 +144,33 @@ export async function fetchAnimeInfo(animeId: string) {
     };
   }
 }
+export async function fetchEpisodes(animeId: string, dub: Dubbing) {
+  if (!animeId)
+    return { success: false, error: ' Missing required params: Id' };
+
+  try {
+    const response = await animeZClient.get(`${animeZBaseUrl}/${animeId}`);
+    const data$: cheerio.CheerioAPI = cheerio.load(response.data);
+
+    const data = getEpisodes(data$);
+
+    return {
+      success: true,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown err',
+    };
+  }
+}
 
 export async function fetchSources(episodeId: string) {
   if (!episodeId) {
     return {
       success: false,
-      error: 'Provide an episodeId!',
+      error: 'Missing required params : episodeId!',
     };
   }
   try {
@@ -162,6 +208,7 @@ export async function fetchSources(episodeId: string) {
           `${serverUrl}${data$(selector).find('source').attr('src')}` || null;
         const type = data$(selector).find('source').attr('type') || null;
         return {
+          success: true,
           source: streamSource,
           type: type,
           referer: embedSource,

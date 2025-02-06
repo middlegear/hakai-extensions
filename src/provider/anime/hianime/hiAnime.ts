@@ -30,7 +30,6 @@ export async function searchAnime(query: string, page: number = 1) {
     const searchSelector: cheerio.SelectorType =
       '.block_area-content .film_list-wrap .flw-item';
     const data = extractSearchResults($data, searchSelector);
-    // console.log(data);
 
     return {
       success: data.success,
@@ -108,9 +107,12 @@ export async function fetchServers(episodeId: string) {
 
     const res$: cheerio.CheerioAPI = cheerio.load(response.data.html);
 
-    const serverdata = extractServerData(res$);
+    const data = extractServerData(res$);
 
-    return serverdata;
+    return {
+      success: true,
+      data: data,
+    };
   } catch (error) {
     return {
       success: false,
@@ -179,9 +181,13 @@ export async function fetchEpisodeSources(
       // console.log(link);
       // const sources = puppeteer(id);
       const sources = await new MegaCloud().extract(link);
-      return sources;
+      return {
+        sucess: true,
+        data: sources,
+      };
     } catch (error) {
       return {
+        success: false,
         error:
           error instanceof Error
             ? error.message
@@ -189,6 +195,9 @@ export async function fetchEpisodeSources(
       };
     }
   } catch (error) {
-    error instanceof Error ? error.message : 'No data found';
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'No data found',
+    };
   }
 }

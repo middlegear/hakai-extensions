@@ -25,11 +25,11 @@ import {
   VidHide,
 } from '../../index.js';
 
-export async function searchAnime(query: string, page: number = 1) {
+export async function searchAnime(query: string, page: number) {
   if (!query)
     return {
       success: false,
-      error: 'Provide a query!',
+      error: 'Missing required params : query',
     };
   try {
     const response = await anitakuClient.get(
@@ -62,13 +62,12 @@ export async function fetchAnimeInfo(animeId: string) {
   if (!animeId)
     return {
       success: false,
-      error: 'Provide an AnimeId!',
+      error: 'Missing required params: AnimeId!',
     };
   try {
     const response = await anitakuClient.get(`${anitakuInfoUrl}/${animeId}`);
-    // console.log(response.data);
+
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    // // movie id is about here
 
     const infoSelector: cheerio.SelectorType =
       'div.main_body > div.anime_info_body ';
@@ -80,7 +79,7 @@ export async function fetchAnimeInfo(animeId: string) {
     const movieId =
       Number(data$(MovieId).find('input#movie_id.movie_id').attr('value')) ||
       null;
-    ////fetchepisodes list
+
     const numberOfepisodesSelector: cheerio.SelectorType =
       'div.main_body > div.anime_video_body > ul#episode_page';
     const totalEps =
@@ -119,7 +118,7 @@ export async function fetchServers(episodeId: string) {
   if (!episodeId)
     return {
       success: false,
-      error: 'Provide an episodeId',
+      error: 'Missing required params: episodeId',
     };
   try {
     const response = await anitakuClient.get(`${anitakuBaseUrl}/${episodeId}`, {
@@ -153,7 +152,10 @@ export async function fetchEpisodeSources(
   server: anitakuAnimeServers
 ) {
   if (!episodeId) {
-    throw new Error('Episode Id is required');
+    return {
+      success: false,
+      error: 'Missing required params: episodeId',
+    };
   }
 
   try {
@@ -283,6 +285,7 @@ export async function fetchEpisodeSources(
     }
   } catch (error) {
     return {
+      success: false,
       error:
         error instanceof Error
           ? error.message

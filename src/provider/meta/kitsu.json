@@ -1,0 +1,1066 @@
+{
+    "data": {
+      "searchAnimeByTitle": {
+        "nodes": [
+          {
+            "id": "46231",
+            "slug": "solo-leveling",
+            "titles": {
+              "localized": {
+                "en": "Solo Leveling"
+              },
+              "preferred": "Ore Dake Level Up na Ken",
+              "romanized": "Ore Dake Level Up na Ken"
+            },
+            "bannerImage": {
+              "blurhash": "KaE.kC~o-o%1xtt7Nds:f+",
+              "original": {
+                "height": 502,
+                "name": "original",
+                "url": "https://media.kitsu.app/anime/46231/cover_image/3889183203c74864e499990fce30cadf.jpg",
+                "width": 2048
+              },
+              "views": [
+                {
+                  "height": 200,
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/46231/cover_image/tiny-d029c43df50d0d014e6d945ff29ac9e8.jpeg",
+                  "width": 840
+                },
+                {
+                  "height": 800,
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/46231/cover_image/large-33273dc297cdc8b10cc1140de07d3dae.jpeg",
+                  "width": 3360
+                },
+                {
+                  "height": 400,
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/46231/cover_image/small-ff0997f6857e1dde6f3c5a62c594cbd4.jpeg",
+                  "width": 1680
+                }
+              ]
+            },
+            "episodes": {
+              "nodes": [
+                {
+                  "thumbnail": {
+                    "blurhash": "K68gv,0K9Y^+4-?cT1M{={",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/331986/thumbnail/07ad7787e9e6820ecacc18dc73b23d6b.jpg",
+                      "width": 1200,
+                      "height": 675
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/331986/thumbnail/tiny-9c156d50e687cfc5786e84107fde51c6.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/331986/thumbnail/large-5ef03dfefb42dc0c116be70fcf30fa9a.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/331986/thumbnail/small-86930a32cc03e8408db72774dab2d592.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/331986/thumbnail/medium-34667b536c50d8f270f9e1de27eaece7.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Around ten years ago, gates that connected our world to another dimension began to appear, leading to the rise of hunters who would traverse these gates to fight the magic beasts within. Sung Jinwoo, E-Rank hunter, is the weakest of them all.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "I'm Used to It."
+                    }
+                  },
+                  "number": 1
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "K54xur55%20c?HIT=_E1%N",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/331987/thumbnail/ce56760a05205c564e61b148eeda4c53.jpg",
+                      "width": 1200,
+                      "height": 675
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/331987/thumbnail/tiny-7ea8b60f25625ed46763f51a3e377ac6.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/331987/thumbnail/large-a76a3a37a3408f28839b8b88d7638d14.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/331987/thumbnail/small-e0dca78210a1ee3bd1d902da98db9b83.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/331987/thumbnail/medium-7e10dc7e479cbbdad77d941a12fcb37b.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo and his party appear to have cleared a low-level dungeon, when a hidden path to an unfamiliar temple is revealed. There they encounter a set of commandments and a group of monsters that cause them absolute despair.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "If I Had One More Chance"
+                    }
+                  },
+                  "number": 2
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KOL4W%^%~U^*xZR.00xuof",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/332099/thumbnail/04a7eb9f58362be010ef1983d76396d4.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/332099/thumbnail/tiny-6734d620a5ce56098a6284e1283a39fa.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/332099/thumbnail/large-6f31819c770624ddb70145b39a08cefc.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/332099/thumbnail/small-f95e21f54f057f8f179e432955172c67.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/332099/thumbnail/medium-92404680fa6cdafe2e324132776b2c27.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo remains behind in the temple dungeon to save his few surviving party members, and with a swing from the god statue's blade, his life comes to an end—or so it seems, before he wakes up in a hospital bed.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "It's Like a Game"
+                    }
+                  },
+                  "number": 3
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "K50m[_bEVnktf4acauaJi[",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/338763/thumbnail/dd05ecbec0cf9cc0e151e96bfa38b74d.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/338763/thumbnail/tiny-ca3d91c6d7c2e4114dfd8e223f82fbe0.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/338763/thumbnail/large-613d2b9c0a7a921611556a835af2cb00.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/338763/thumbnail/small-62694c2f8bc3d342d7b9a176f7283617.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/338763/thumbnail/medium-51d91cb3e6d28a2807e14f477792a139.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Having entered the instance dungeon located inside the subway, Jinwoo levels up time and time again by fighting waves of magic beasts. As he gradually makes his way forward, he finds a long stairway leading deeper underground.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "I've Gotta Get Stronger"
+                    }
+                  },
+                  "number": 4
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KGE.d~x]_1~UM}My-nR-bH",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346884/thumbnail/a44c0a0749eb8f8ee6120f710b29648f.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346884/thumbnail/tiny-418f1718cdeb73185e212e301c32be05.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346884/thumbnail/large-60835c616ecdacd53104beefc0222604.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346884/thumbnail/small-8822f9a249fccde028280d0a89b2e8b5.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346884/thumbnail/medium-0394b50374026e644d660cd50ed0116a.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo joins a party led by Hwang Dongsuk to meet the headcount necessary for a C-Rank dungeon. Joined by another temporary hire, Yoo Jinho, the party defeats beasts without much trouble, but Jinwoo has suspicions about the group's lack of a healer.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "A Pretty Good Deal"
+                    }
+                  },
+                  "number": 5
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "K55FLdD]N4s3Mtn{M|RqtS",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346885/thumbnail/4b8e512ee62e63c3a04cdd8e6f3468b6.jpg",
+                      "width": 1200,
+                      "height": 677
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346885/thumbnail/tiny-1828ef921b1a5ff61b1d83925fb181af.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346885/thumbnail/large-830a5c3c5a54073470aa5452ad26dc37.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346885/thumbnail/small-b06e8123b0a3f0593c531c2cf21c340b.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346885/thumbnail/medium-bb5bc534b26f84b59ad5fe63e9062d49.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "While the C-Rank dungeon raid by Jinwoo and the others seems to be progressing well, the moment they step into an area covered in mana stones with a sleeping dungeon boss, things take a wrong turn.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "The Real Hunt Begins"
+                    }
+                  },
+                  "number": 6
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KKI2~29}V[XO}Y=wE4$~^O",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346886/thumbnail/df9a50864bf011bf88becccdc7f52cfb.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346886/thumbnail/tiny-1cd805414ff0a79e7412d76a985df060.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346886/thumbnail/large-07f77ea80076e52375ca363d8039b2fa.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346886/thumbnail/small-36c20ed47ecbc67c6488d2ec1df11c50.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346886/thumbnail/medium-15081df9cf4056a30f7b335446f21f16.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "As Jinwoo continues his training, he completes a daily quest one day by doing more than the quest requires, and a key that leads to a certain item appears in front of him.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "Let's See How Far I Can Go"
+                    }
+                  },
+                  "number": 7
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KuKnl7Sh_Nazx]%MM{nhn$",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346887/thumbnail/c9923929b3eeac6e97b53fbf26b05e82.jpg",
+                      "width": 1200,
+                      "height": 675
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346887/thumbnail/tiny-e856cc17cef5ee4a134488f79e1cf6fb.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346887/thumbnail/large-bf9823d2a68c849c3287dcc4d1553c9e.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346887/thumbnail/small-a250de12cf968964e57ce81463b00c88.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346887/thumbnail/medium-ea1b7b5100ed5d5f8e9cd6a6c6316378.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo answers a Hunter's Association request to take part in the raid of a D-Rank dungeon, where he encounters a few familiar faces.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "This Is Frustrating"
+                    }
+                  },
+                  "number": 8
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KvF#%EWW0MxtazM|NGfQt6",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346888/thumbnail/d130cd6f4c6d7b09a533a3efc87655ec.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346888/thumbnail/tiny-17040c0be558b8196ea1d7ac354f8de4.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346888/thumbnail/large-9c6d59445073e02abc60c01a798197ee.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346888/thumbnail/small-632ee47bafb932a0564242c503995719.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346888/thumbnail/medium-3f33db6be8a7c35bd37b54d88c3be401.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "At the D-Rank raid, Jinwoo is reunited with four of the Cartenon Temple survivors. Together, they explore the dungeon with Kang Taeshik and his men. After splitting up, they hear a scream, and then...\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "You've Been Hiding Your Skills"
+                    }
+                  },
+                  "number": 9
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KuJ7{[00%fE2M}j]xZxtoJ",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346889/thumbnail/d1b2f2cb47772a146462dc27d0a43965.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346889/thumbnail/tiny-0077972d323bea09c57257f7008838cb.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346889/thumbnail/large-7cf432c6b3ad5791c70c83c1d209262d.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346889/thumbnail/small-e67fa37f59797e105be8f24c9523b25f.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346889/thumbnail/medium-a602e4575c891165ee84136f2ddb55f9.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo survives tragedy once again, but Woo Jinchul warns him that Hwang Dongsoo, an S-Rank hunter, may be after his life. Determined to grow stronger, Jinwoo teams up with Jinho to raid a succession of C-Rank dungeons, but they attract attention...\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "What Is This, a Picnic?"
+                    }
+                  },
+                  "number": 10
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KFCE93az0|=yjt9[1va|S1",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346890/thumbnail/5ee0ec0b374d7a1cdc39d9ea1083abea.jpg",
+                      "width": 1200,
+                      "height": 675
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346890/thumbnail/tiny-7f7ca1ae69e11a14ce5c161bfa0c53f9.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346890/thumbnail/large-b5244c7d35650c9e0a4fb37cb680dc14.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346890/thumbnail/small-e295583d1c42c5799d24f26599acfd40.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346890/thumbnail/medium-d01c4855c28dce24ec2aa2fd09e53b98.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Out of the blue, a \"job-change quest\" pops up in Jinwoo's window. Feeling that it may help him get stronger, he enters the gate. Inside, he fights wave after wave of enemies, culminating in a knight who brings back memories of the Cartenon Temple.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "A Knight Who Defends an Empty Throne"
+                    }
+                  },
+                  "number": 11
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KVGH-x~Br;xtxaj[ENR+$%",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/346891/thumbnail/c87651ce702368adb09d5d12ea3d39e9.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/346891/thumbnail/tiny-4fba8d17884dcb521b82a9b58feb43ed.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/346891/thumbnail/large-550aa014669841833e83f24a2310dfe5.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/346891/thumbnail/small-03abf8e941c4e33e7e8a2291e829fce4.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/346891/thumbnail/medium-1f51730c9634db337a641ed78c8e6961.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Drained from endless battle, Jinwoo sees a phantom of his past self. To overcome his own past as the Weakest Hunter of All Mankind, he struggles to find a way to clear the job-change quest.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "Arise"
+                    }
+                  },
+                  "number": 12
+                }
+              ]
+            },
+            "posterImage": {
+              "blurhash": "KPBqJD4TrV%%IUs8.TD%wa",
+              "original": {
+                "url": "https://media.kitsu.app/anime/46231/poster_image/63b0009b44fcba44e86701d7c30c93d5.png",
+                "name": "original"
+              },
+              "views": [
+                {
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/46231/poster_image/tiny-7d855638194552cca8000acb56544ead.jpeg"
+                },
+                {
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg"
+                },
+                {
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/46231/poster_image/small-8850292e573c458ea5f2442a4299924d.jpeg"
+                },
+                {
+                  "name": "medium",
+                  "url": "https://media.kitsu.app/anime/46231/poster_image/medium-d75b57ef0c9056044cc0e277ac34d6e5.jpeg"
+                }
+              ]
+            }
+          },
+          {
+            "id": "48671",
+            "slug": "Solo-Leveling-Season-2-Arise-from-the-Shadow",
+            "titles": {
+              "localized": {
+                "en": "Solo Leveling Season 2 -Arise from the Shadow-"
+              },
+              "preferred": "Ore dake Level Up na Ken: Season 2 - Arise from the Shadow",
+              "romanized": "Ore dake Level Up na Ken: Season 2 - Arise from the Shadow"
+            },
+            "bannerImage": {
+              "blurhash": "KaGINK~p?I^,otX8%MWVIn",
+              "original": {
+                "height": 633,
+                "name": "original",
+                "url": "https://media.kitsu.app/anime/48671/cover_image/79ec6fc03c7515c4a15d78f107b33253.jpg",
+                "width": 1500
+              },
+              "views": [
+                {
+                  "height": 200,
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/48671/cover_image/tiny-afdc640f5d8c1b17cf023ed6ec6d7116.jpeg",
+                  "width": 840
+                },
+                {
+                  "height": 800,
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/48671/cover_image/large-e4edb994223d3451a023d5dd8c64e0be.jpeg",
+                  "width": 3360
+                },
+                {
+                  "height": 400,
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/48671/cover_image/small-b4c0e34690d2c3f890cfc6efc0d787eb.jpeg",
+                  "width": 1680
+                }
+              ]
+            },
+            "episodes": {
+              "nodes": [
+                {
+                  "thumbnail": {
+                    "blurhash": "KUGIlyV@NeM{WBe.00WBjF",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365797/thumbnail/93677521b68968fb7e0c81b6112000f8.jpg",
+                      "width": 3840,
+                      "height": 2160
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365797/thumbnail/tiny-a17a4959a3c3bc333f75060ae3804974.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365797/thumbnail/large-49b89df235db97a7fa2a44abf6a406ce.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365797/thumbnail/small-091e16ce9698c5c14c9d6068ead6083c.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365797/thumbnail/medium-28c9b3ab858d111b3e96ddf677e592ec.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "After a scheduled meeting with Jinah's teachers, Jinwoo is asked to talk to one of her classmates, Han Song-yi, who is working as a hunter. In an effort to show her the harsh reality of the job, Jinwoo takes her to a raid designated for new hunters of the White Tiger guild.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "You Aren't E-Rank, Are You?"
+                    }
+                  },
+                  "number": 1
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KADcgyx]^,xvX9D%00M{%h",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365798/thumbnail/f8ce69c1d5ebde0c4fc5c26930fdb48d.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365798/thumbnail/tiny-bbdb2d6d8c0dd4db3293fdd2c44cd455.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365798/thumbnail/large-e07a31bc490a3d18053cced086672383.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365798/thumbnail/small-d9400d48d461e63587bbac4a65971c4a.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365798/thumbnail/medium-8cae356e5f63960e333dc654f47359f9.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "After being trapped inside of a red gate, Jinwoo has to contend with a bloodthirsty pack of ice elves who question his humanity.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "I Suppose You aren't Aware"
+                    }
+                  },
+                  "number": 2
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KE72TuMyMf8ybHt6x[tQkC",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365799/thumbnail/abe50992db09e4a09be2bfe1bf8593bd.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365799/thumbnail/tiny-55873308f231d063222e1786c73df6ee.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365799/thumbnail/large-88b428081a594d29c843acdb2d597c0d.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365799/thumbnail/small-71a255c0c6f3f598e03b41eeaed8240d.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365799/thumbnail/medium-f2c3ca0d808db5ddf209bfd85331a345.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Having completed his promise to Jinho to clear 19 dungeons, Jinwoo is stronger than he was when he fought the Cerberus. In order to gather the ingredients for the Elixir of Life and save his mother, he once again enters the S-Rank Demon's Castle dungeon.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "Still a Long Way to Go"
+                    }
+                  },
+                  "number": 3
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KRKme6Av00iHXR-;xw%LD%",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365800/thumbnail/5691573bcdda1b8cd27523a2dece3dde.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365800/thumbnail/tiny-8dc18b93ad79ad99582f8d949505db53.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365800/thumbnail/large-a6d76b77edc471ad4a7a722edbe00812.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365800/thumbnail/small-5e353afe564eb63f219fe3c1cb1d6516.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365800/thumbnail/medium-685d436500df6a5502868a9b8b19599d.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": "Jinwoo realizes that he'll need to become even stronger in order to clear the Demon's Castle and decides to have his hunter rank reassessed.\n\n(Source: Crunchyroll)"
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "I Need to Stop Faking"
+                    }
+                  },
+                  "number": 4
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "K14w*GtRJ6sps:bw1IEfxu",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365801/thumbnail/09bfa17de465a8d6de9159e03b2b56ce.jpg",
+                      "width": 1200,
+                      "height": 675
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365801/thumbnail/tiny-288b0f7bdfbfcf88da7971f7e0dd4535.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365801/thumbnail/large-1d2aadafc1d0cd287155f8269904ecaa.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365801/thumbnail/small-86cb131065adb6ae2f403d757b0d7574.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365801/thumbnail/medium-822cd5cec874622f890f66da6a028e57.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": ""
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "This is What We're Trained To Do"
+                    }
+                  },
+                  "number": 5
+                },
+                {
+                  "thumbnail": {
+                    "blurhash": "KUH06sNH16$eS2NrEJxaR%",
+                    "original": {
+                      "url": "https://media.kitsu.app/episode/365802/thumbnail/35d6298ea9bd2a1b943cb5f91c43029f.jpg",
+                      "width": 1920,
+                      "height": 1080
+                    },
+                    "views": [
+                      {
+                        "height": 90,
+                        "name": "tiny",
+                        "url": "https://media.kitsu.app/episode/365802/thumbnail/tiny-f577acb0cae3e5349c242c7ca5d18262.jpeg"
+                      },
+                      {
+                        "height": 540,
+                        "name": "large",
+                        "url": "https://media.kitsu.app/episode/365802/thumbnail/large-ac67ee64868e0b0fe1c964ece5294501.jpeg"
+                      },
+                      {
+                        "height": 180,
+                        "name": "small",
+                        "url": "https://media.kitsu.app/episode/365802/thumbnail/small-f417605866546b55b9164be3952e4de3.jpeg"
+                      },
+                      {
+                        "height": 360,
+                        "name": "medium",
+                        "url": "https://media.kitsu.app/episode/365802/thumbnail/medium-7c77cb2835023cf8d3cf067ac0bdca1d.jpeg"
+                      }
+                    ]
+                  },
+                  "description": {
+                    "en": ""
+                  },
+                  "titles": {
+                    "localized": {
+                      "en": "Don't Look Down on My Guys"
+                    }
+                  },
+                  "number": 6
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 7
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 8
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 9
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 10
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 11
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 12
+                },
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 13
+                }
+              ]
+            },
+            "posterImage": {
+              "blurhash": "KVGlVT~W?H^ks.oz-:NsR*",
+              "original": {
+                "url": "https://media.kitsu.app/anime/48671/poster_image/839ccca51b13f5ff13790f158795fbba.jpg",
+                "name": "original"
+              },
+              "views": [
+                {
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/48671/poster_image/tiny-84eb905dc3dd84d56a3463a9e6c20a03.jpeg"
+                },
+                {
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg"
+                },
+                {
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/48671/poster_image/small-e2be4bc8bfe9871fdd1f691c6173324b.jpeg"
+                },
+                {
+                  "name": "medium",
+                  "url": "https://media.kitsu.app/anime/48671/poster_image/medium-31e96bc0e48dfb71f0bb6bc5cf84164f.jpeg"
+                }
+              ]
+            }
+          },
+          {
+            "id": "48572",
+            "slug": "ore-dake-level-up-na-ken-how-to-get-stronger",
+            "titles": {
+              "localized": {
+                "en": "Solo Leveling: How to Get Stronger"
+              },
+              "preferred": "Ore dake Level Up na Ken: How to Get Stronger",
+              "romanized": "Ore dake Level Up na Ken: How to Get Stronger"
+            },
+            "bannerImage": null,
+            "episodes": {
+              "nodes": [
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 1
+                }
+              ]
+            },
+            "posterImage": {
+              "blurhash": "KYA-PCDis8.TIUs.x^M{s+",
+              "original": {
+                "url": "https://media.kitsu.app/anime/48572/poster_image/9349b59b46bfad8989ba5cf993d8ba34.jpg",
+                "name": "original"
+              },
+              "views": [
+                {
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/48572/poster_image/tiny-a0955fd412d812ecd6baef8207e63ffb.jpeg"
+                },
+                {
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/48572/poster_image/large-f1d7a0541e4a13bc82bff17720b65b96.jpeg"
+                },
+                {
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/48572/poster_image/small-e412613afd08d7467834e52b9f46dc65.jpeg"
+                },
+                {
+                  "name": "medium",
+                  "url": "https://media.kitsu.app/anime/48572/poster_image/medium-3388a16e2d7bd07f18501716c29335b3.jpeg"
+                }
+              ]
+            }
+          },
+          {
+            "id": "49220",
+            "slug": "ore-dake-level-up-na-ken-reawakening",
+            "titles": {
+              "localized": {
+                "en": "Solo Leveling: ReAwakening"
+              },
+              "preferred": "Ore dake Level Up na Ken: ReAwakening",
+              "romanized": "Ore dake Level Up na Ken: ReAwakening"
+            },
+            "bannerImage": {
+              "blurhash": "KWCGZoo$9DNXWAV=oyjZoh",
+              "original": {
+                "height": 1110,
+                "name": "original",
+                "url": "https://media.kitsu.app/anime/49220/cover_image/4bc36774cc0d5d46b93cd0bc5c938aac.jpg",
+                "width": 3221
+              },
+              "views": [
+                {
+                  "height": 200,
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/49220/cover_image/tiny-c9e01b6384fcab6b6a7c8c26101b932a.jpeg",
+                  "width": 840
+                },
+                {
+                  "height": 800,
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/49220/cover_image/large-c35aa9fd44bce073bb0c3016b7bf7062.jpeg",
+                  "width": 3360
+                },
+                {
+                  "height": 400,
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/49220/cover_image/small-85add3e657dc1505629805b0ebea9dce.jpeg",
+                  "width": 1680
+                }
+              ]
+            },
+            "episodes": {
+              "nodes": [
+                {
+                  "thumbnail": null,
+                  "description": {},
+                  "titles": {
+                    "localized": {}
+                  },
+                  "number": 1
+                }
+              ]
+            },
+            "posterImage": {
+              "blurhash": "KNDc8rMciIH?oLX-00yDWU",
+              "original": {
+                "url": "https://media.kitsu.app/anime/49220/poster_image/1db10f3af2894af950f3d17ff629bdda.png",
+                "name": "original"
+              },
+              "views": [
+                {
+                  "name": "tiny",
+                  "url": "https://media.kitsu.app/anime/49220/poster_image/tiny-3a6b35e4995695d3590c2a0b448acfbe.jpeg"
+                },
+                {
+                  "name": "large",
+                  "url": "https://media.kitsu.app/anime/49220/poster_image/large-16db0e8ff7c9449bd1bf8ba33c320140.jpeg"
+                },
+                {
+                  "name": "small",
+                  "url": "https://media.kitsu.app/anime/49220/poster_image/small-6e934004ce58201df3caa4ff34f828dc.jpeg"
+                },
+                {
+                  "name": "medium",
+                  "url": "https://media.kitsu.app/anime/49220/poster_image/medium-c005add2b2fadd8f01ceb2440c548806.jpeg"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }

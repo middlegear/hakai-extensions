@@ -6,7 +6,7 @@ export type anime = {
   dub?: string | null;
   romanji?: string | null;
 };
-export type scrappedAnimeSearch = {};
+
 export type Episodes = {
   id: string | null;
   title: string | null;
@@ -15,6 +15,5 @@ export type animeInfo = {
   id: string | null;
   title: string | null;
   posterImage: string | null;
-  href: string | null;
-  // episodes: Episodes[];
+  // href: string | null;
 };

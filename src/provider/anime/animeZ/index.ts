@@ -1,8 +1,7 @@
 import {
   fetchAnimeInfo,
   fetchSources,
-  searchAnime,
-  searchSuggestions,
+  matchingSearcResponse,
 } from './animeZ.js';
 
 class AnimeZ {
@@ -13,16 +12,9 @@ class AnimeZ {
    * @returns an array of anime related to search
    */
   async search(query: string, page: number = 1) {
-    return searchAnime(query, page);
+    return matchingSearcResponse(query, page);
   }
-  /**
-   *
-   * @param query search query  as string
-   * @returns search results for anime
-   */
-  async searchSuggestions(query: string) {
-    return searchSuggestions(query);
-  }
+
   /**
    *
    * @param animeId string

@@ -1,20 +1,26 @@
 ////main file where everything gets exported
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
+import { matchingSearcResponse } from './provider/anime/animeZ/animeZ.js';
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { HiAnime } from './provider/index.js';
 import { getProviderId } from './provider/meta/jikan/providers.js';
+import { searchKitsu } from './provider/meta/kitsu.js';
 import Meta from './provider/meta/meta.js';
 import { AnimeStatusFilter, Season } from './types/jikan.js';
 
 // getCharacters(16498)
 // const anitaku = new Anitaku();
-
+// matchingSearcResponse('bleach', 1)
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
 // anitaku
 //   .fetchSources("bleach-sennen-kessen-hen-soukoku-tan-episode-8")
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
-
+searchKitsu('solo levelling')
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
 //
 // const anitaku = new AnimeZ();
 // import { fetchProviderId } from "./meta/anilist/fetchProviderId";
@@ -22,11 +28,11 @@ import { AnimeStatusFilter, Season } from './types/jikan.js';
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
 
-const jikan = new Meta.Anilist();
-jikan
-  .search('bleach')
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+// const jikan = new Meta.Anilist();
+// jikan
+//   .search('bleach')
+//   .then((data) => console.log(data))
+//   .catch((err) => console.error(err));
 
 // // 56784 52635 59989 41467  52635  269  40028  48583  51535
 

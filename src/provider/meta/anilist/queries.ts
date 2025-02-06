@@ -291,3 +291,73 @@ export const characterQuery = `query Media($mediaId: Int, $sort: [CharacterSort]
     }
   }
 }`;
+
+////kistu queries
+export const kistuQuery = `query ExampleQuery($title: String!, $first: Int, $episodesFirst2: Int) {
+  searchAnimeByTitle(title: $title, first: $first) {
+    nodes {
+      id
+      slug
+      titles {
+        localized
+        preferred
+        romanized
+      }
+      bannerImage {
+        blurhash
+        original {
+          height
+          name
+          url
+          width
+        }
+        views {
+          height
+          name
+          url
+          width
+        }
+      }
+      episodes(first: $episodesFirst2) {
+        nodes {
+          thumbnail {
+            blurhash
+            original {
+              url
+            
+            }
+            views {
+             
+              name
+              url
+            }
+          }
+          description
+          titles {
+            localized
+          }
+          number
+        }
+      }
+      posterImage {
+        blurhash
+        original {
+          url
+          name
+        }
+        views {
+          name
+          url
+        }
+      }
+    }
+  }
+}
+
+
+`;
+// var  {
+//   "title": "solo levelling",
+//   "first": 5,
+//   "episodesFirst2": 2000
+// }

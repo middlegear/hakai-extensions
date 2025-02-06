@@ -8,7 +8,6 @@ import {
 
 export async function fetchProviderId(id: number) {
   try {
-    // Fetch anime info from Anilist  API
     const data = await fetchAnimeById(id);
     const titles = data.data?.title;
     const englishTitle = titles?.english as string;
@@ -16,9 +15,7 @@ export async function fetchProviderId(id: number) {
     const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
 
     if (!titles) throw new Error(' title not found.');
-    // console.log(titles, userPref);
 
-    // Providers' search functions
     const searchAnitaku = async (title: string) => {
       const anitaku = new Anitaku();
       try {
@@ -40,30 +37,13 @@ export async function fetchProviderId(id: number) {
       try {
         const result = await animeZ.search(title);
         return (
-          result.anime?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             animeId: item.id,
             name: item.title,
           })) || []
         );
       } catch (error) {
         console.error('Error fetching from AnimeZ:', error);
-        return [];
-      }
-    };
-
-    const searchAnimeZSuggestions = async (title: string) => {
-      const animeZ = new AnimeZ();
-      try {
-        const result = await animeZ.searchSuggestions(title);
-        return (
-          result.anime?.map((item: any) => ({
-            animeId: item.id,
-            name: item.title,
-            alt: item.alternatives || 'stubborn provider',
-          })) || []
-        );
-      } catch (error) {
-        console.error('Error fetching from AnimeZ Suggestions:', error);
         return [];
       }
     };
@@ -84,8 +64,6 @@ export async function fetchProviderId(id: number) {
         return [];
       }
     };
-
-    // Fetch results from all providers
     const fetchProviderResults = async (
       modifiedString: string,
       userPref: string
@@ -93,47 +71,24 @@ export async function fetchProviderId(id: number) {
       const providerResults = await Promise.all([
         searchAnitaku(userPref),
         searchAnimeZ(modifiedString),
-        searchAnimeZSuggestions(modifiedString),
+
         searchHiAnime(userPref),
       ]);
 
-      const [
-        anitakuResults,
-        animeZResults,
-        animeZSuggestionsResults,
-        hiAnimeResults,
-      ] = providerResults;
+      const [anitakuResults, animeZResults, hiAnimeResults] = providerResults;
 
-      // Organizing results by provider key
       const separatedResults = {
         anitaku: anitakuResults,
         animeZ: animeZResults,
-        animeZSuggestions: animeZSuggestionsResults,
         hiAnime: hiAnimeResults,
       };
 
       const anitakures = separatedResults.anitaku;
       const hianimeres = separatedResults.hiAnime;
-      ////combine both data
-      const matchingAnimeZ = animeZResults.map(
-        (animeItem: { animeId: any }) => {
-          const matchingSuggestion = animeZSuggestionsResults.find(
-            (animesuggest: { animeId: any }) =>
-              animesuggest.animeId === animeItem.animeId
-          );
-          if (matchingSuggestion) {
-            return {
-              ...animeItem,
-              alt: matchingSuggestion.alt || null,
-            };
-          }
-          return animeItem;
-        }
-      );
 
       const { gogoAnime } = bestAnitakuTitle(titles, anitakures);
       const { hiAnime } = bestHianimeTitle(titles, hianimeres);
-      const { animeZ } = bestanimeZTitle(titles, matchingAnimeZ);
+      const { animeZ } = bestanimeZTitle(titles, animeZResults);
 
       return {
         data,

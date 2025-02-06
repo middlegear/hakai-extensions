@@ -59,7 +59,7 @@ export function anitaku_extractAnimeInfo(
     description: null,
     releaseDate: null,
     currentStatus: null,
-  }; /// remember to scrape for genres its buggy
+  };
 
   animeInfo.title =
     $(selector)?.find('div.anime_info_body_bg > h1').text().trim() || null;
