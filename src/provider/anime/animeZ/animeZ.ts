@@ -6,7 +6,8 @@ import {
   getEpisodes,
 } from './scraper.js';
 import { animeZBaseUrl, animeZClient } from '../../index.js';
-import { Dubbing } from '../hianime/types.js';
+import { category, servers } from './types.js';
+import { Url } from 'url';
 
 async function searchAnime(query: string, page: number) {
   if (!query)
@@ -136,7 +137,10 @@ export async function fetchAnimeInfo(animeId: string) {
 
     const data = extractAnimeZInfo(data$);
 
-    return data;
+    return {
+      succes: true,
+      data: data,
+    };
   } catch (error) {
     return {
       success: false,
@@ -144,7 +148,10 @@ export async function fetchAnimeInfo(animeId: string) {
     };
   }
 }
-export async function fetchEpisodes(animeId: string, dub: Dubbing) {
+export async function fetchEpisodes(
+  animeId: string,
+  dub: category = category.SUB
+) {
   if (!animeId)
     return { success: false, error: ' Missing required params: Id' };
 
@@ -153,10 +160,24 @@ export async function fetchEpisodes(animeId: string, dub: Dubbing) {
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
 
     const data = getEpisodes(data$);
-
+    let episodes;
+    switch (dub) {
+      case category.DUB:
+        episodes = data.episodes?.filter(
+          (item) => item.category === category.DUB
+        );
+        break;
+      case category.SUB:
+        episodes = data.episodes?.filter(
+          (item) => item.category === category.SUB
+        );
+        break;
+      default:
+        episodes = data.episodes;
+    }
     return {
       success: true,
-      data: data,
+      data: episodes,
     };
   } catch (error) {
     return {
@@ -166,7 +187,10 @@ export async function fetchEpisodes(animeId: string, dub: Dubbing) {
   }
 }
 
-export async function fetchSources(episodeId: string) {
+export async function fetchSources(
+  episodeId: string,
+  server: servers = servers.SU57
+) {
   if (!episodeId) {
     return {
       success: false,
@@ -184,40 +208,73 @@ export async function fetchSources(episodeId: string) {
     const embedSource: string | null =
       iframe$(iframe).find('iframe').attr('src') || null;
 
-    const host = iframe$('main#box_right_watch')
-      .find('input#currentlink')
-      .attr('value')
-      ?.split('/')
-      .at(-1);
-    const serverUrl = iframe$('main#box_right_watch')
-      .find('input#currentlink')
-      .attr('value');
+    // const host = iframe$('main#box_right_watch')
+    //   .find('input#currentlink')
+    //   .attr('value')
+    //   ?.split('/')
+    //   .at(-1);
+    // const serverUrl = iframe$('main#box_right_watch')
+    //   .find('input#currentlink')
+    //   .attr('value');
+    ///the site server buttons look messed up idk why
+    const link = iframe$('div#watch-block > div#list_sv')
+      .find('a.loadchapter')
+      .map(function () {
+        return iframe$(this).attr('data-link');
+      })
+      .get();
 
-    if (embedSource?.startsWith('https')) {
-      try {
-        const stream = await animeZClient.get(`${embedSource}`, {
-          headers: {
-            Referer: `${animeZBaseUrl}/`,
-            Authorization: `${host}`,
-          },
-        });
+    let frame;
+    let newEmbedSource;
 
-        const data$: cheerio.CheerioAPI = cheerio.load(stream.data);
-        const selector: cheerio.SelectorType = 'div#video-container > video';
-        const streamSource =
-          `${serverUrl}${data$(selector).find('source').attr('src')}` || null;
-        const type = data$(selector).find('source').attr('type') || null;
-        return {
-          success: true,
-          source: streamSource,
-          type: type,
-          referer: embedSource,
-        };
-      } catch (error) {
-        return {
-          success: false,
-          error: error instanceof Error ? error.message : 'check embedSource',
-        };
+    if (embedSource) {
+      frame = new URL(embedSource);
+    }
+    if (link && frame) {
+      switch (server) {
+        case servers.F35:
+          newEmbedSource = link[0] + frame?.pathname;
+          break;
+
+        case servers.SU57:
+          newEmbedSource = link[1] + frame?.pathname;
+          break;
+
+        case servers.Typhoon:
+          newEmbedSource = frame.href;
+          break;
+      }
+
+      const serverUrl = new URL(newEmbedSource);
+
+      console.log(serverUrl.host);
+      if (serverUrl.href?.startsWith('https')) {
+        try {
+          const stream = await animeZClient.get(`${serverUrl.href}`, {
+            headers: {
+              Referer: `${animeZBaseUrl}/`,
+              Authorization: `${serverUrl.host}`,
+            },
+          });
+
+          const data$: cheerio.CheerioAPI = cheerio.load(stream.data);
+          const selector: cheerio.SelectorType = 'div#video-container > video';
+          const streamSource =
+            `${serverUrl.protocol}${serverUrl.hostname}${data$(selector).find('source').attr('src')}` ||
+            null;
+          const type = data$(selector).find('source').attr('type') || null;
+          return {
+            success: true,
+            source: streamSource,
+            type: type,
+            referer: serverUrl.href,
+          };
+        } catch (error) {
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'check embedSource',
+          };
+        }
       }
     }
   } catch (error) {

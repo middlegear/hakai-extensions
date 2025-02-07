@@ -101,7 +101,6 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
     id: null,
     title: null,
     posterImage: null,
-    // href: null,
   };
 
   animeInfo.title = $(selector1).find('h2').text().trim() || null;
@@ -110,32 +109,52 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
       .find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image')
       .attr('src')}` || null;
   const href = $(selector1).find('a.text-info').attr('href');
-  // animeInfo.href = href || null;
+
   animeInfo.id = href?.split('/').at(-2) || null;
+  const episodes: {
+    hasDub: boolean;
+    hasSub: boolean;
+  }[] = [];
+
+  const episodesSelector: cheerio.SelectorType =
+    'ul#list_chapter_id_detail > li.wp-manga-chapter';
+
+  $(episodesSelector).each((_, element) => {
+    const text = $(element).find('a').text();
+
+    episodes.push({
+      hasDub: text.includes('Dub'),
+      hasSub: !text.includes('Dub'),
+    });
+  });
+
+  const hasDub = episodes.some((item) => item.hasDub);
+  const hasSub = episodes.some((item) => item.hasSub);
 
   return {
     animeInfo,
+    hasDub,
+    hasSub,
   };
 }
 
 export function getEpisodes($: cheerio.CheerioAPI) {
   const episodes: {
-    id: string | null;
-    number: string | null;
-    // category: string | null;
+    episodeId: string | null;
+    number: number | null;
+    category: string | null;
   }[] = [];
 
   const episodesSelector: cheerio.SelectorType =
     'ul#list_chapter_id_detail > li.wp-manga-chapter  ';
   $(episodesSelector).each((_, element) => {
     episodes.push({
-      id: $(element).find('a').attr('href')?.slice(1) || null,
-
-      number: $(element).find('a').text().trim() || null,
-      //   category: $(element).find('a').text().split('-').includes('Dub')
-      //     ? //!includes(dub) for sub boolean
-      //       Dubbing.Dub
-      //     : Dubbing.Sub || null,
+      episodeId: $(element).find('a').attr('href')?.slice(1) || null,
+      number:
+        Number($(element).find('a').text().trim().split('-').at(0)) || null,
+      category: $(element).find('a').text().split('-').includes('Dub')
+        ? Dubbing.Dub
+        : Dubbing.Sub || null,
     });
   });
   episodes.reverse();

@@ -15,5 +15,13 @@ export type animeInfo = {
   id: string | null;
   title: string | null;
   posterImage: string | null;
-  // href: string | null;
 };
+export enum category {
+  DUB = 'dub',
+  SUB = 'sub',
+}
+export enum servers {
+  F35,
+  SU57,
+  Typhoon,
+}

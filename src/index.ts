@@ -1,14 +1,18 @@
 ////main file where everything gets exported
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-import { matchingSearcResponse } from './provider/anime/animeZ/animeZ.js';
+import {
+  fetchAnimeInfo,
+  fetchSources,
+  matchingSearcResponse,
+} from './provider/anime/animeZ/animeZ.js';
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { HiAnime } from './provider/index.js';
 import { getProviderId } from './provider/meta/jikan/providers.js';
 import { searchKitsu } from './provider/meta/kitsu.js';
 import Meta from './provider/meta/meta.js';
 import { AnimeStatusFilter, Season } from './types/jikan.js';
-
+import { fetchEpisodes } from './provider/anime/animeZ/animeZ.js';
 // getCharacters(16498)
 // const anitaku = new Anitaku();
 // matchingSearcResponse('bleach', 1)
@@ -18,7 +22,8 @@ import { AnimeStatusFilter, Season } from './types/jikan.js';
 //   .fetchSources("bleach-sennen-kessen-hen-soukoku-tan-episode-8")
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
-searchKitsu('solo levelling')
+// searchKitsu('solo levelling')
+fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14-195280')
   .then((data) => console.log(data))
   .catch((err) => console.error(err));
 //
