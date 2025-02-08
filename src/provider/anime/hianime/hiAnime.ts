@@ -14,14 +14,11 @@ export async function searchAnime(query: string, page: number = 1) {
   if (!query)
     return {
       success: false,
-      error: 'Please enter a valid id',
+      error: 'Missing required Params : query',
     };
 
   query = query.trim() ? decodeURIComponent(query.trim()) : '';
 
-  if (page === undefined) {
-    page = 1;
-  }
   try {
     const response = await zoroClient.get(
       `${zoroSearch}?keyword=${query}&page=${page as number}`
@@ -50,7 +47,7 @@ export async function fetchAnimeInfo(animeId: string) {
   if (!animeId)
     return {
       success: false,
-      error: 'Provide an animeId!',
+      error: 'Missing required params :animeId',
     };
 
   try {
@@ -73,9 +70,6 @@ export async function fetchAnimeInfo(animeId: string) {
       '.detail-infor-content .ss-list a';
     const resEpisodes = extractEpisodesList($episodes, episodesSelector);
 
-    // const relatedAnimeSeasons = await client.get(`${zoroBaseUrl}/watch/${animeId}`);
-    // console.log(resAnimeInfo, resEpisodes);
-
     return { success: true, animeInfo: resAnimeInfo, episodes: resEpisodes };
   } catch (error) {
     return {
@@ -89,7 +83,7 @@ export async function fetchServers(episodeId: string) {
   if (!episodeId)
     return {
       success: false,
-      error: 'Provide an episodeId!',
+      error: 'Missing required params :episodeId!',
     };
 
   try {
@@ -127,6 +121,12 @@ export async function fetchEpisodeSources(
   server: Servers,
   language: Dubbing
 ) {
+  if (!episodeid) {
+    return {
+      success: false,
+      error: 'Missing required params episodeId',
+    };
+  }
   try {
     const newId = episodeid.split('-').pop();
 

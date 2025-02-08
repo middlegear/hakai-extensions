@@ -30,8 +30,9 @@ export enum AnimeStatusFilter {
   Upcoming = 'upcoming',
   Favourite = 'favourite',
 }
-export enum Providers {
-  Anitaku = 'anitaku',
+
+export enum AnimeProvider {
   AnimeZ = 'animez',
   HiAnime = 'hianime',
+  Anitaku = 'anitaku',
 }

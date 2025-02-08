@@ -515,3 +515,73 @@ export async function getTopAnime(
     };
   }
 }
+
+export async function getEpisodes(id: number, page: number) {
+  if (!id) {
+    return {
+      success: false,
+      error: 'Missing require params :mal_id',
+    };
+  }
+
+  try {
+    const response = await axios.get(
+      `${jikanBaseUrl}/anime/${id}/episodes?page=${page}`
+    );
+
+    // const pagination = response.data.pagination;
+    const pagination = {
+      hasNextPage: response.data.pagination.has_next_page,
+      lastPage: response.data.pagination.last_visible_page,
+    };
+
+    const data = response.data.data.map((item: any) => ({
+      number: item.mal_id,
+      title: item.title,
+      filler: item.filler,
+      recap: item.recap,
+    }));
+    return {
+      success: true,
+      pagination: pagination,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'unknown err',
+    };
+  }
+}
+
+export async function getEpisodeInfo(jikanId: number, episodeNumber: number) {
+  if (!jikanId) {
+    return {
+      success: false,
+      error: 'Missing required params : mal_id',
+    };
+  }
+
+  try {
+    const response = await axios.get(
+      `${jikanBaseUrl}/anime/${jikanId}/episodes/${episodeNumber}`
+    );
+
+    const data = {
+      number: response.data.data.mal_id,
+      title: response.data.data.title,
+      duration: Number(response.data.data.duration) / 60 || null,
+      filler: response.data.data.filler,
+      synopsis: response.data.data.synopsis,
+    };
+    return {
+      succes: true,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'unknown err',
+    };
+  }
+}

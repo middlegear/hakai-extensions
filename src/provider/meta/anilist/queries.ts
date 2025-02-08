@@ -299,9 +299,11 @@ export const kistuQuery = `query ExampleQuery($title: String!, $first: Int, $epi
       id
       slug
       titles {
-        localized
         preferred
         romanized
+        original
+        translated
+      
       }
       bannerImage {
         blurhash

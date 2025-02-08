@@ -12,6 +12,8 @@ import {
   getSeason,
   getTopAnime,
   searchAnime,
+  getEpisodeInfo,
+  getEpisodes,
 } from './jikan.js';
 
 import { getProviderId } from './providers.js';
@@ -35,7 +37,7 @@ class Jikan {
 
   /**
    *
-   * @param id number. Required
+   * @param id MAL ID number. Required
    * @returns anime resource
    */
   async fetchInfo(id: number) {
@@ -52,7 +54,7 @@ class Jikan {
 
   /**
    *
-   * @param id number.  Required
+   * @param id MAL ID number. Required
    * @returns anime characters resource
    */
 
@@ -123,6 +125,24 @@ class Jikan {
     limit: number = 25
   ) {
     return getNextSeason(filter, page, limit);
+  }
+  /**
+   *
+   * @param id  MAL ID number. Required
+   * @param page number default = 1 (optional)
+   * @returns episodes resource
+   */
+  async fetchEpisodes(id: number, page: number = 1) {
+    return getEpisodes(id, page);
+  }
+  /**
+   *
+   * @param id MAL ID number. Required
+   * @param episodeNumber number. Required
+   * @returns episode information resource
+   */
+  async fetchEpisodeInfo(id: number, episodeNumber: number) {
+    return getEpisodeInfo(id, episodeNumber);
   }
 }
 

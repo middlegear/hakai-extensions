@@ -9,7 +9,7 @@ import {
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { HiAnime } from './provider/index.js';
 import { getProviderId } from './provider/meta/jikan/providers.js';
-import { searchKitsu } from './provider/meta/kitsu.js';
+import { getEpisodes, getEpisodeInfo } from './provider/meta/jikan/jikan.js';
 import Meta from './provider/meta/meta.js';
 import { AnimeStatusFilter, Season } from './types/jikan.js';
 import { fetchEpisodes } from './provider/anime/animeZ/animeZ.js';
@@ -22,8 +22,9 @@ import { fetchEpisodes } from './provider/anime/animeZ/animeZ.js';
 //   .fetchSources("bleach-sennen-kessen-hen-soukoku-tan-episode-8")
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
-// searchKitsu('solo levelling')
-fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14-195280')
+
+// fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14-195280')
+getEpisodeInfo(21, 1)
   .then((data) => console.log(data))
   .catch((err) => console.error(err));
 //
