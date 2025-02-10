@@ -1,10 +1,4 @@
 import {
-  AnimeStatusFilter,
-  AnimeType,
-  Filters,
-  Season,
-} from '../../../types/jikan.js';
-import {
   getAnimeCharacters,
   getCurrentSeason,
   getInfoById,
@@ -16,6 +10,7 @@ import {
   getEpisodes,
   getProviderId,
 } from './jikan.js';
+import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
 
 class Jikan {
   /**

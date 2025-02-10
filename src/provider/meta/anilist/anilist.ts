@@ -24,7 +24,7 @@ import {
   Sort,
   Seasons,
   Charactersort,
-} from '../../../types/anilist.js';
+} from './types.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -34,8 +34,8 @@ export async function searchAnime(
   search: string,
   page: number,
   perPage: number,
-  type: MediaType,
-  isAdult: boolean
+  type: MediaType = MediaType.Anime,
+  isAdult: boolean = false
 ) {
   if (!search) {
     return {
@@ -223,8 +223,8 @@ export async function fetchAnimeById(id: number) {
 }
 
 export async function fetchTopAiring(
-  page: number = 1,
-  perPage: number = 25,
+  page: number,
+  perPage: number,
   type: MediaType = MediaType.Anime,
   format: Format = Format.TV,
   status: Status = Status.RELEASING,
@@ -326,10 +326,10 @@ export async function fetchTopAiring(
 export async function fetchPopular(
   page: number,
   perPage: number,
-  type: MediaType,
   format: Format,
-  isAdult: boolean,
-  sort: Sort
+  type: MediaType = MediaType.Anime,
+  isAdult: boolean = false,
+  sort: Sort = Sort.POPULARITY_DESC
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -426,10 +426,10 @@ export async function fetchPopular(
 export async function fetchTopRated(
   page: number,
   perPage: number,
-  isAdult: boolean,
-  type: MediaType,
-  sort: Sort,
-  format?: Format
+  format: Format,
+  isAdult: boolean = false,
+  type: MediaType = MediaType.Anime,
+  sort: Sort = Sort.SCORE_DESC
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -524,14 +524,14 @@ export async function fetchTopRated(
 }
 
 export async function fetchSeason(
-  page: number = 1,
-  perPage: number = 25,
-  type: MediaType = MediaType.Anime,
-  format: Format = Format.TV,
-  isAdult: boolean = false,
+  page: number,
+  perPage: number,
   season: Seasons,
   seasonYear: number,
-  sort: Sort = Sort.POPULARITY_DESC
+  sort: Sort,
+  format: Format,
+  isAdult: boolean = false,
+  type: MediaType = MediaType.Anime
 ) {
   if (!season || !seasonYear) {
     return {

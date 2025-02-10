@@ -7,8 +7,6 @@ import {
 } from './scraper.js';
 import { animeZBaseUrl, animeZClient } from '../../index.js';
 import { category, servers } from './types.js';
-import { Url } from 'url';
-import { E } from 'vitest/dist/chunks/reporters.6vxQttCV.js';
 import { ASource } from '../../../types/types.js';
 
 async function searchAnime(query: string, page: number) {
@@ -151,7 +149,10 @@ export async function fetchAnimeInfo(animeId: string) {
   }
 }
 //// the pagination of episodes are coming in as latest so pick the last visible page the decrement this is for high episode anime
-export async function getAnimeEpisodes(animeId: string, dub: category) {
+export async function getAnimeEpisodes(
+  animeId: string,
+  dub: category = category.SUB
+) {
   if (!animeId)
     return { success: false, error: ' Missing required params: Id' };
 
@@ -189,7 +190,8 @@ export async function getAnimeEpisodes(animeId: string, dub: category) {
 
 export async function fetchSources(
   episodeId: string,
-  server: servers = servers.SU57
+  server: servers,
+  dub: category
 ) {
   if (!episodeId) {
     return {
@@ -197,9 +199,40 @@ export async function fetchSources(
       error: 'Missing required params : episodeId!',
     };
   }
+
+  let episodeId2;
+  switch (dub) {
+    case category.SUB:
+      if (episodeId.includes('dub')) {
+        episodeId2 = episodeId.replace('dub', '');
+      } else {
+        episodeId2 = episodeId;
+      }
+      break;
+
+    case category.DUB:
+      if (episodeId.includes('dub')) {
+        episodeId2 = episodeId;
+      } else {
+        const splitter = episodeId.split('/');
+        let parts = splitter.at(1)?.split('-');
+
+        if (parts && parts.length > 1) {
+          parts[1] = parts[1] + 'dub';
+          splitter[1] = parts.join('-');
+        }
+        episodeId2 = splitter.join('/');
+      }
+
+      break;
+
+    default:
+      episodeId2 = episodeId;
+  }
+  console.log(episodeId2);
   try {
     const response = await animeZClient.get(
-      `${animeZBaseUrl}/${decodeURIComponent(episodeId)}`
+      `${animeZBaseUrl}/${decodeURIComponent(episodeId2)}`
     );
 
     const iframe$: cheerio.CheerioAPI = cheerio.load(response.data);
@@ -247,7 +280,7 @@ export async function fetchSources(
 
       const serverUrl = new URL(newEmbedSource);
 
-      console.log(serverUrl.host);
+      // console.log(serverUrl.host);
       if (serverUrl.href?.startsWith('https')) {
         try {
           const stream = await animeZClient.get(`${serverUrl.href}`, {

@@ -1,159 +1,120 @@
 import {
-  MediaType,
-  Format,
-  Status,
-  Sort,
-  Seasons,
-  Charactersort,
-} from '../../../types/anilist.js';
-import {
-  fetchAnimeById,
-  fetchAnimeCharacters,
-  fetchPopular,
-  fetchProviderId,
-  fetchSeason,
-  fetchTopAiring,
-  fetchTopRated,
   searchAnime,
+  fetchAnimeById,
+  fetchProviderId,
+  fetchTopAiring,
+  fetchPopular,
+  fetchTopRated,
+  fetchSeason,
+  fetchAnimeCharacters,
 } from './anilist.js';
+import { MediaType, Format, Sort, Seasons, Charactersort } from './types.js';
 
 class Anilist {
   /**
-     * 
-     * @param search search query string. Required
-     * @param page  number default = 1 (optional)
-     * @param perPage sets the limit per page default = 20 (optional)
-     
-     * @returns search results for anime
-     */
-  async search(
-    search: string,
-    page: number = 1,
-    perPage: number = 20,
-    type: MediaType = MediaType.Anime,
-    isAdult: boolean = false
-  ) {
-    return searchAnime(search, page, perPage, type, isAdult);
+   * Searches for anime based on the provided query.
+   * @param {string} search - The search query string (Required).
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @returns {Promise<Array>} - An array of anime related to the search query.
+   */
+  async search(search: string, page: number = 1, perPage: number = 20) {
+    return searchAnime(search, page, perPage);
   }
+
   /**
-   *
-   * @param id number  AnilistId . Required
-   * @returns anime resource
+   * Fetches detailed information about an anime.
+   * @param {number} id - The Anilist anime ID (Required).
+   * @returns {Promise<Object>} - An object containing detailed anime information.
    */
   async fetchInfo(id: number) {
     return fetchAnimeById(id);
   }
+
   /**
-   *
-   * @param id number AnilistId . Required
-   * @returns anime resource mapped to providers
+   * Fetches anime information by provider ID.
+   * @param {number} id - The Anilist anime ID (Required).
+   * @returns {Promise<Object>} - An object containing provider IDs and anime info.
    */
   async fetchMapping(id: number) {
     return fetchProviderId(id);
   }
+
   /**
- * 
- * @param page  number default = 1 (optional)
- * @param perPage sets the limit per page default = 20 (optional)
-
- * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
-
- * @returns Airing anime resource
- */
-  async fetchAiring(
-    page: number = 1,
-    perPage: number = 20,
-    type: MediaType = MediaType.Anime,
-    format: Format = Format.TV,
-    isAdult: boolean = false,
-    status: Status = Status.RELEASING,
-    sort: Sort = Sort.SCORE_DESC
-  ) {
-    return fetchTopAiring(page, perPage, type, format, status, isAdult, sort);
+   * Fetches top airing anime.
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @returns {Promise<Array>} - An array of top-airing anime.
+   */
+  async fetchAiring(page: number = 1, perPage: number = 20) {
+    return fetchTopAiring(page, perPage);
   }
+
   /**
-   *
-   * @param page number default = 1 (optional)
-   * @param perPage sets the limit per page default = 20 (optional)
-   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats.Default = TV (Optional)
-   *
-   * @returns Most Popular anime resource
+   * Fetches the most popular anime.
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
+   * @returns {Promise<Array>} - An array of popular anime.
    */
   async fetchMostPopular(
     page: number = 1,
     perPage: number = 20,
-    type: MediaType = MediaType.Anime,
-    format: Format = Format.TV,
-    isAdult: boolean = false,
-    sort: Sort = Sort.POPULARITY_DESC
+    format: Format = Format.TV
   ) {
-    return fetchPopular(page, perPage, type, format, isAdult, sort);
+    return fetchPopular(page, perPage, format);
   }
+
   /**
-   * 
-   * @param page number default = 1 (optional)
-   * @param perPage sets the limit per page default = 20 (optional)
-   * @param  @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
-  
- 
-   * @returns top rated anime resource
+   * Fetches top-rated anime.
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV)..
+   * @returns {Promise<Array>} - An array of top-rated anime.
    */
   async fetchTop(
     page: number = 1,
-    perPage: number = 25,
-    type: MediaType = MediaType.Anime,
-    format: Format = Format.TV,
-    isAdult: boolean = false,
-    sort: Sort = Sort.SCORE_DESC
+    perPage: number = 20,
+    format: Format = Format.TV
   ) {
-    return fetchTopRated(page, perPage, isAdult, type, sort, format);
+    return fetchTopRated(page, perPage, format);
   }
 
   /**
-   * 
-   * @param page number default = 1 (optional)
-   * @param perPage sets the limit per page default = 20 (optional)
-
-   * @param format Enum: TV, TV_SHORT, MOVIE , SPECIAL, OVA , ONA, MUSIC, MANGA, NOVEL, ONE_SHOT. Available Anime formats. Default = TV (Optional)
-
-   * @param season Enum WINTER, SPRING, SUMMER, FALL. Required. Availabe anime seasons
-   * @param seasonYear number .Required
-   * 
-   * @returns Seasonal anime resource
+   * Fetches seasonal anime.
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @param {Seasons} season - The season (WINTER, SPRING, SUMMER, FALL) (Required).
+   * @param {number} seasonYear - The year of the season (Required).
+   * @param {Sort} [sort=Sort.POPULARITY_DESC] - Sorting order (Optional, defaults to Popularity Descending).
+   * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
+   * @returns {Promise<Array>} - An array of seasonal anime.
    */
   async fetchSeasonalAnime(
     page: number = 1,
     perPage: number = 20,
-    type: MediaType = MediaType.Anime,
-    format: Format = Format.TV,
-    isAdult: boolean = false,
     season: Seasons,
     seasonYear: number,
-    sort: Sort = Sort.POPULARITY_DESC
+    sort: Sort = Sort.POPULARITY_DESC,
+    format: Format = Format.TV
   ) {
-    return fetchSeason(
-      page,
-      perPage,
-      type,
-      format,
-      isAdult,
-      season,
-      seasonYear,
-      sort
-    );
+    return fetchSeason(page, perPage, season, seasonYear, sort, format);
   }
+
   /**
-   *
-   * @param mediaId number. Anilist animeId. Required
-   *
-   * @returns Anime character resoource
+   * Fetches characters from an anime.
+   * @param {number} Id - The Anilist anime ID (Required).
+   * @param {Charactersort} [sort=Charactersort.RELEVANCE] - Sorting order for characters (Optional, defaults to Relevance).
+   * @param {Charactersort} [voiceActorsSort2=Charactersort.RELEVANCE] - Sorting order for voice actors (Optional, defaults to Relevance).
+   * @returns {Promise<Array>} - An array of anime characters.
    */
   async fetchCharacters(
-    mediaId: number,
+    Id: number,
     sort: Charactersort = Charactersort.RELEVANCE,
     voiceActorsSort2: Charactersort = Charactersort.RELEVANCE
   ) {
-    return fetchAnimeCharacters(mediaId, sort, voiceActorsSort2);
+    return fetchAnimeCharacters(Id, sort, voiceActorsSort2);
   }
 }
+
 export { Anilist };

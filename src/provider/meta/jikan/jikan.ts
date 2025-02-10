@@ -1,20 +1,21 @@
 import axios from 'axios';
 
-import {
-  AnimeStatusFilter,
-  AnimeType,
-  Filters,
-  Season,
-} from '../../../types/jikan.js';
 import { TINFO } from '../../../types/types.js';
 import { AnimeZ, HiAnime } from '../../index.js';
-import { AnimeProvider } from '../../../types/jikan.js';
+
 import {
   animeZtitle,
   // anitakuTitle,
   hianimeTitle,
   // type JikanTitle,
 } from './mapperjikan.js';
+import {
+  AnimeProvider,
+  AnimeStatusFilter,
+  AnimeType,
+  Filters,
+  Season,
+} from './types.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(

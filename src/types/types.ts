@@ -23,7 +23,6 @@ export type TINFO = {
   studio: string | null;
   producers: string | null;
 };
-//sources
 
 export type Subtitles = {
   url: string | null;

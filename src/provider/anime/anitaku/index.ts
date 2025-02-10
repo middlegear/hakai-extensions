@@ -6,7 +6,9 @@ import {
 } from './anitaku.js';
 
 import { anitakuServers } from './types.js';
-
+/**
+ *  @deprecated This provider has been deprecated will be removed later
+ */
 class Anitaku {
   /**
    * searches for anime based on query

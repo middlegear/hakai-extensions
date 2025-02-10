@@ -8,46 +8,43 @@ import { Dubbing, Servers } from './types.js';
 
 class HiAnime {
   /**
-   *
-   *
-   * @param query search query string
-   * @param page  defaults to 1 number (optional)
-   * Searches for anime based on the query
-   *
+   * Searches for anime based on the provided query.
+   * @param {string} query - The search query string. Required.
+   * @param {number} [page=1] - The page number for pagination (optional, defaults to 1).
+   * @returns {Promise<Array>} - An array of anime related to the search query.
    */
   async search(query: string, page: number = 1) {
     return searchAnime(query, page);
   }
   /**
-   *
-   *
-   * @param  animeId string
-   * @returns animeInfo with episodes
+   * Fetches detailed information about a specific anime, including episode data.
+   * @param {string} animeId - The unique identifier for the anime.
+   * @returns {Promise<Object>} - An object containing anime details and episode information.
    */
   async fetchInfo(animeId: string) {
     return fetchAnimeInfo(animeId);
   }
   /**
-   *
-   * @param episodeId unique id string
-   * @returns available servers
+   * Fetches available server infomation about the episode
+   * @param {string} episodeId - The unique identifier for the episode
+   * @returns {Promise<Object>}- An object containing server information
    */
   async fetchEpisodeServers(episodeId: string) {
     return fetchServers(episodeId);
   }
   /**
-   *
-   * @requires episodeId   unique id string
-   * @param server (optional) default is HD-1
-   * @param dub (optional) default is sub
-   *@returns streaming sources
+   * Fetches streaming sources for a given anime episode.
+   * @param {string} episodeId - The unique identifier for the episode. Required.
+   * @param {servers} [server=servers.HD1] - The server to use (optional, defaults to SU57).
+   * @param {category} [category=Dubbing.SUB] - The language category (optional, defaults to subbed).
+   * @returns {Promise<Object>} - An object containing streaming sources.
    */
   async fetchSources(
     episodeId: string,
     server: Servers = Servers.HD1,
-    dub: Dubbing = Dubbing.Sub
+    category: Dubbing = Dubbing.Sub
   ) {
-    return fetchEpisodeSources(episodeId, server, dub);
+    return fetchEpisodeSources(episodeId, server, category);
   }
 }
 export { HiAnime };

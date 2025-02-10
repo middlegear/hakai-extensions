@@ -1,4 +1,5 @@
 ////main file where everything gets exported
+// export * as Anilist from './provider/meta/anilist/index.js'; the way to export stuff for building
 // import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
 // import {
@@ -7,7 +8,7 @@
 //   matchingSearcResponse,
 // } from './provider/anime/animeZ/animeZ.js';
 // import { Servers, Dubbing } from './provider/anime/hianime/types.js';
-// import { AnimeZ, HiAnime } from './provider/index.js';
+import { AnimeZ, HiAnime } from './provider/index.js';
 
 // import {
 //   getEpisodes,
@@ -17,7 +18,7 @@
 // import Meta from './provider/meta/meta.js';
 // import { AnimeProvider, AnimeStatusFilter, Season } from './types/jikan.js';
 // // getCharacters(16498)
-// const anitaku = new AnimeZ();
+const anitaku = new AnimeZ();
 //   .search('one piece')
 // matchingSearcResponse('bleach', 1)
 //   .then((data) => console.log(data))
@@ -27,13 +28,13 @@
 // .then((data) => console.log(data))
 // .catch((err) => console.error(err));
 //bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280/
-// anitaku
-//   .fetchSources(
-//     'bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14-195280'
-//   )
-//   // getEpisodeswithInfo(56784, 1, AnimeProvider.HiAnime)
-//   .then((data) => console.log(data))
-//   .catch((err) => console.error(err));
+anitaku
+  .fetchSources(
+    'bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280'
+  )
+  //   // getEpisodeswithInfo(56784, 1, AnimeProvider.HiAnime)
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
 //
 // const anitaku = new AnimeZ();
 // import { fetchProviderId } from "./meta/anilist/fetchProviderId";
@@ -67,4 +68,3 @@
 //   .then((data: any) => console.log(data))
 //   .catch((err: any) => console.error(err));
 // ///boruto-naruto-next-generations-8143
-// export * as Anilist from './provider/meta/anilist/index.js'; the way to export stuff
