@@ -68,7 +68,7 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
         item.normalizedId === bestDubMatch.bestMatch.target
     );
   }
-  const gogoanime = {
+  return {
     sub: {
       animeId: subres?.animeId || null,
       name: subres?.name || null,
@@ -79,9 +79,6 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
       name: dubres?.name || null,
       score: bestDubMatch?.bestMatch.rating || null,
     },
-  };
-  return {
-    gogoanime,
   };
 }
 
@@ -114,13 +111,12 @@ export function hianimeTitle(title: JikanTitle, results: result[]) {
         item.name === bestTitleMatch.bestMatch.target
     );
   }
-  const hiAnime = {
+  return {
     animeId: match?.animeId || null,
     name: match?.name || null,
     romaji: match?.romaji || null,
     score: bestTitleMatch?.bestMatch.rating || null,
   };
-  return { hiAnime };
 }
 export function animeZtitle(title: JikanTitle, results: result[]) {
   const normalizedEnglish = normalizetitle(title.english as string);
@@ -151,7 +147,7 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
         item.nomalizedAnimeId === bestTitle.bestMatch.target
     );
   }
-  const animeZ = {
+  return {
     animeId: match?.animeId || null,
     name: match?.name || null,
     alt:
@@ -159,5 +155,4 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
       'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating,
   };
-  return { animeZ };
 }

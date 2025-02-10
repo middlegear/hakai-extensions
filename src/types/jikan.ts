@@ -34,5 +34,5 @@ export enum AnimeStatusFilter {
 export enum AnimeProvider {
   AnimeZ = 'animez',
   HiAnime = 'hianime',
-  Anitaku = 'anitaku',
+  // Anitaku = 'anitaku',
 }

@@ -32,3 +32,5 @@ data :res
 }
 
 in the end add some rankings
+
+work on class documentations with jsdocs

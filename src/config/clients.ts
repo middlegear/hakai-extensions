@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 
 const client: AxiosRequestConfig = {
-  timeout: 4000,
+  timeout: 8000,
   headers: {
     Accept: ACCEPT_HEADER,
     'Content-Encoding': ACCEPT_ENCODING,

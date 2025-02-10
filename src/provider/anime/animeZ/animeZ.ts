@@ -8,6 +8,7 @@ import {
 import { animeZBaseUrl, animeZClient } from '../../index.js';
 import { category, servers } from './types.js';
 import { Url } from 'url';
+import { E } from 'vitest/dist/chunks/reporters.6vxQttCV.js';
 
 async function searchAnime(query: string, page: number) {
   if (!query)
@@ -148,10 +149,8 @@ export async function fetchAnimeInfo(animeId: string) {
     };
   }
 }
-export async function fetchEpisodes(
-  animeId: string,
-  dub: category = category.SUB
-) {
+//// the pagination of episodes are coming in as latest so pick the last visible page the decrement this is for high episode anime
+export async function getAnimeEpisodes(animeId: string, dub: category) {
   if (!animeId)
     return { success: false, error: ' Missing required params: Id' };
 
@@ -177,7 +176,7 @@ export async function fetchEpisodes(
     }
     return {
       success: true,
-      data: episodes,
+      episodes,
     };
   } catch (error) {
     return {

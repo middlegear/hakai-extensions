@@ -1,8 +1,10 @@
 import {
   fetchAnimeInfo,
   fetchSources,
+  getAnimeEpisodes,
   matchingSearcResponse,
 } from './animeZ.js';
+import { category } from './types.js';
 
 class AnimeZ {
   /**
@@ -31,6 +33,15 @@ class AnimeZ {
 
   async fetchSources(episodeId: string) {
     return fetchSources(episodeId);
+  }
+  /**
+   *
+   * @param id  episodeId string. Required
+   * @param dub category can be sub / dub = sub
+   * @returns
+   */
+  async fetchEpisodes(id: string, dub: category = category.SUB) {
+    return getAnimeEpisodes(id, dub);
   }
 }
 export { AnimeZ };

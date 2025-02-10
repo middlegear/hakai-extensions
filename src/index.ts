@@ -7,14 +7,18 @@ import {
   matchingSearcResponse,
 } from './provider/anime/animeZ/animeZ.js';
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
-import { HiAnime } from './provider/index.js';
-import { getProviderId } from './provider/meta/jikan/providers.js';
+import { AnimeZ, HiAnime } from './provider/index.js';
+import {
+  getEpisodeswithInfo,
+  getProviderId,
+} from './provider/meta/jikan/providers.js';
 import { getEpisodes, getEpisodeInfo } from './provider/meta/jikan/jikan.js';
 import Meta from './provider/meta/meta.js';
-import { AnimeStatusFilter, Season } from './types/jikan.js';
-import { fetchEpisodes } from './provider/anime/animeZ/animeZ.js';
+import { AnimeProvider, AnimeStatusFilter, Season } from './types/jikan.js';
 // getCharacters(16498)
-// const anitaku = new Anitaku();
+// const anitaku = new HiAnime();
+// anitaku
+//   .search('one piece')
 // matchingSearcResponse('bleach', 1)
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
@@ -24,7 +28,7 @@ import { fetchEpisodes } from './provider/anime/animeZ/animeZ.js';
 //   .catch((err) => console.error(err));
 
 // fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14-195280')
-getEpisodeInfo(21, 1)
+getEpisodeswithInfo(56784, 1, AnimeProvider.AnimeZ)
   .then((data) => console.log(data))
   .catch((err) => console.error(err));
 //

@@ -21,7 +21,7 @@ export enum category {
   SUB = 'sub',
 }
 export enum servers {
-  F35,
-  SU57,
-  Typhoon,
+  F35 = 'F35 ',
+  SU57 = 'Rusia',
+  Typhoon = 'EU',
 }
