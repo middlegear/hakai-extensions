@@ -22,7 +22,7 @@ export async function searchAnime(
   query: string,
   page: number,
   limit: number,
-  type: String
+  type: AnimeType = AnimeType.TV
 ) {
   if (!query)
     return {
@@ -440,10 +440,10 @@ export async function getSeason(
 }
 
 export async function getTopAnime(
-  filter: AnimeStatusFilter,
-  type: AnimeType,
   page: number,
-  limit: number
+  limit: number,
+  filter: AnimeStatusFilter,
+  type: AnimeType
 ) {
   if (!filter || !type) {
     return {
@@ -695,10 +695,11 @@ export async function getProviderId(id: number) {
     throw error;
   }
 }
+/// fix pagination issues
 export async function getEpisodeswithInfo(
   jikanId: number,
-  page: number,
-  provider: AnimeProvider
+  provider: AnimeProvider,
+  page: number = 1
 ) {
   try {
     const data = await getProviderId(jikanId);
@@ -713,6 +714,7 @@ export async function getEpisodeswithInfo(
           result.episodes?.map((item: any) => ({
             episodeId: item.episodeId,
             number: item.number,
+            title: item.title,
           })) || []
         );
       } catch (error) {
@@ -745,7 +747,7 @@ export async function getEpisodeswithInfo(
         ]);
         const [jikan, animezdata] = res;
 
-        if (animezdata && animezdata.length > 20) {
+        if (animezdata && animezdata.length > 24) {
           return {
             data: data.data,
             animezdata,
@@ -761,6 +763,7 @@ export async function getEpisodeswithInfo(
             episodeId: item.episodeId,
             number: item.number,
             episodeTitle: jikanEpisode?.title || 'Unknown Title',
+            category: item.category,
           };
         });
 
@@ -772,7 +775,7 @@ export async function getEpisodeswithInfo(
           fetchEpisodesHianime(zoro.animeId as string),
         ]);
 
-        if (hianime && hianime.length > 20)
+        if (hianime && hianime.length > 24)
           return {
             data: data.data,
             hianime,

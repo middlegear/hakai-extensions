@@ -9,132 +9,137 @@ import {
   getEpisodeInfo,
   getEpisodes,
   getProviderId,
+  getEpisodeswithInfo,
 } from './jikan.js';
-import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
+import {
+  AnimeType,
+  AnimeStatusFilter,
+  Season,
+  Filters,
+  AnimeProvider,
+} from './types.js';
 
 class Jikan {
   /**
-   *
-   * @param query search query string. Required
-   * @param page number default = 1 (optional)
-   * @param limit sets the limit per page default is 25 (optional)
-   * @param type  Enum: "tv" "movie" "ova" "special" "ona" "music" "cm" "pv" "tv_special". Available Anime types
-   * @returns search results for anime
+   * Searches for anime by query.
+   * @param {string} query - The search query (Required).
+   * @param {number} [page=1] - The page number.
+   * @param {number} [limit=25] - Number of results per page.
+   * @param {AnimeType} [type=AnimeType.TV] - The anime type filter.
+   * @returns {Promise<any>} - The search results.
    */
-  async search(
-    query: string,
-    page: number = 1,
-    limit: number = 25,
-    type: AnimeType = AnimeType.TV
-  ) {
-    return searchAnime(query, page, limit, type);
+  async search(query: string, page = 1, limit = 25) {
+    return searchAnime(query, page, limit);
   }
 
   /**
-   *
-   * @param id MAL ID number. Required
-   * @returns anime resource
+   * Fetches anime details by MAL ID.
+   * @param {number} id - The MAL ID (Required).
+   * @returns {Promise<any>} - The anime information.
    */
   async fetchInfo(id: number) {
     return getInfoById(id);
   }
+
   /**
-   *
-   * @param id number MAL animeId.  Required
-   * @returns anime resource mapped to providers
+   * Fetches anime provider mappings for an anime.
+   * @param {number} id - The MAL ID (Required).
+   * @returns {Promise<any>} - The mapped providerId with anime details.
    */
-  async fetchMapping(id: number) {
+  async fetchAnimeId(id: number) {
     return getProviderId(id);
   }
-
   /**
-   *
-   * @param id MAL ID number. Required
-   * @returns anime characters resource
+   * Fetches anime provider episodes for an anime.
+   *@param {number} id - The MAL ID (Required).
+   * @param {AnimeProvider} - The anime provider Zoro / AnimeZ
+   * @returns {Promise<any>} - The animeInfo with Episodes
    */
-
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider) {
+    return getEpisodeswithInfo(id, provider);
+  }
+  /**
+   * Fetches characters for a given anime.
+   * @param {number} id - The MAL ID (Required).
+   * @returns {Promise<any>} - The anime characters.
+   */
   async fetchAnimeCharacters(id: number) {
     return getAnimeCharacters(id);
   }
 
   /**
-   *
-   * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types
-   * @param type Enum: "tv" "movie" "ova" "special" "ona" "music" "cm" "pv" "tv_special" default = 'tv'. Available Anime types. Default ='tv' (optional)
-   * @param page number default = 1 (optional)
-   * @param limit number default = 25 (optional)
-   * @returns Top anime
+   * Fetches top anime based on filters.
+   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.).
+   * @param {AnimeType} [type=AnimeType.TV] - The anime type.
+   * @param {number} [page=1] - The page number.
+   * @param {number} [limit=25] - Number of results per page.
+   * @returns {Promise<any>} - The top anime list.
    */
   async fetchTopAnime(
+    page = 1,
+    limit = 25,
     filter: AnimeStatusFilter,
-    type: AnimeType = AnimeType.TV,
-    page: number = 1,
-    limit: number = 25
+    type: AnimeType = AnimeType.TV
   ) {
-    return getTopAnime(filter, type, page, limit);
+    return getTopAnime(page, limit, filter, type);
   }
 
   /**
-   *
-   * @param year number. Required
-   * @param season Enum: "winter", "fall","spring","summer" available season types. Required!
-   * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types. Default ='tv' (optional)
-   * @param page number default = 1 (optional)
-   * @param limit number default = 25 (optional)
-   * @returns seasonal anime
+   * Fetches seasonal anime for a given year and season.
+   * @param {number} year - The target year (Required).
+   * @param {Season} season - The target season (winter, fall, etc.).
+   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {number} [page=1] - The page number.
+   * @param {number} [limit=25] - Number of results per page.
+   * @returns {Promise<any>} - The seasonal anime list.
    */
   async fetchSeason(
     year: number,
     season: Season,
-    filter: Filters = Filters.TV,
-    page: number = 1,
-    limit: number = 25
+    page = 1,
+    limit = 25,
+    filter: Filters = Filters.TV
   ) {
     return getSeason(year, season, filter, page, limit);
   }
+
   /**
-   *
-   * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types. Default ='tv' (optional)
-   * @param page number default = 1 (optional)
-   * @param limit number default = 25 (optional)
-   * @returns current seasonal anime
+   * Fetches currently airing seasonal anime.
+   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {number} [page=1] - The page number.
+   * @param {number} [limit=25] - Number of results per page.
+   * @returns {Promise<any>} - The current seasonal anime.
    */
-  async fetchCurrentSeason(
-    filter: Filters = Filters.TV,
-    page: number = 1,
-    limit: number = 25
-  ) {
+  async fetchCurrentSeason(filter: Filters = Filters.TV, page = 1, limit = 25) {
     return getCurrentSeason(filter, page, limit);
   }
 
   /**
-   *
-   * @param filter Enum: "airing" "upcoming" "bypopularity" "favorite". Top items filter types. Default ='tv' (optional)
-   * @param page number default = 1 (optional)
-   * @param limit number default = 25 (optional)
-   * @returns next season's anime
+   * Fetches anime for the upcoming season.
+   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {number} [page=1] - The page number.
+   * @param {number} [limit=25] - Number of results per page.
+   * @returns {Promise<any>} - The upcoming season's anime.
    */
-  async fetchNextSeason(
-    filter: Filters = Filters.TV,
-    page: number = 1,
-    limit: number = 25
-  ) {
+  async fetchNextSeason(filter: Filters = Filters.TV, page = 1, limit = 25) {
     return getNextSeason(filter, page, limit);
   }
+
   /**
-   *
-   * @param id  MAL ID number. Required
-   * @param page number default = 1 (optional)
-   * @returns episodes resource
+   * Fetches episode list for a given anime.
+   * @param {number} id - The MAL ID (Required).
+   * @param {number} [page=1] - The page number.
+   * @returns {Promise<any>} - The anime episodes.
    */
-  async fetchEpisodes(id: number, page: number = 1) {
+  async fetchEpisodes(id: number, page = 1) {
     return getEpisodes(id, page);
   }
+
   /**
-   *
-   * @param id MAL ID number. Required
-   * @param episodeNumber number. Required
-   * @returns episode information resource
+   * Fetches detailed information about a specific episode.
+   * @param {number} id - The MAL ID (Required).
+   * @param {number} episodeNumber - The episode number (Required).
+   * @returns {Promise<any>} - The episode details.
    */
   async fetchEpisodeInfo(id: number, episodeNumber: number) {
     return getEpisodeInfo(id, episodeNumber);
