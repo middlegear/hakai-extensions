@@ -9,6 +9,7 @@ import { animeZBaseUrl, animeZClient } from '../../index.js';
 import { category, servers } from './types.js';
 import { Url } from 'url';
 import { E } from 'vitest/dist/chunks/reporters.6vxQttCV.js';
+import { ASource } from '../../../types/types.js';
 
 async function searchAnime(query: string, page: number) {
   if (!query)
@@ -262,10 +263,33 @@ export async function fetchSources(
             `${serverUrl.protocol}${serverUrl.hostname}${data$(selector).find('source').attr('src')}` ||
             null;
           const type = data$(selector).find('source').attr('type') || null;
+          const data: ASource = {
+            intro: {
+              start: null,
+              end: null,
+            },
+            outro: {
+              start: null,
+              end: null,
+            },
+            subtitles: [
+              {
+                url: null,
+                lang: null,
+              },
+            ],
+            sources: [
+              {
+                url: streamSource,
+                isM3U8: streamSource?.endsWith('.m3u8') ?? null,
+                type: type,
+              },
+            ],
+          };
           return {
             success: true,
-            source: streamSource,
-            type: type,
+            data: data,
+            scrapeNote: 'Use proxy ',
             referer: serverUrl.href,
           };
         } catch (error) {

@@ -14,9 +14,9 @@ import {
   searchAnime,
   getEpisodeInfo,
   getEpisodes,
+  getProviderId,
 } from './jikan.js';
 
-import { getProviderId } from './providers.js';
 class Jikan {
   /**
    *

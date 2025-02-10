@@ -10,12 +10,12 @@ import {
   fetchAnimeById,
   fetchAnimeCharacters,
   fetchPopular,
+  fetchProviderId,
   fetchSeason,
   fetchTopAiring,
   fetchTopRated,
   searchAnime,
 } from './anilist.js';
-import { fetchProviderId } from './fetchProviderId.js';
 
 class Anilist {
   /**

@@ -178,7 +178,7 @@ export async function fetchEpisodeSources(
       );
       // console.log(link, mediadataId); looks like a crude implementation
       // const id = link.split('/').at(-1);
-      // console.log(link);
+      // console.log(id);
       // const sources = puppeteer(id);
       const sources = await new MegaCloud().extract(link);
       return {

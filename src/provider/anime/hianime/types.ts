@@ -49,16 +49,16 @@ export type ScrappedServers = {
 };
 
 export enum Servers {
-  HD1 = "hd-1",
+  HD1 = 'hd-1',
   // StreamSB = "streamsb",
   // StreamTape = "streamtape",
-  HD2 = "hd-2",
+  HD2 = 'hd-2',
 }
-export type language = "sub" | "dub" | "raw";
+export type language = 'sub' | 'dub' | 'raw';
 export enum Dubbing {
-  Dub = "dub",
-  Sub = "sub",
-  Raw = "raw",
+  Dub = 'dub',
+  Sub = 'sub',
+  Raw = 'raw',
 }
 export type scrappedAnime = {
   success: boolean;
@@ -67,16 +67,3 @@ export type scrappedAnime = {
   totalPages?: number | null;
   currentPage?: number | null;
 };
-export type Error = {
-  success: boolean;
-  error?: string;
-};
-export type scrappedAnimeInfo = {
-  success: boolean;
-  animeInfo?: AnimeInfo;
-  episodes?: EpisodeInfo[];
-};
-// export type scrappedServerData = {
-//   success: boolean;
-//   servers: AnimeServers;
-// };
