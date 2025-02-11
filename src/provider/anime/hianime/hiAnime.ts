@@ -138,7 +138,7 @@ export async function fetchAnimeInfo(animeId: string) {
       };
     return {
       success: false,
-      staus: 500,
+      status: 500,
       data: null,
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };

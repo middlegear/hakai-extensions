@@ -1,3 +1,4 @@
+import { AnimeProvider } from '../../../types/types.js';
 import {
   searchAnime,
   fetchAnimeById,
@@ -7,8 +8,9 @@ import {
   fetchTopRated,
   fetchSeason,
   fetchAnimeCharacters,
+  getEpisodeswithInfo,
 } from './anilist.js';
-import { MediaType, Format, Sort, Seasons, Charactersort } from './types.js';
+import { Format, Seasons, Charactersort } from './types.js';
 
 class Anilist {
   /**
@@ -68,29 +70,28 @@ class Anilist {
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV)..
    * @returns {Promise<Array>} - An array of top-rated anime.
    */
-  async fetchTop(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
+  async fetchTopRatedAnime(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
     return fetchTopRated(page, perPage, format);
   }
 
   /**
    * Fetches seasonal anime.
-   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
-   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
    * @param {Seasons} season - The season (WINTER, SPRING, SUMMER, FALL) (Required).
    * @param {number} seasonYear - The year of the season (Required).
-   * @param {Sort} [sort=Sort.POPULARITY_DESC] - Sorting order (Optional, defaults to Popularity Descending).
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
+   * @param {Sort} [sort=Sort.POPULARITY_DESC] - Sorting order (Optional, defaults to Popularity Descending).
    * @returns {Promise<Array>} - An array of seasonal anime.
    */
   async fetchSeasonalAnime(
-    page: number = 1,
-    perPage: number = 20,
     season: Seasons,
     seasonYear: number,
-    sort: Sort = Sort.POPULARITY_DESC,
+    page: number = 1,
+    perPage: number = 20,
     format: Format = Format.TV,
   ) {
-    return fetchSeason(page, perPage, season, seasonYear, sort, format);
+    return fetchSeason(season, seasonYear, page, perPage, format);
   }
 
   /**
@@ -106,6 +107,15 @@ class Anilist {
     voiceActorsSort2: Charactersort = Charactersort.RELEVANCE,
   ) {
     return fetchAnimeCharacters(Id, sort, voiceActorsSort2);
+  }
+  /**
+   * Fetches animeInfo with Provider episodes using AnilistId
+   * @param {number} Id - The Anilist anime ID (Required).
+   * @param {AnimeProvider} [provider] - AnimeProvider (Optional, defaults to HiAnime)
+   * @returns {Promise<Object>} -An object of animeInfo with episodes
+   */
+  async fetchEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
+    return getEpisodeswithInfo(id, provider);
   }
 }
 

@@ -8,7 +8,11 @@
 //   matchingSearcResponse,
 // } from './provider/anime/animeZ/animeZ.js';
 // import { Servers, Dubbing } from './provider/anime/hianime/types.js';
+import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { AnimeZ, HiAnime } from './provider/index.js';
+import { fetchTopAiring } from './provider/meta/anilist/anilist.js';
+import { Anilist } from './provider/meta/anilist/index.js';
+import { Seasons } from './provider/meta/anilist/types.js';
 
 // import {
 //   getEpisodes,
@@ -28,11 +32,12 @@ const anitaku = new AnimeZ();
 // .then((data) => console.log(data))
 // .catch((err) => console.error(err));
 //bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280/
-anitaku
-  .fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280')
-  //   // getEpisodeswithInfo(56784, 1, AnimeProvider.HiAnime)
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
+// anitaku;
+// .fetchInfo('bleach-thousandyear-blood-war-–-the-conflict-12505')
+// .fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280')
+//   // getEpisodeswithInfo(56784, 1, AnimeProvider.HiAnime)
+// .then(data => console.log(data))
+// .catch(err => console.error(err));
 //
 // const anitaku = new AnimeZ();
 // import { fetchProviderId } from "./meta/anilist/fetchProviderId";
@@ -53,16 +58,14 @@ anitaku
 //   .catch((err) => console.error(err));
 
 // const hianime = new HiAnime();
-// hianime
-//   .fetchInfo("bleach-thousand-year-blood-war-the-conflict-19322")
-//   .then((data) => console.log(data))
-//   .catch((err) => console.error(err));
-// hianime
-//   .fetchInfo("boruto-naruto-next-generations-8143")
-//   .then((data) => console.log(data))
-//   .catch((err) => console.error(err));
-// hianime
-//   .fetchSources('bleach-806-episode-13793', Servers.HD1, Dubbing.Sub)
-//   .then((data: any) => console.log(data))
-//   .catch((err: any) => console.error(err));
+const anilist = new Anilist();
+anilist
+  // .fetchAiring(1, 2)
+  // .fetchTopRatedAnime(1, 2)
+  // .fetchMostPopular(1, 25)
+  // .search('bleach')
+  // .fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 5)
+  .fetchEpisodes(97938)
+  .then((data: any) => console.log(data))
+  .catch((err: any) => console.error(err));
 // ///boruto-naruto-next-generations-8143

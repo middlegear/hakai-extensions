@@ -1,3 +1,4 @@
+import { AnimeProvider } from '../../../types/types.js';
 import {
   getAnimeCharacters,
   getCurrentSeason,
@@ -11,7 +12,7 @@ import {
   getProviderId,
   getEpisodeswithInfo,
 } from './jikan.js';
-import { AnimeType, AnimeStatusFilter, Season, Filters, AnimeProvider } from './types.js';
+import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
 
 class Jikan {
   /**
@@ -46,10 +47,10 @@ class Jikan {
   /**
    * Fetches anime provider episodes for an anime.
    *@param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} - The anime provider Zoro / AnimeZ
+   * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
    * @returns {Promise<any>} - The animeInfo with Episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider) {
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
     return getEpisodeswithInfo(id, provider);
   }
   /**

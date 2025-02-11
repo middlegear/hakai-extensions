@@ -42,6 +42,13 @@ export const fetchByIdQuery = `query ($id: Int ) {
 
 export const airingQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $format: MediaFormat, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort]) {
   Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
     media(type: $type, format: $format, status: $status, isAdult: $isAdult, sort: $sort) {
       id
       idMal
@@ -90,11 +97,19 @@ export const airingQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
       meanScore
       
     }
+    
   }
 }`;
 
 export const popularAnimeQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $format: MediaFormat, $isAdult: Boolean, $sort: [MediaSort]) {
   Page(page: $page, perPage: $perPage) {
+  pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
     media(type: $type, format: $format, isAdult: $isAdult, sort: $sort) {
       id
       idMal
@@ -142,11 +157,19 @@ export const popularAnimeQuery = `query Query($page: Int, $perPage: Int, $type: 
       averageScore
       meanScore
     }
+    
   }
 }`;
 
 export const seasonQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $format: MediaFormat, $isAdult: Boolean, $season: MediaSeason, $seasonYear: Int, $sort: [MediaSort]) {
   Page(page: $page, perPage: $perPage) {
+   pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
     media(type: $type, format: $format, isAdult: $isAdult, season: $season, seasonYear: $seasonYear, sort: $sort) {
       id
       idMal
@@ -275,6 +298,7 @@ export const characterQuery = `query Media($mediaId: Int, $sort: [CharacterSort]
           }
           image {
             large
+            medium
           }
         }
         voiceActors(sort: $voiceActorsSort2) {

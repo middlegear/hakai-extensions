@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { TINFO } from '../../../types/types.js';
+import { AnimeProvider, TINFO } from '../../../types/types.js';
 import { AnimeZ, HiAnime } from '../../index.js';
 
 import {
@@ -9,7 +9,7 @@ import {
   hianimeTitle,
   // type JikanTitle,
 } from './mapperjikan.js';
-import { AnimeProvider, AnimeStatusFilter, AnimeType, Filters, Season } from './types.js';
+import { AnimeStatusFilter, AnimeType, Filters, Season } from './types.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(

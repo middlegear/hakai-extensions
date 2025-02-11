@@ -120,6 +120,7 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
 
   return {
     animeInfo,
+    // episodes,
     hasDub,
     hasSub,
   };

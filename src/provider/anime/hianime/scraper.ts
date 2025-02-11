@@ -150,7 +150,7 @@ export function extractEpisodesList($: cheerio.CheerioAPI, selector: cheerio.Sel
     });
   });
 
-  return resEpisodeList;
+  return resEpisodeList || [];
 }
 
 export function extractServerData($: cheerio.CheerioAPI) {

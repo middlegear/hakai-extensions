@@ -18,7 +18,7 @@ import {
 import { USER_AGENT_HEADER } from '../../index.js';
 
 import { MediaType, Format, Status, Sort, Seasons, Charactersort } from './types.js';
-import { AnimeProvider } from '../jikan/types.js';
+import { AnimeProvider } from '../../../types/types.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -73,12 +73,11 @@ export async function searchAnime(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    // const res = response.data.data.Page.media;
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
-
+      color: item.coverImage.color,
       bannerImage:
         item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
@@ -164,62 +163,54 @@ export async function fetchAnimeById(id: number) {
         },
       },
     );
+
     if (!response.data)
-      if (!response.data)
-        return {
-          success: false,
-          status: 204,
-          error: 'Server returned an empty response',
-          data: null,
-          pagination: null,
-        };
-    const pagination = {
-      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
-      total: response.data.data.Page.pageInfo.total,
-      lastPage: response.data.data.Page.pageInfo.lastPage,
-      currentPage: response.data.data.Page.pageInfo.currentPage,
-      perPage: response.data.data.Page.pageInfo.perPage,
-    };
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: null,
+      };
 
     const res = {
-      malId: response.data.data.Page.media.idMal,
-      anilistId: response.data.data.Page.media.id,
+      malId: response.data.data.Media.idMal,
+      anilistId: response.data.data.Media.id,
       image:
-        response.data.data.Page.media.coverImage.extraLarge ??
-        response.data.data.Page.media.coverImage.large ??
-        response.data.data.Page.media.coverImage.medium,
+        response.data.data.Media.coverImage.extraLarge ??
+        response.data.data.Media.coverImage.large ??
+        response.data.data.Media.coverImage.medium,
+      color: response.data.data.Media.coverImage.color,
 
       bannerImage:
-        response.data.data.Page.media.bannerImage ??
-        response.data.data.Page.media.coverImage.extraLarge ??
-        response.data.data.Page.media.coverImage.large ??
-        response.data.data.Page.media.coverImage.medium,
+        response.data.data.Media.bannerImage ??
+        response.data.data.Media.coverImage.extraLarge ??
+        response.data.data.Media.coverImage.large ??
+        response.data.data.Media.coverImage.medium,
+
       title: {
-        romaji:
-          response.data.data.Page.media.title.romaji ?? response.data.data.Page.media.title.userPreferred,
-        english: response.data.data.Page.media.title.english,
-        native: response.data.data.Page.media.title.native,
+        romaji: response.data.data.Media.title.romaji ?? response.data.data.Media.title.userPreferred,
+        english: response.data.data.Media.title.english,
+        native: response.data.data.Media.title.native,
       },
-      trailer: response.data.data.Page.media.trailer,
-      type: response.data.data.Page.media.type,
-      status: response.data.data.Page.media.status,
-      duration: response.data.data.Page.media.duration,
-      score: response.data.data.Page.media.meanScore ?? response.data.data.Page.media.averageScore,
-      genres: response.data.data.Page.media.genres,
-      episodes: response.data.data.Page.media.episodes,
-      synopsis: response.data.data.Page.media.description,
-      season: response.data.data.Page.media.season,
+      trailer: response.data.data.Media.trailer,
+      type: response.data.data.Media.type,
+      status: response.data.data.Media.status,
+      duration: response.data.data.Media.duration,
+      score: response.data.data.Media.meanScore ?? response.data.data.media.averageScore,
+      genres: response.data.data.Media.genres,
+      episodes: response.data.data.Media.episodes,
+      synopsis: response.data.data.Media.description,
+      season: response.data.data.Media.season,
       studio:
-        response.data.data.Page.media.studios.nodes.length > 0
-          ? response.data.data.Page.media.studios.nodes[0].name
+        response.data.data.Media.studios.nodes.length > 0
+          ? response.data.data.Media.studios.nodes[0].name
           : null,
-      producers: response.data.data.Page.media.studios.nodes.map((item2: any) => item2.name),
+      producers: response.data.data.Media.studios.nodes.map((item2: any) => item2.name),
     };
 
     return {
       success: true,
       status: 200,
-      pagination: pagination,
       data: res,
     };
   } catch (error) {
@@ -227,13 +218,11 @@ export async function fetchAnimeById(id: number) {
       return {
         success: false,
         data: null,
-        pagination: null,
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
-      pagination: null,
       data: null,
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
@@ -283,8 +272,6 @@ export async function fetchTopAiring(
       currentPage: response.data.data.Page.pageInfo.currentPage,
       perPage: response.data.data.Page.pageInfo.perPage,
     };
-
-    // const res = response.data.data.Page.media;
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
@@ -393,7 +380,6 @@ export async function fetchPopular(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    // const res = response.data.data.Page.media;
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
@@ -566,14 +552,14 @@ export async function fetchTopRated(
 }
 
 export async function fetchSeason(
-  page: number,
-  perPage: number,
   season: Seasons,
   seasonYear: number,
-  sort: Sort,
+  page: number,
+  perPage: number,
   format: Format,
   isAdult: boolean = false,
   type: MediaType = MediaType.Anime,
+  sort: Sort = Sort.POPULARITY_DESC,
 ) {
   if (!season || !seasonYear) {
     return {
@@ -729,25 +715,46 @@ export async function fetchAnimeCharacters(
         success: false,
         status: 204,
         error: 'Server returned an empty response',
-        data: [],
+        data: null,
       };
+    const res = {
+      malId: response.data.data.Media.idMal,
+      anilistId: response.data.data.Media.id,
+      title: {
+        romaji: response.data.data.Media.title.romaji ?? response.data.data.Media.title.userPreferred,
+        english: response.data.data.Media.title.english,
+        native: response.data.data.Media.title.native,
+      },
+      characters: response.data.data?.Media.characters.edges.map((item: any) => ({
+        role: item.role,
+        id: item.node.id,
+        name: item.node.name.full,
+        image: item.node.image.large ?? item.node.image.medium,
+        voiceActors: item.voiceActors.map((item2: any) => ({
+          name: item2.name.full,
+          language: item2.languageV2,
+          image: item2.image.large ?? item2.image.medium,
+        })),
+      })),
+    };
+
     return {
       success: true,
       status: 200,
-      data: response.data.data,
+      data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
-        data: [],
+        data: null,
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
-      data: [],
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
@@ -886,14 +893,14 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
           const animeZ = await fetchEpisodesAnimeZ(animezId.animeId as string);
           return {
             success: true,
-            data: anilistData.data,
+            data: anilistData.data?.animeInfo,
             animeZ: animeZ,
           };
         case AnimeProvider.HiAnime:
           const hianime = await fetchEpisodesHianime(zoro.animeId as string);
           return {
             success: true,
-            data: anilistData.data,
+            data: anilistData.data?.animeInfo,
             hianime: hianime,
           };
       }

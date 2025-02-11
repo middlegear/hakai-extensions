@@ -13,9 +13,9 @@ class AnimeZ {
   }
 
   /**
-   * Fetches detailed information about a specific anime, including episode data.
+   * Fetches detailed information about a specific anime.
    * @param {string} animeId - The unique identifier for the anime.
-   * @returns {Promise<Object>} - An object containing anime details and episode information.
+   * @returns {Promise<Object>} - An object containing anime details .
    */
   async fetchInfo(animeId: string) {
     return fetchAnimeInfo(animeId);
@@ -28,7 +28,7 @@ class AnimeZ {
    * @param {category} [dub=category.SUB] - The language category (optional, defaults to subbed).
    * @returns {Promise<Object>} - An object containing streaming sources.
    */
-  async fetchSources(episodeId: string, server = servers.SU57, dub = category.SUB) {
+  async fetchSources(episodeId: string, dub = category.SUB, server = servers.SU57) {
     return fetchSources(episodeId, server, dub);
   }
 

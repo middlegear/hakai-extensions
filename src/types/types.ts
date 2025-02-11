@@ -45,3 +45,8 @@ export type ASource = {
   subtitles: Subtitles[];
   sources: Source[];
 };
+export enum AnimeProvider {
+  AnimeZ = 'animez',
+  HiAnime = 'hianime',
+  // Anitaku = 'anitaku',
+}

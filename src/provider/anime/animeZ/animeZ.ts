@@ -204,7 +204,7 @@ export async function fetchAnimeInfo(animeId: string) {
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
 
     const data = extractAnimeZInfo(data$);
-    if (!data.animeInfo || !data.hasDub || data.hasSub) {
+    if (!data.animeInfo) {
       return {
         success: false,
         error: 'Scraping Error',
