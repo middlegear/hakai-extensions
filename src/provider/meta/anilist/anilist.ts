@@ -834,7 +834,7 @@ export async function fetchProviderId(id: number) {
   }
 }
 
-export async function fetchEpisodeswithInfo(anilistId: number, provider: AnimeProvider) {
+export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProvider) {
   if (!anilistId && !provider) {
     return {
       success: false,
