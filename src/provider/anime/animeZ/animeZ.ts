@@ -336,7 +336,7 @@ export async function fetchSources(episodeId: string, server: servers, dub: cate
     default:
       episodeId2 = episodeId;
   }
-  console.log(episodeId2);
+
   try {
     const response = await animeZClient.get(`${animeZBaseUrl}/${decodeURIComponent(episodeId2)}`);
 

@@ -1,11 +1,5 @@
-# Ignore all .json files
-**/*.json
-
-# Ignore build and node_modules directories
-node_modules/
-dist/
-
-
-# Ignore specific files
-package-lock.json
-yarn.lock
+# Ignore dependencies
+node_modules
+dist
+build
+coverage

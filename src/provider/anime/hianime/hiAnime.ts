@@ -38,7 +38,7 @@ export async function searchAnime(query: string, page: number) {
     const searchSelector: cheerio.SelectorType = '.block_area-content .film_list-wrap .flw-item';
 
     const data = extractSearchResults($data, searchSelector);
-    if (!data.anime) {
+    if (!data.anime || data.anime.length == 0) {
       return {
         success: false,
         error: 'Scraper Error',

@@ -94,9 +94,8 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
 
   animeInfo.title = $(selector1).find('h2').text().trim() || null;
   animeInfo.posterImage =
-    `${animeZBaseUrl}/${$(selector1)
-      .find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image')
-      .attr('src')}` || null;
+    `${animeZBaseUrl}/${$(selector1).find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image').attr('src')}` ||
+    null;
   const href = $(selector1).find('a.text-info').attr('href');
 
   animeInfo.id = href?.split('/').at(-2) || null;

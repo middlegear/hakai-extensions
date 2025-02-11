@@ -157,9 +157,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
       switch (server) {
         case anitakuServers.GogoServer: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidcdn')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidcdn')?.find('a')?.attr('data-video')}`,
           );
           break;
         }
@@ -173,9 +171,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
         }
         case anitakuServers.MP4Upload: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.mp4upload')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.mp4upload')?.find('a')?.attr('data-video')}`,
           );
           break;
         }
@@ -189,9 +185,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
         }
         case anitakuServers.VidHide: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidhide')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidhide')?.find('a')?.attr('data-video')}`,
           );
 
           break;
@@ -199,9 +193,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
         // /////this seems like the one default
         case anitakuServers.Vidstreaming: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.anime')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.anime')?.find('a')?.attr('data-video')}`,
           );
           break;
         }

@@ -18,16 +18,26 @@ export async function searchAnime(
   limit: number,
   type: AnimeType = AnimeType.TV,
 ) {
-  if (!query)
+  if (!query) {
     return {
       success: false,
-      error: 'Missing required parameters: query',
+      status: 400,
+      data: [],
+      error: 'Missing required fields : search',
     };
+  }
   try {
     const { data } = await axios.get(
       `${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}&type=${type}`,
     );
-
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: data.pagination.has_next_page,
       lastPage: data.pagination.last_visible_page,
@@ -81,26 +91,47 @@ export async function searchAnime(
     }));
 
     return {
-      pagination,
-      search,
+      success: true,
+      pagination: pagination,
+      status: 200,
+      data: search,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Contact dev ',
     };
   }
 }
 
 export async function getInfoById(Id: number) {
-  if (!Id)
+  if (!Id) {
     return {
       success: false,
-      error: 'Missing required parameters: MAL_id',
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id!',
     };
+  }
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${Id}`);
-
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: null,
+        pagination: null,
+      };
     const animeInfo: TINFO = {
       malId: data.data.mal_id,
       title: {
@@ -147,29 +178,63 @@ export async function getInfoById(Id: number) {
     };
     return {
       success: true,
-      animeInfo,
+      status: 200,
+      data: animeInfo,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: null,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
 ///get anime characters need to implement actual characters
 export async function getAnimeCharacters(id: number) {
-  if (!id)
+  if (!id) {
     return {
       success: false,
-      error: 'Missing required parameters:MAL_id',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter : id!',
     };
+  }
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/anime/${id}/characters`);
-    return data;
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+    return {
+      success: true,
+      status: 200,
+      data: data,
+    };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
@@ -178,13 +243,24 @@ export async function getCurrentSeason(filter: Filters, page: number, limit: num
   if (!filter) {
     return {
       success: false,
-      error: 'Missing required parameters: filter',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter : filter!',
     };
   }
   try {
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/now?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+
     const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
@@ -240,13 +316,23 @@ export async function getCurrentSeason(filter: Filters, page: number, limit: num
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: currentSeason,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
@@ -255,13 +341,23 @@ export async function getNextSeason(filter: Filters, page: number, limit: number
   if (!filter) {
     return {
       success: false,
-      error: 'Missing required parameters: filter',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter :filter!',
     };
   }
   try {
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/upcoming?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
@@ -318,13 +414,23 @@ export async function getNextSeason(filter: Filters, page: number, limit: number
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: NextSeason,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
@@ -333,13 +439,24 @@ export async function getSeason(year: number, season: Season, filter: Filters, p
   if (!year || !season || !filter) {
     return {
       success: false,
-      error: 'Missing required parameters: year, season, or filter',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter : year!|| ,season || ,Filters',
     };
   }
   try {
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/${year}/${season}?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+
     const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
@@ -396,13 +513,23 @@ export async function getSeason(year: number, season: Season, filter: Filters, p
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: Season,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
@@ -411,13 +538,23 @@ export async function getTopAnime(page: number, limit: number, filter: AnimeStat
   if (!filter || !type) {
     return {
       success: false,
-      error: 'Missing required parameters: year, season, or filter',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter enum: AnimeStatusFilter  || animeType!',
     };
   }
   try {
     const { data } = await axios.get(
       `${jikanBaseUrl}/top/anime?filter=${filter}&type=${type}&?sfw&page=${page}&limit=${limit}`,
     );
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const res = data;
     const pagination = {
       hasNextPage: res.pagination.has_next_page,
@@ -475,13 +612,23 @@ export async function getTopAnime(page: number, limit: number, filter: AnimeStat
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: topAnime,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
@@ -490,14 +637,22 @@ export async function getEpisodes(id: number, page: number) {
   if (!id) {
     return {
       success: false,
-      error: 'Missing require params :mal_id',
+      status: 400,
+      data: [],
+      error: 'Missing required parameter : Malid!',
     };
   }
 
   try {
     const response = await axios.get(`${jikanBaseUrl}/anime/${id}/episodes?page=${page}`);
-
-    // const pagination = response.data.pagination;
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.pagination.has_next_page,
       lastPage: response.data.pagination.last_visible_page,
@@ -511,28 +666,47 @@ export async function getEpisodes(id: number, page: number) {
     }));
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: data,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'unknown err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
 
-export async function getEpisodeInfo(jikanId: number, episodeNumber: number) {
-  if (!jikanId) {
+export async function getEpisodeInfo(Id: number, episodeNumber: number) {
+  if (!Id && !episodeNumber) {
     return {
       success: false,
-      error: 'Missing required params : mal_id',
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : Malid! || episodeNumber',
     };
   }
 
   try {
-    const response = await axios.get(`${jikanBaseUrl}/anime/${jikanId}/episodes/${episodeNumber}`);
-
+    const response = await axios.get(`${jikanBaseUrl}/anime/${Id}/episodes/${episodeNumber}`);
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: null,
+        pagination: null,
+      };
     const data = {
       number: response.data.data.mal_id,
       title: response.data.data.title,
@@ -542,119 +716,113 @@ export async function getEpisodeInfo(jikanId: number, episodeNumber: number) {
     };
     return {
       succes: true,
+      status: 200,
       data: data,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'unknown err',
+      data: null,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
 
 export async function getProviderId(id: number) {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter: mal_id!',
+    };
+  }
+
   try {
-    // Fetch anime info from Jikan API
-    const data = await getInfoById(id);
-    const englishTitle = data.animeInfo?.title?.english as string;
-    const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
-    const romanjiTitle = data.animeInfo?.title.romaji as string;
-    const titles = data?.animeInfo?.title;
-    if (!titles) throw new Error('English title not found.');
+    const jikanData = await getInfoById(id);
+    const titles = jikanData?.data?.title;
 
-    // Providers' search functions
-    // const searchAnitaku = async (title: string) => {
-    //   const anitaku = new Anitaku();
-    //   try {
-    //     const result = await anitaku.search(title);
-    //     return (
-    //       result.anime?.map((item: any) => ({
-    //         animeId: item.id,
-    //         name: item.title,
-    //       })) || []
-    //     );
-    //   } catch (error) {
-    //     console.error('Error fetching from Anitaku:', error);
-    //     return [];
-    //   }
-    // };
-
-    const searchAnimeZ = async (title: string) => {
-      const animeZ = new AnimeZ();
-      try {
-        const result = await animeZ.search(title);
-        return (
-          result.data?.map((item: any) => ({
-            animeId: item.id,
-            name: item.title,
-          })) || []
-        );
-      } catch (error) {
-        console.error('Error fetching from AnimeZ:', error);
-        return [];
-      }
-    };
-
-    const searchHiAnime = async (title: string) => {
-      const hiAnime = new HiAnime();
-      try {
-        const result = await hiAnime.search(title);
-        return (
-          result.data?.map((item: any) => ({
-            animeId: item.id,
-            name: item.name,
-            romaji: item.romanji,
-          })) || []
-        );
-      } catch (error) {
-        console.error('Error fetching from HiAnime:', error);
-        return [];
-      }
-    };
-
-    // Fetch results from all providers
-    const fetchProviderResults = async (modifiedString: string, romanjiTitle: string) => {
-      const providerResults = await Promise.all([
-        // searchAnitaku(romanjiTitle),
-        searchAnimeZ(modifiedString),
-        searchHiAnime(romanjiTitle),
-      ]);
-
-      const [animeZResults, hiAnimeResults] = providerResults;
-
-      const separatedResults = {
-        // anitaku: anitakuResults,
-        animeZ: animeZResults,
-        hiAnime: hiAnimeResults,
-      };
-
-      // const anitakures = separatedResults.anitaku;
-      const hianimeres = separatedResults.hiAnime;
-
-      // const gogoanime = anitakuTitle(titles, anitakures);
-      const hiAnime = hianimeTitle(titles, hianimeres);
-      const animeZ = animeZtitle(titles, animeZResults);
-
+    if (!titles) {
       return {
-        data,
-        // gogoanime,
-        hiAnime,
-        animeZ,
+        success: false,
+        status: 404,
+        data: null,
+        error: 'Anime title not found.',
       };
+    }
+
+    const englishTitle = titles.english?.split(':')?.[0]?.trim() || '';
+    const romajiTitle = titles.romaji || '';
+
+    const searchProvider = async (provider: any, title: string) => {
+      try {
+        const result = await provider.search(title);
+        return (
+          result?.data?.map((item: any) => ({
+            animeId: item.id,
+            name: item.title ?? item.name,
+            romaji: item.romanji ?? '',
+          })) || []
+        );
+      } catch (error) {
+        console.error(`Error fetching from ${provider.constructor.name}:`, error);
+        return [];
+      }
     };
 
-    return await fetchProviderResults(modifiedString as string, romanjiTitle);
+    const animeZ = new AnimeZ();
+    const hiAnime = new HiAnime();
+
+    // Fetch provider results
+    const [animeZResults, hiAnimeResults] = await Promise.all([
+      searchProvider(animeZ, englishTitle),
+      searchProvider(hiAnime, romajiTitle),
+    ]);
+
+    const matchedAnimeZ = animeZtitle(titles, animeZResults);
+    const matchedHiAnime = hianimeTitle(titles, hiAnimeResults);
+
+    return {
+      success: true,
+      status: 200,
+      data: {
+        animeInfo: jikanData,
+        animeZ: matchedAnimeZ,
+        hiAnime: matchedHiAnime,
+      },
+    };
   } catch (error) {
-    console.error('Error in getAnimeTitle:', error);
-    throw error;
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
 }
+
 /// fix pagination issues
 export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider, page: number = 1) {
+  if (!jikanId && !provider) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! || provider',
+    };
+  }
   try {
     const data = await getProviderId(jikanId);
-    const zoro = data.hiAnime;
-    const animezId = data.animeZ;
+    const zoro = data.data?.hiAnime;
+    const animezId = data.data?.animeZ;
 
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
@@ -688,62 +856,80 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
         return null;
       }
     };
+    if (animezId && zoro) {
+      switch (provider) {
+        case AnimeProvider.AnimeZ:
+          const res = await Promise.all([
+            getEpisodes(jikanId, page),
+            fetchEpisodesAnimeZ(animezId.animeId as string),
+          ]);
+          const [jikan, animezdata] = res;
 
-    switch (provider) {
-      case AnimeProvider.AnimeZ:
-        const res = await Promise.all([
-          getEpisodes(jikanId, page),
-          fetchEpisodesAnimeZ(animezId.animeId as string),
-        ]);
-        const [jikan, animezdata] = res;
+          if (animezdata && animezdata.length > 24) {
+            return {
+              data: data.data,
+              success: data.success,
+              status: data.status,
+              animezdata,
+            };
+          }
 
-        if (animezdata && animezdata.length > 24) {
-          return {
-            data: data.data,
-            animezdata,
-          };
-        }
+          const matchingEpisodes = animezdata?.map(item => {
+            const jikanEpisode = jikan.data.find((item2: any) => item2.number === item.number);
+            return {
+              data: data.data,
+              success: data.success,
+              status: data.status,
+              episodeId: item.episodeId,
+              number: item.number,
+              episodeTitle: jikanEpisode?.title || 'Unknown Title',
+              category: item.category,
+            };
+          });
 
-        const matchingEpisodes = animezdata?.map(item => {
-          const jikanEpisode = jikan.data.find((item2: any) => item2.number === item.number);
-          return {
-            data: data.data,
-            episodeId: item.episodeId,
-            number: item.number,
-            episodeTitle: jikanEpisode?.title || 'Unknown Title',
-            category: item.category,
-          };
-        });
+          return matchingEpisodes;
 
-        return matchingEpisodes;
+        case AnimeProvider.HiAnime:
+          const [jikan2, hianime] = await Promise.all([
+            getEpisodes(jikanId, page),
+            fetchEpisodesHianime(zoro.animeId as string),
+          ]);
 
-      case AnimeProvider.HiAnime:
-        const [jikan2, hianime] = await Promise.all([
-          getEpisodes(jikanId, page),
-          fetchEpisodesHianime(zoro.animeId as string),
-        ]);
+          if (hianime && hianime.length > 24)
+            return {
+              data: data.data,
+              success: data.success,
+              status: data.status,
+              hianime,
+            };
 
-        if (hianime && hianime.length > 24)
-          return {
-            data: data.data,
-            hianime,
-          };
-
-        const matchingEpisodes2 = hianime?.map(item => {
-          const jikanEpisode2 = jikan2.data.find((item2: any) => item2.number === item.number);
-          return {
-            data: data.data,
-            episodeId: item.episodeId,
-            number: item.number,
-            title: jikanEpisode2.title,
-          };
-        });
-        return matchingEpisodes2;
+          const matchingEpisodes2 = hianime?.map(item => {
+            const jikanEpisode2 = jikan2.data.find((item2: any) => item2.number === item.number);
+            return {
+              data: data.data,
+              success: data.success,
+              status: data.status,
+              episodeId: item.episodeId,
+              number: item.number,
+              title: jikanEpisode2.title,
+            };
+          });
+          return matchingEpisodes2;
+      }
     }
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: null,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }

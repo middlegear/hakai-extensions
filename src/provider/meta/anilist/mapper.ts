@@ -72,7 +72,7 @@ export function bestAnitakuTitle(title: AnilistTitle, results: SearchResults[]) 
     );
   }
 
-  const gogoAnime = {
+  return {
     sub: {
       animeId: subres?.animeId || null,
       name: subres?.name || null,
@@ -83,10 +83,6 @@ export function bestAnitakuTitle(title: AnilistTitle, results: SearchResults[]) 
       name: dubres?.name || null,
       score: bestDubResult?.bestMatch?.rating || null,
     },
-  };
-
-  return {
-    gogoAnime,
   };
 }
 
@@ -120,13 +116,12 @@ export function bestHianimeTitle(title: AnilistTitle, results: SearchResults[]) 
         item.normalizedRomaji === bestTitle.bestMatch.target,
     );
   }
-  const hiAnime = {
+  return {
     animeId: match?.animeId || null,
     name: match?.name || null,
     romaji: match?.romaji || null,
     score: bestTitle?.bestMatch.rating || null,
   };
-  return { hiAnime };
 }
 
 export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
@@ -157,11 +152,10 @@ export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
         item.normalizedId === bestTitle.bestMatch.target,
     );
   }
-  const animeZ = {
+  return {
     animeId: resultMatch?.animeId || null,
     name: resultMatch?.name || null,
     alts: resultMatch?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating || null,
   };
-  return { animeZ };
 }

@@ -18,6 +18,7 @@ import {
 import { USER_AGENT_HEADER } from '../../index.js';
 
 import { MediaType, Format, Status, Sort, Seasons, Charactersort } from './types.js';
+import { AnimeProvider } from '../jikan/types.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -34,6 +35,7 @@ export async function searchAnime(
     return {
       success: false,
       status: 400,
+      data: [],
       error: 'Missing required fields : search',
     };
   }
@@ -55,7 +57,14 @@ export async function searchAnime(
         },
       },
     );
-
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -109,13 +118,23 @@ export async function searchAnime(
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Contact dev ',
     };
   }
 }
@@ -123,6 +142,8 @@ export async function fetchAnimeById(id: number) {
   if (!id) {
     return {
       success: false,
+      status: 400,
+      data: null,
       error: 'Missing required parameter : id!',
     };
   }
@@ -143,6 +164,15 @@ export async function fetchAnimeById(id: number) {
         },
       },
     );
+    if (!response.data)
+      if (!response.data)
+        return {
+          success: false,
+          status: 204,
+          error: 'Server returned an empty response',
+          data: null,
+          pagination: null,
+        };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -151,7 +181,6 @@ export async function fetchAnimeById(id: number) {
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    // const res = response.data.data.Page.media;
     const res = {
       malId: response.data.data.Page.media.idMal,
       anilistId: response.data.data.Page.media.id,
@@ -189,12 +218,24 @@ export async function fetchAnimeById(id: number) {
 
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        pagination: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      pagination: null,
+      data: null,
+      status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
@@ -227,6 +268,14 @@ export async function fetchTopAiring(
         },
       },
     );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -277,14 +326,26 @@ export async function fetchTopAiring(
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
+
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        pagination: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      data: [],
+      pagination: null,
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
@@ -316,6 +377,14 @@ export async function fetchPopular(
         },
       },
     );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -368,12 +437,23 @@ export async function fetchPopular(
     }));
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      status: 500,
+      data: [],
+      pagination: null,
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
@@ -405,6 +485,14 @@ export async function fetchTopRated(
         },
       },
     );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -461,8 +549,17 @@ export async function fetchTopRated(
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        pagination: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      status: 500,
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
@@ -481,6 +578,9 @@ export async function fetchSeason(
   if (!season || !seasonYear) {
     return {
       success: false,
+      status: 400,
+      data: [],
+      pagination: null,
       error: 'Missing a required param : season | seasonYear',
     };
   }
@@ -511,6 +611,14 @@ export async function fetchSeason(
         },
       },
     );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
@@ -519,7 +627,6 @@ export async function fetchSeason(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    // const res = response.data.data.Page.media;
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
@@ -563,12 +670,23 @@ export async function fetchSeason(
     }));
     return {
       success: true,
+      status: 200,
       pagination: pagination,
       data: res,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      data: [],
+      pagination: null,
+      status: 500,
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
@@ -582,6 +700,8 @@ export async function fetchAnimeCharacters(
   if (!mediaId) {
     return {
       success: false,
+      status: 400,
+      data: [],
       error: 'Missing required parameter : mediaid!',
     };
   }
@@ -604,43 +724,54 @@ export async function fetchAnimeCharacters(
         },
       },
     );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+      };
     return {
       success: true,
+      status: 200,
       data: response.data.data,
     };
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
+      status: 500,
+      data: [],
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
 
 export async function fetchProviderId(id: number) {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Invalid or missing required parameter: id!',
+    };
+  }
+
   try {
-    const data = await fetchAnimeById(id);
-    const titles = data.data?.title;
-    const englishTitle = titles?.english as string;
-    const userPref = titles?.romaji.split(' ').slice(0, 3).join(' ');
-    const modifiedString = englishTitle?.split(':')?.at(0)?.trim();
+    const anilistData = await fetchAnimeById(id);
+    if (!anilistData?.data?.title) {
+      throw new Error('Title not found.');
+    }
 
-    if (!titles) throw new Error(' title not found.');
-
-    // const searchAnitaku = async (title: string) => {
-    //   const anitaku = new Anitaku();
-    //   try {
-    //     const result = await anitaku.search(title);
-    //     return (
-    //       result.anime?.map((item: any) => ({
-    //         animeId: item.id,
-    //         name: item.title,
-    //       })) || []
-    //     );
-    //   } catch (error) {
-    //     console.error('Error fetching from Anitaku:', error);
-    //     return [];
-    //   }
-    // };
+    const titles = anilistData.data.title;
+    const englishTitle = titles.english?.split(':')?.at(0)?.trim() || '';
+    const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
     const searchAnimeZ = async (title: string) => {
       const animeZ = new AnimeZ();
@@ -674,40 +805,105 @@ export async function fetchProviderId(id: number) {
         return [];
       }
     };
-    const fetchProviderResults = async (modifiedString: string, userPref: string) => {
-      const providerResults = await Promise.all([
-        // searchAnitaku(userPref),
-        searchAnimeZ(modifiedString),
 
-        searchHiAnime(userPref),
-      ]);
+    const providerResults = await Promise.all([
+      searchAnimeZ(englishTitle || userPref),
+      searchHiAnime(userPref),
+    ]);
 
-      const [animeZResults, hiAnimeResults] = providerResults;
+    const [animeZResults, hiAnimeResults] = providerResults;
 
-      const separatedResults = {
-        // anitaku: anitakuResults,
-        animeZ: animeZResults,
-        hiAnime: hiAnimeResults,
-      };
-
-      // const anitakures = separatedResults.anitaku;
-      const hianimeres = separatedResults.hiAnime;
-
-      // const { gogoAnime } = bestAnitakuTitle(titles, anitakures);
-      const { hiAnime } = bestHianimeTitle(titles, hianimeres);
-      const { animeZ } = bestanimeZTitle(titles, animeZResults);
-
-      return {
-        data,
-        // gogoAnime,
-        hiAnime,
-        animeZ,
-      };
+    const data = {
+      animeInfo: anilistData,
+      hiAnime: bestHianimeTitle(titles, hiAnimeResults),
+      animeZ: bestanimeZTitle(titles, animeZResults),
     };
 
-    return await fetchProviderResults(modifiedString as string, userPref);
+    return {
+      success: true,
+      status: 200,
+      data,
+    };
   } catch (error) {
-    console.error('Error in getAnimeTitle:', error);
-    throw error;
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
+
+export async function fetchEpisodeswithInfo(anilistId: number, provider: AnimeProvider) {
+  if (!anilistId && !provider) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! || provider',
+    };
+  }
+  try {
+    const anilistData = await fetchProviderId(anilistId);
+    const zoro = anilistData.data?.hiAnime;
+    const animezId = anilistData.data?.animeZ;
+
+    const fetchEpisodesHianime = async (animeId: string) => {
+      const hiAnime = new HiAnime();
+      try {
+        const result = await hiAnime.fetchInfo(animeId);
+        return (
+          result.data?.episodes?.map((item: any) => ({
+            episodeId: item.episodeId,
+            number: item.number,
+            title: item.title,
+          })) || []
+        );
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return null;
+      }
+    };
+    const fetchEpisodesAnimeZ = async (id: string) => {
+      const animeZ = new AnimeZ();
+      try {
+        const result = await animeZ.fetchEpisodes(id);
+        return (
+          result.data?.map((item: any) => ({
+            episodeId: item.episodeId,
+            number: item.number,
+            category: item.category,
+          })) || []
+        );
+      } catch (error) {
+        console.error('Error fetching from AnimeZ:', error);
+        return null;
+      }
+    };
+    if (animezId && zoro) {
+      switch (provider) {
+        case AnimeProvider.AnimeZ:
+          const animeZ = await fetchEpisodesAnimeZ(animezId.animeId as string);
+          return {
+            success: true,
+            data: anilistData.data,
+            animeZ: animeZ,
+          };
+        case AnimeProvider.HiAnime:
+          const hianime = await fetchEpisodesHianime(zoro.animeId as string);
+          return {
+            success: true,
+            data: anilistData.data,
+            hianime: hianime,
+          };
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: [],
+      status: 200,
+      error: error instanceof Error ? error.message : 'Unknown Err',
+    };
   }
 }
