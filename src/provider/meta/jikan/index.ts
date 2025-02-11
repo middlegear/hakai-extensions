@@ -11,13 +11,7 @@ import {
   getProviderId,
   getEpisodeswithInfo,
 } from './jikan.js';
-import {
-  AnimeType,
-  AnimeStatusFilter,
-  Season,
-  Filters,
-  AnimeProvider,
-} from './types.js';
+import { AnimeType, AnimeStatusFilter, Season, Filters, AnimeProvider } from './types.js';
 
 class Jikan {
   /**
@@ -75,12 +69,7 @@ class Jikan {
    * @param {number} [limit=25] - Number of results per page.
    * @returns {Promise<any>} - The top anime list.
    */
-  async fetchTopAnime(
-    page = 1,
-    limit = 25,
-    filter: AnimeStatusFilter,
-    type: AnimeType = AnimeType.TV
-  ) {
+  async fetchTopAnime(page = 1, limit = 25, filter: AnimeStatusFilter, type: AnimeType = AnimeType.TV) {
     return getTopAnime(page, limit, filter, type);
   }
 
@@ -93,13 +82,7 @@ class Jikan {
    * @param {number} [limit=25] - Number of results per page.
    * @returns {Promise<any>} - The seasonal anime list.
    */
-  async fetchSeason(
-    year: number,
-    season: Season,
-    page = 1,
-    limit = 25,
-    filter: Filters = Filters.TV
-  ) {
+  async fetchSeason(year: number, season: Season, page = 1, limit = 25, filter: Filters = Filters.TV) {
     return getSeason(year, season, filter, page, limit);
   }
 

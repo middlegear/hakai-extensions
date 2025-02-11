@@ -87,12 +87,7 @@ const fake_window: fakeWindow = {
   c: false,
   G: '',
   z: function (a: number) {
-    return [
-      (4278190080 & a) >> 24,
-      (16711680 & a) >> 16,
-      (65280 & a) >> 8,
-      255 & a,
-    ];
+    return [(4278190080 & a) >> 24, (16711680 & a) >> 16, (65280 & a) >> 8, 255 & a];
   },
   crypto: crypto,
   msCrypto: crypto,
@@ -122,9 +117,7 @@ let memoryBuff: Uint8Array | null;
 //fix this
 function getMemBuff(): Uint8Array {
   return (memoryBuff =
-    null !== memoryBuff && 0 !== memoryBuff.byteLength
-      ? memoryBuff
-      : new Uint8Array(wasm.memory.buffer));
+    null !== memoryBuff && 0 !== memoryBuff.byteLength ? memoryBuff : new Uint8Array(wasm.memory.buffer));
 }
 
 const encoder = new TextEncoder();
@@ -175,9 +168,7 @@ function isNull(test: any) {
 
 function getDataView() {
   return (dataView =
-    dataView === null ||
-    isDetached(dataView.buffer) ||
-    dataView.buffer !== wasm.memory.buffer
+    dataView === null || isDetached(dataView.buffer) || dataView.buffer !== wasm.memory.buffer
       ? new DataView(wasm.memory.buffer)
       : dataView);
 }
@@ -199,9 +190,7 @@ const decoder = new TextDecoder('utf-8', {
 });
 
 function decodeSub(index: number, offset: number) {
-  return (
-    (index >>>= 0), decoder.decode(getMemBuff().subarray(index, index + offset))
-  );
+  return (index >>>= 0), decoder.decode(getMemBuff().subarray(index, index + offset));
 }
 
 function addToStack(item: any) {
@@ -223,8 +212,7 @@ function args(QP: any, Qn: number, QT: number, func: Function) {
       try {
         return func(Qx.a, Qx.b, ...Qw);
       } finally {
-        0 == --Qx.cnt &&
-          (wasm.__wbindgen_export_2.get(Qx.dtor)(Qx.a, Qx.b), (Qx.a = 0));
+        0 == --Qx.cnt && (wasm.__wbindgen_export_2.get(Qx.dtor)(Qx.a, Qx.b), (Qx.a = 0));
       }
     }),
     ((QP.original = Qx), QP)
@@ -252,10 +240,7 @@ function applyToWindow(func: Function, args: ArrayLike<Object>) {
 }
 
 function Qj(QP: ArrayLike<number>, Qn: any) {
-  return (
-    (Qn = Qn(+QP.length, 1) >>> 0),
-    (getMemBuff().set(QP, Qn), (size = QP.length), Qn)
-  );
+  return (Qn = Qn(+QP.length, 1) >>> 0), (getMemBuff().set(QP, Qn), (size = QP.length), Qn);
 }
 
 function isResponse(obj: Object) {
@@ -269,8 +254,7 @@ async function QN(QP: Response, Qn: WebAssembly.Imports) {
     ? ((QT = await QP.arrayBuffer()),
       (Qt = await WebAssembly.instantiate(QT, Qn)),
       Object.assign(Qt, { bytes: QT }))
-    : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof
-        WebAssembly.Instance
+    : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
       ? {
           instance: Qt,
           module: QP,
@@ -298,11 +282,7 @@ function initWasm() {
       },
       __wbindgen_string_get: function (offset: number, index: number) {
         let str = get(index);
-        let val = parse(
-          str,
-          wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
-        );
+        let val = parse(str, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, val, true);
       },
@@ -329,11 +309,7 @@ function initWasm() {
       __wbg_instanceof_CanvasRenderingContext2d_4ec30ddd3f29f8f9: function () {
         return true;
       },
-      __wbg_subarray_adc418253d76e2f1: function (
-        index: number,
-        num1: number,
-        num2: number
-      ) {
+      __wbg_subarray_adc418253d76e2f1: function (index: number, num1: number, num2: number) {
         return addToStack(get(index).subarray(num1 >>> 0, num2 >>> 0));
       },
       __wbg_randomFillSync_5c9c955aa56b6049: function () {},
@@ -403,7 +379,7 @@ function initWasm() {
           // @ts-ignore
           decodeIndex: number,
           // @ts-ignore
-          decodeIndexOffset: number
+          decodeIndexOffset: number,
         ) {
           return addToStack(canvas);
         }, arguments);
@@ -415,7 +391,7 @@ function initWasm() {
           // @ts-ignore
           decodeIndex: number,
           // @ts-ignore
-          decodeOffset: number
+          decodeOffset: number,
         ) {
           //let item = get(index).querySelector(decodeSub(decodeIndex, decodeOffset));
           //return isNull(item) ? 0 : addToStack(item);
@@ -434,14 +410,12 @@ function initWasm() {
         // @ts-ignore
         decodeIndex: number,
         // @ts-ignore
-        decodeOffset: number
+        decodeOffset: number,
       ) {
         //let attr = get(index).getAttribute(decodeSub(decodeIndex, decodeOffset));
         let attr = meta.content;
         //todo!
-        let todo = isNull(attr)
-          ? 0
-          : parse(attr, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
+        let todo = isNull(attr) ? 0 : parse(attr, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, todo, true);
       },
@@ -467,11 +441,7 @@ function initWasm() {
       __wbg_toDataURL_97b108dd1a4b7454: function () {
         // @ts-ignore
         return applyToWindow(function (offset: number, index: number) {
-          let _dataUrl = parse(
-            dataURL,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1
-          );
+          let _dataUrl = parse(dataURL, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
           getDataView().setInt32(offset + 4, size, true);
           getDataView().setInt32(offset, _dataUrl, true);
         }, arguments);
@@ -486,11 +456,7 @@ function initWasm() {
         return true;
       },
       __wbg_src_87a0e38af6229364: function (offset: number, index: number) {
-        let _src = parse(
-          get(index).src,
-          wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
-        );
+        let _src = parse(get(index).src, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, _src, true);
       },
@@ -510,11 +476,7 @@ function initWasm() {
       },
       __wbg_origin_305402044aa148ce: function () {
         return applyToWindow(function (offset: number, index: number) {
-          let _origin = parse(
-            get(index).origin,
-            wasm.__wbindgen_export_0,
-            wasm.__wbindgen_export_1
-          );
+          let _origin = parse(get(index).origin, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
           getDataView().setInt32(offset + 4, size, true);
           getDataView().setInt32(offset, _origin, true);
         }, arguments);
@@ -544,19 +506,11 @@ function initWasm() {
         return isNull(_performance) ? 0 : addToStack(_performance);
       },
       __wbg_origin_e1f8acdeb3a39a2b: function (offset: number, index: number) {
-        let _origin = parse(
-          get(index).origin,
-          wasm.__wbindgen_export_0,
-          wasm.__wbindgen_export_1
-        );
+        let _origin = parse(get(index).origin, wasm.__wbindgen_export_0, wasm.__wbindgen_export_1);
         getDataView().setInt32(offset + 4, size, true);
         getDataView().setInt32(offset, _origin, true);
       },
-      __wbg_get_8986951b1ee310e0: function (
-        index: number,
-        decode1: number,
-        decode2: number
-      ) {
+      __wbg_get_8986951b1ee310e0: function (index: number, decode1: number, decode2: number) {
         let data = get(index)[decodeSub(decode1, decode2)];
         return isNull(data) ? 0 : addToStack(data);
       },
@@ -585,10 +539,7 @@ function initWasm() {
           return addToStack(fake_window);
         }, arguments);
       },
-      __wbg_newnoargs_cfecb3965268594c: function (
-        index: number,
-        offset: number
-      ) {
+      __wbg_newnoargs_cfecb3965268594c: function (index: number, offset: number) {
         return addToStack(new Function(decodeSub(index, offset)));
       },
       __wbindgen_object_clone_ref: function (index: number) {
@@ -607,31 +558,19 @@ function initWasm() {
         }, arguments);
       },
       __wbg_call_67f2111acd2dfdb6: function () {
-        return applyToWindow(function (
-          index: number,
-          index2: number,
-          index3: number
-        ) {
+        return applyToWindow(function (index: number, index2: number, index3: number) {
           return addToStack(get(index).call(get(index2), get(index3)));
         }, arguments);
       },
       __wbg_set_961700853a212a39: function () {
-        return applyToWindow(function (
-          index: number,
-          index2: number,
-          index3: number
-        ) {
+        return applyToWindow(function (index: number, index2: number, index3: number) {
           return Reflect.set(get(index), get(index2), get(index3));
         }, arguments);
       },
       __wbg_buffer_b914fb8b50ebbc3e: function (index: number) {
         return addToStack(get(index).buffer);
       },
-      __wbg_newwithbyteoffsetandlength_0de9ee56e9f6ee6e: function (
-        index: number,
-        val: number,
-        val2: number
-      ) {
+      __wbg_newwithbyteoffsetandlength_0de9ee56e9f6ee6e: function (index: number, val: number, val2: number) {
         return addToStack(new Uint8Array(get(index), val >>> 0, val2 >>> 0));
       },
       __wbg_newwithlength_0d03cef43b68a530: function (length: number) {
@@ -646,11 +585,7 @@ function initWasm() {
       __wbg_length_21c4b0ae73cba59d: function (index: number) {
         return get(index).length;
       },
-      __wbg_set_7d988c98e6ced92d: function (
-        index: number,
-        index2: number,
-        val: number
-      ) {
+      __wbg_set_7d988c98e6ced92d: function (index: number, index2: number, val: number) {
         get(index).set(get(index2), val >>> 0);
       },
       __wbindgen_debug_string: function () {},
@@ -764,12 +699,7 @@ const M = (a: any, P: any) => {
 };
 
 function z(a: any) {
-  return [
-    (a & 4278190080) >> 24,
-    (a & 16711680) >> 16,
-    (a & 65280) >> 8,
-    a & 255,
-  ];
+  return [(a & 4278190080) >> 24, (a & 16711680) >> 16, (a & 65280) >> 8, a & 255];
 }
 
 export async function getSources(embed_url: string, site: string) {
@@ -846,8 +776,7 @@ export async function getSources(embed_url: string, site: string) {
     let Q5 = fake_window.navigate();
     Q5 = new Uint8Array(Q5);
     let Q8: any;
-    Q8 =
-      resp_json.t != 0 ? (i(Q5, Q1), Q5) : ((Q8 = resp_json.k), i(Q8, Q1), Q8);
+    Q8 = resp_json.t != 0 ? (i(Q5, Q1), Q5) : ((Q8 = resp_json.k), i(Q8, Q1), Q8);
 
     // @ts-ignore
     const str = btoa(String.fromCharCode.apply(null, new Uint8Array(Q8)));

@@ -1,3 +1,4 @@
-dist
-node_modules
-.git
+dist;
+node_modules.git;
+node_modules;
+node_modules;

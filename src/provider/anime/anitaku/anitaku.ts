@@ -33,11 +33,10 @@ export async function searchAnime(query: string, page: number) {
     };
   try {
     const response = await anitakuClient.get(
-      `${anitakuSearchUrl}?keyword=${encodeURIComponent(query)}&page=${page}`
+      `${anitakuSearchUrl}?keyword=${encodeURIComponent(query)}&page=${page}`,
     );
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    const resSelector: cheerio.SelectorType =
-      'div.last_episodes > ul.items > li';
+    const resSelector: cheerio.SelectorType = 'div.last_episodes > ul.items > li';
 
     const data = extractAnitakuSearchResults(resSelector, data$);
     return {
@@ -50,10 +49,7 @@ export async function searchAnime(query: string, page: number) {
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Unable to find search anime check the domain',
+      error: error instanceof Error ? error.message : 'Unable to find search anime check the domain',
     };
   }
 }
@@ -69,22 +65,17 @@ export async function fetchAnimeInfo(animeId: string) {
 
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
 
-    const infoSelector: cheerio.SelectorType =
-      'div.main_body > div.anime_info_body ';
+    const infoSelector: cheerio.SelectorType = 'div.main_body > div.anime_info_body ';
 
     const resAnimeInfo = anitaku_extractAnimeInfo(data$, infoSelector);
     const MovieId: cheerio.SelectorType =
       'div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next';
 
-    const movieId =
-      Number(data$(MovieId).find('input#movie_id.movie_id').attr('value')) ||
-      null;
+    const movieId = Number(data$(MovieId).find('input#movie_id.movie_id').attr('value')) || null;
 
     const numberOfepisodesSelector: cheerio.SelectorType =
       'div.main_body > div.anime_video_body > ul#episode_page';
-    const totalEps =
-      data$(numberOfepisodesSelector).find('li > a.active').attr('ep_end') ||
-      null;
+    const totalEps = data$(numberOfepisodesSelector).find('li > a.active').attr('ep_end') || null;
 
     const resEpisodes = await axios.get(
       `${anitakuAjaxLoadEpisodes}?ep_start=0&ep_end=${totalEps}&id=${movieId}&default_ep=0&alias=${animeId}`,
@@ -94,7 +85,7 @@ export async function fetchAnimeInfo(animeId: string) {
           'User-Agent': anitaku_USER_AGENT_HEADER,
           'Content-Encoding': ACCEPT_ENCODING,
         },
-      }
+      },
     );
 
     const resHtmlEpisodes$: cheerio.CheerioAPI = cheerio.load(resEpisodes.data);
@@ -126,8 +117,7 @@ export async function fetchServers(episodeId: string) {
     });
 
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-    const selector: cheerio.SelectorType =
-      'div.anime_video_body > div.anime_muti_link > ul > li ';
+    const selector: cheerio.SelectorType = 'div.anime_video_body > div.anime_muti_link > ul > li ';
 
     const data = anitakuExtractServers(data$, selector);
     const dowloads = anitakuExtractDownloadSrc(data$);
@@ -147,10 +137,7 @@ export async function fetchServers(episodeId: string) {
 
 /// extractors remaining this will need lots of work
 
-export async function fetchEpisodeSources(
-  episodeId: string,
-  server: anitakuAnimeServers
-) {
+export async function fetchEpisodeSources(episodeId: string, server: anitakuAnimeServers) {
   if (!episodeId) {
     return {
       success: false,
@@ -170,51 +157,41 @@ export async function fetchEpisodeSources(
       switch (server) {
         case anitakuServers.GogoServer: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.vidcdn'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidcdn')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
           break;
         }
         case anitakuServers.Doodstream: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.doodstream'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.doodstream')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
           break;
         }
         case anitakuServers.MP4Upload: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.mp4upload'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.mp4upload')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
           break;
         }
         case anitakuServers.StreamWish: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.streamwish'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.streamwish')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
           break;
         }
         case anitakuServers.VidHide: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.vidhide'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.vidhide')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
 
           break;
@@ -222,20 +199,16 @@ export async function fetchEpisodeSources(
         // /////this seems like the one default
         case anitakuServers.Vidstreaming: {
           serverUrl = new URL(
-            `${data$(
-              'div.anime_video_body > div.anime_muti_link > ul > li.anime'
-            )
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.anime')
               ?.find('a')
-              ?.attr('data-video')}`
+              ?.attr('data-video')}`,
           );
           break;
         }
 
         default: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body_watch_items.load > div.play-video')
-              ?.find('iframe')
-              ?.attr('src')}`
+            `${data$('div.anime_video_body_watch_items.load > div.play-video')?.find('iframe')?.attr('src')}`,
           );
           break;
         }
@@ -243,8 +216,7 @@ export async function fetchEpisodeSources(
     } catch (error) {
       return {
         success: false,
-        error:
-          error instanceof Error ? error.message : 'Unable to find serverURL ',
+        error: error instanceof Error ? error.message : 'Unable to find serverURL ',
       };
     }
 
@@ -286,10 +258,7 @@ export async function fetchEpisodeSources(
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : ' no data check the episodeId and serverId ',
+      error: error instanceof Error ? error.message : ' no data check the episodeId and serverId ',
     };
   }
 }

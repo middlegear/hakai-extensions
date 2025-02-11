@@ -12,13 +12,12 @@ export async function VidHide(videoUrl: URL) {
     // Code adapted from Zenda-Cross (https://github.com/Zenda-Cross/vega-app/blob/main/src/lib/providers/multi/multiGetStream.ts)
     // Thank you to Zenda-Cross for the original implementation.
 
-    const functionRegex =
-      /eval\(function\((.*?)\)\{.*?return p\}.*?\('(.*?)'\.split/;
+    const functionRegex = /eval\(function\((.*?)\)\{.*?return p\}.*?\('(.*?)'\.split/;
     const match = functionRegex.exec(response.data);
     let p = '';
     if (match) {
       // Ensure match[1] exists before splitting
-      const params = match[1]?.split(',').map((param) => param.trim()) ?? [];
+      const params = match[1]?.split(',').map(param => param.trim()) ?? [];
       const encodedString = match[0] ?? '';
 
       // Safely extract `p` using optional chaining
@@ -59,7 +58,7 @@ export async function VidHide(videoUrl: URL) {
     });
     const newSources = {
       source:
-        sources.map((item) => ({
+        sources.map(item => ({
           file: item.url,
 
           isM3u8: item.isM3U8,
@@ -69,8 +68,7 @@ export async function VidHide(videoUrl: URL) {
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : 'Request Error,chech headers ',
+      error: error instanceof Error ? error.message : 'Request Error,chech headers ',
     };
   }
 }

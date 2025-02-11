@@ -1,9 +1,4 @@
-import {
-  fetchAnimeInfo,
-  fetchEpisodeSources,
-  fetchServers,
-  searchAnime,
-} from './hiAnime.js';
+import { fetchAnimeInfo, fetchEpisodeSources, fetchServers, searchAnime } from './hiAnime.js';
 import { Dubbing, Servers } from './types.js';
 
 class HiAnime {
@@ -39,11 +34,7 @@ class HiAnime {
    * @param {category} [category=Dubbing.SUB] - The language category (optional, defaults to subbed).
    * @returns {Promise<Object>} - An object containing streaming sources.
    */
-  async fetchSources(
-    episodeId: string,
-    server: Servers = Servers.HD1,
-    category: Dubbing = Dubbing.Sub
-  ) {
+  async fetchSources(episodeId: string, server: Servers = Servers.HD1, category: Dubbing = Dubbing.Sub) {
     return fetchEpisodeSources(episodeId, server, category);
   }
 }

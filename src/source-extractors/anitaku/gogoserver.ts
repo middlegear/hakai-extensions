@@ -12,9 +12,7 @@ export async function GogoServer(videoUrl: URL) {
   try {
     const res = await anitakuClient.get(`${videoUrl.href}`);
     const data$: cheerio.CheerioAPI = cheerio.load(res.data);
-    const scriptVal = data$('script[data-name="episode"]').attr(
-      'data-value'
-    ) as string;
+    const scriptVal = data$('script[data-name="episode"]').attr('data-value') as string;
 
     const id = videoUrl.searchParams.get('id') ?? '';
 
@@ -33,7 +31,7 @@ export async function GogoServer(videoUrl: URL) {
             'X-Requested-With': 'XMLHttpRequest',
             Referer: videoUrl.href,
           },
-        }
+        },
       );
       const encryptedRes = response.data.data;
       const decryptRes = CryptoJS.AES.decrypt(encryptedRes, keys.secondKey, {
@@ -43,21 +41,17 @@ export async function GogoServer(videoUrl: URL) {
       const res = JSON.parse(decryptRes);
       const sources = {
         source:
-          res?.source?.map(
-            (item: { file: string; label: string; type: string }) => ({
-              file: item.file,
-              label: item.label,
-              type: item.type,
-            })
-          ) || null,
+          res?.source?.map((item: { file: string; label: string; type: string }) => ({
+            file: item.file,
+            label: item.label,
+            type: item.type,
+          })) || null,
         alt:
-          res?.source_bk?.map(
-            (item: { file: string; label: string; type: string }) => ({
-              file: item.file,
-              label: item.label,
-              type: item.type,
-            })
-          ) || null,
+          res?.source_bk?.map((item: { file: string; label: string; type: string }) => ({
+            file: item.file,
+            label: item.label,
+            type: item.type,
+          })) || null,
         subtitles:
           res?.track?.tracks?.map((item: { file: any; kind: any }) => ({
             file: item.file,
@@ -76,10 +70,7 @@ export async function GogoServer(videoUrl: URL) {
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Check for valid videoUrl href',
+      error: error instanceof Error ? error.message : 'Check for valid videoUrl href',
     };
   }
 }

@@ -44,7 +44,7 @@ export type RawServers = SubServers;
 export type ScrappedServers = {
   sub: SubServers[];
   dub: DubServers[];
-  raw: RawServers[];
+  // raw: RawServers[];
   episodeNumber: number | null;
 };
 

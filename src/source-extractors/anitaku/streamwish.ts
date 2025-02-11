@@ -12,13 +12,12 @@ export async function StreamWish(videoUrl: URL) {
     // Code adapted from Zenda-Cross (https://github.com/Zenda-Cross/vega-app/blob/main/src/lib/providers/multi/multiGetStream.ts)
     // Thank you to Zenda-Cross for the original implementation.
 
-    const functionRegex =
-      /eval\(function\((.*?)\)\{.*?return p\}.*?\('(.*?)'\.split/;
+    const functionRegex = /eval\(function\((.*?)\)\{.*?return p\}.*?\('(.*?)'\.split/;
     const match = functionRegex.exec(response.data);
     let p = '';
     if (match) {
       // Ensure match[1] exists before splitting
-      const params = match[1]?.split(',').map((param) => param.trim()) ?? [];
+      const params = match[1]?.split(',').map(param => param.trim()) ?? [];
       const encodedString = match[0] ?? '';
 
       // Safely extract `p` using optional chaining
@@ -41,12 +40,10 @@ export async function StreamWish(videoUrl: URL) {
     }
     const links = p.match(/file:\s*"([^"]+\.m3u8[^"]*)"/) ?? [];
     const subtitleMatches =
-      p?.match(
-        /{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g
-      ) ?? [];
+      p?.match(/{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g) ?? [];
     // console.log(links, subtitleMatches);
 
-    const subtitles = subtitleMatches.map((sub) => {
+    const subtitles = subtitleMatches.map(sub => {
       const lang = sub?.match(/label:"([^"]+)"/)?.[1] ?? '';
       const url = sub?.match(/file:"([^"]+)"/)?.[1] ?? '';
       const kind = sub?.match(/kind:"([^"]+)"/)?.[1] ?? '';
@@ -77,7 +74,7 @@ export async function StreamWish(videoUrl: URL) {
     });
     const newSources = {
       source:
-        sources.map((item) => ({
+        sources.map(item => ({
           file: item.file,
           kind: item.type,
           isM3u8: item.isM3U8,
@@ -87,8 +84,7 @@ export async function StreamWish(videoUrl: URL) {
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : 'Request Error,chech headers ',
+      error: error instanceof Error ? error.message : 'Request Error,chech headers ',
     };
   }
 }

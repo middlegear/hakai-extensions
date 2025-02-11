@@ -1,4 +1,4 @@
-import { findBestMatch } from "string-similarity";
+import { findBestMatch } from 'string-similarity';
 
 export type AnilistTitle = {
   english: string;
@@ -13,16 +13,13 @@ export type SearchResults = {
 };
 
 function normalizeTitle(title: string) {
-  return title ? title.toLowerCase().trim() : "No title provided";
+  return title ? title.toLowerCase().trim() : 'No title provided';
 }
 
-export function bestAnitakuTitle(
-  title: AnilistTitle,
-  results: SearchResults[]
-) {
+export function bestAnitakuTitle(title: AnilistTitle, results: SearchResults[]) {
   const normalizedRomajiTitle = normalizeTitle(title.romaji);
 
-  const normalizedResults = results.map((item) => ({
+  const normalizedResults = results.map(item => ({
     ...item,
     normalizedRomaji: normalizeTitle(item.name as string),
     normalizedId: normalizeTitle(item.animeId),
@@ -32,11 +29,11 @@ export function bestAnitakuTitle(
     normalizedResults.length > 0
       ? findBestMatch(
           normalizedRomajiTitle,
-          normalizedResults.map((title) => title.normalizedRomaji)
+          normalizedResults.map(title => title.normalizedRomaji),
         ) ||
         findBestMatch(
           normalizedRomajiTitle,
-          normalizedResults.map((item) => item.normalizedId)
+          normalizedResults.map(item => item.normalizedId),
         )
       : null;
 
@@ -45,14 +42,14 @@ export function bestAnitakuTitle(
       ? findBestMatch(
           normalizedRomajiTitle,
           normalizedResults
-            .filter((title) => title.normalizedRomaji.includes("dub"))
-            .map((title) => title.normalizedRomaji)
+            .filter(title => title.normalizedRomaji.includes('dub'))
+            .map(title => title.normalizedRomaji),
         ) ||
         findBestMatch(
           normalizedRomajiTitle,
           normalizedResults
-            .filter((title) => title.normalizedId.includes("dub"))
-            .map((title) => title.normalizedId)
+            .filter(title => title.normalizedId.includes('dub'))
+            .map(title => title.normalizedId),
         )
       : null;
 
@@ -61,17 +58,17 @@ export function bestAnitakuTitle(
 
   if (bestResult !== null && bestResult.bestMatch) {
     subres = normalizedResults.find(
-      (item) =>
+      item =>
         item.normalizedRomaji === bestResult.bestMatch.target ||
-        item.normalizedId === bestResult.bestMatch.target
+        item.normalizedId === bestResult.bestMatch.target,
     );
   }
 
   if (bestDubResult !== null && bestDubResult.bestMatch) {
     dubres = normalizedResults.find(
-      (item) =>
+      item =>
         item.normalizedRomaji === bestDubResult.bestMatch.target ||
-        item.normalizedId === bestDubResult.bestMatch.target
+        item.normalizedId === bestDubResult.bestMatch.target,
     );
   }
 
@@ -93,14 +90,11 @@ export function bestAnitakuTitle(
   };
 }
 
-export function bestHianimeTitle(
-  title: AnilistTitle,
-  results: SearchResults[]
-) {
+export function bestHianimeTitle(title: AnilistTitle, results: SearchResults[]) {
   const normalizedRomaji = normalizeTitle(title.romaji);
   const normalizedEngishTitle = normalizeTitle(title.english);
 
-  const normalizedResults = results.map((item) => ({
+  const normalizedResults = results.map(item => ({
     ...item,
     normalizedname: normalizeTitle(item.name as string),
     normalizedRomaji: normalizeTitle(item.romaji as string),
@@ -110,20 +104,20 @@ export function bestHianimeTitle(
     normalizedResults.length > 0
       ? findBestMatch(
           normalizedEngishTitle,
-          normalizedResults.map((title) => title.normalizedname)
+          normalizedResults.map(title => title.normalizedname),
         ) ||
         findBestMatch(
           normalizedRomaji,
-          normalizedResults.map((item) => item.normalizedRomaji)
+          normalizedResults.map(item => item.normalizedRomaji),
         )
       : null;
 
   let match = null;
   if (bestTitle !== null && bestTitle.bestMatch !== null) {
     match = normalizedResults.find(
-      (item) =>
+      item =>
         item.normalizedname === bestTitle.bestMatch.target ||
-        item.normalizedRomaji === bestTitle.bestMatch.target
+        item.normalizedRomaji === bestTitle.bestMatch.target,
     );
   }
   const hiAnime = {
@@ -136,7 +130,7 @@ export function bestHianimeTitle(
 }
 
 export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
-  const normalizedResults = result.map((item) => ({
+  const normalizedResults = result.map(item => ({
     ...item,
     normalizedId: normalizeTitle(item.animeId),
     normalizedName: normalizeTitle(item.name as string),
@@ -148,27 +142,25 @@ export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
     normalizedResults.length > 0
       ? findBestMatch(
           normalizedEngishTitle,
-          normalizedResults.map((item) => item.normalizedName) ||
+          normalizedResults.map(item => item.normalizedName) ||
             findBestMatch(
               normalizedEngishTitle,
-              normalizedResults.map((item) => item.normalizedId)
-            )
+              normalizedResults.map(item => item.normalizedId),
+            ),
         )
       : null;
   let resultMatch;
   if (bestTitle && bestTitle.bestMatch) {
     resultMatch = normalizedResults.find(
-      (item) =>
+      item =>
         item.normalizedName === bestTitle.bestMatch.target ||
-        item.normalizedId === bestTitle.bestMatch.target
+        item.normalizedId === bestTitle.bestMatch.target,
     );
   }
   const animeZ = {
     animeId: resultMatch?.animeId || null,
     name: resultMatch?.name || null,
-    alts:
-      resultMatch?.alt ||
-      "Sometimes the anime provider Maybe Good, Sometimes Maybe Shit",
+    alts: resultMatch?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating || null,
   };
   return { animeZ };

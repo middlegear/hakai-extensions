@@ -29,12 +29,10 @@ const anitaku = new AnimeZ();
 // .catch((err) => console.error(err));
 //bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280/
 anitaku
-  .fetchSources(
-    'bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280'
-  )
+  .fetchSources('bleach-thousandyear-blood-war-–-the-conflict-12505/epi-14dub-195280')
   //   // getEpisodeswithInfo(56784, 1, AnimeProvider.HiAnime)
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
 //
 // const anitaku = new AnimeZ();
 // import { fetchProviderId } from "./meta/anilist/fetchProviderId";

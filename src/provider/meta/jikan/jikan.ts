@@ -9,20 +9,14 @@ import {
   hianimeTitle,
   // type JikanTitle,
 } from './mapperjikan.js';
-import {
-  AnimeProvider,
-  AnimeStatusFilter,
-  AnimeType,
-  Filters,
-  Season,
-} from './types.js';
+import { AnimeProvider, AnimeStatusFilter, AnimeType, Filters, Season } from './types.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(
   query: string,
   page: number,
   limit: number,
-  type: AnimeType = AnimeType.TV
+  type: AnimeType = AnimeType.TV,
 ) {
   if (!query)
     return {
@@ -31,7 +25,7 @@ export async function searchAnime(
     };
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}&type=${type}`
+      `${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}&type=${type}`,
     );
 
     const pagination = {
@@ -48,10 +42,8 @@ export async function searchAnime(
         english: item.title_english,
         native: item.title_japanese,
       },
-      image:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      bannerImage:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url,
       episodes: item.episodes,
 
@@ -59,7 +51,7 @@ export async function searchAnime(
         ? new Date(
             item.aired.prop.from.year,
             item.aired.prop.from.month - 1,
-            item.aired.prop.from.day
+            item.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -70,7 +62,7 @@ export async function searchAnime(
         ? new Date(
             item.aired.prop.to.year,
             item.aired.prop.to.month - 1,
-            item.aired.prop.to.day
+            item.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -116,12 +108,8 @@ export async function getInfoById(Id: number) {
         english: data.data.title_english,
         native: data.data.title_japanese,
       },
-      image:
-        data.data.images.jpg.large_image_url ??
-        data.data.images.webp.large_image_url,
-      bannerImage:
-        data.data.images.jpg.large_image_url ??
-        data.data.images.webp.large_image_url,
+      image: data.data.images.jpg.large_image_url ?? data.data.images.webp.large_image_url,
+      bannerImage: data.data.images.jpg.large_image_url ?? data.data.images.webp.large_image_url,
       trailer: data.data.trailer.embed_url,
       episodes: data.data.episodes,
 
@@ -129,7 +117,7 @@ export async function getInfoById(Id: number) {
         ? new Date(
             data.data.aired.prop.from.year,
             data.data.aired.prop.from.month - 1,
-            data.data.aired.prop.from.day
+            data.data.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -140,7 +128,7 @@ export async function getInfoById(Id: number) {
         ? new Date(
             data.data.aired.prop.year,
             data.data.aired.prop.month - 1,
-            data.data.aired.prop.to.day
+            data.data.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -186,11 +174,7 @@ export async function getAnimeCharacters(id: number) {
   }
 }
 
-export async function getCurrentSeason(
-  filter: Filters,
-  page: number,
-  limit: number
-) {
+export async function getCurrentSeason(filter: Filters, page: number, limit: number) {
   if (!filter) {
     return {
       success: false,
@@ -199,7 +183,7 @@ export async function getCurrentSeason(
   }
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/now?filter=${filter}&?sfw&page=${page}&limit=${limit}`
+      `${jikanBaseUrl}/seasons/now?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
     const res = data;
     const pagination = {
@@ -216,10 +200,8 @@ export async function getCurrentSeason(
         english: item.title_english,
         native: item.title_japanese,
       },
-      image:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      bannerImage:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url,
       episodes: item.episodes,
 
@@ -227,7 +209,7 @@ export async function getCurrentSeason(
         ? new Date(
             item.aired.prop.from.year,
             item.aired.prop.from.month - 1,
-            item.aired.prop.from.day
+            item.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -238,7 +220,7 @@ export async function getCurrentSeason(
         ? new Date(
             item.aired.prop.to.year,
             item.aired.prop.to.month - 1,
-            item.aired.prop.to.day
+            item.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -269,11 +251,7 @@ export async function getCurrentSeason(
   }
 }
 
-export async function getNextSeason(
-  filter: Filters,
-  page: number,
-  limit: number
-) {
+export async function getNextSeason(filter: Filters, page: number, limit: number) {
   if (!filter) {
     return {
       success: false,
@@ -282,7 +260,7 @@ export async function getNextSeason(
   }
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/upcoming?filter=${filter}&?sfw&page=${page}&limit=${limit}`
+      `${jikanBaseUrl}/seasons/upcoming?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
     const res = data;
     const pagination = {
@@ -300,10 +278,8 @@ export async function getNextSeason(
         english: item.title_english,
         native: item.title_japanese,
       },
-      image:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      bannerImage:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url,
       episodes: item.episodes,
 
@@ -311,7 +287,7 @@ export async function getNextSeason(
         ? new Date(
             item.aired.prop.from.year,
             item.aired.prop.from.month - 1,
-            item.aired.prop.from.day
+            item.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -322,7 +298,7 @@ export async function getNextSeason(
         ? new Date(
             item.aired.prop.to.year,
             item.aired.prop.to.month - 1,
-            item.aired.prop.to.day
+            item.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -353,13 +329,7 @@ export async function getNextSeason(
   }
 }
 
-export async function getSeason(
-  year: number,
-  season: Season,
-  filter: Filters,
-  page: number,
-  limit: number
-) {
+export async function getSeason(year: number, season: Season, filter: Filters, page: number, limit: number) {
   if (!year || !season || !filter) {
     return {
       success: false,
@@ -368,7 +338,7 @@ export async function getSeason(
   }
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/${year}/${season}?filter=${filter}&?sfw&page=${page}&limit=${limit}`
+      `${jikanBaseUrl}/seasons/${year}/${season}?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
     );
     const res = data;
     const pagination = {
@@ -386,10 +356,8 @@ export async function getSeason(
         english: item.title_english,
         native: item.title_japanese,
       },
-      image:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      bannerImage:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url,
       episodes: item.episodes,
 
@@ -397,7 +365,7 @@ export async function getSeason(
         ? new Date(
             item.aired.prop.from.year,
             item.aired.prop.from.month - 1,
-            item.aired.prop.from.day
+            item.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -408,7 +376,7 @@ export async function getSeason(
         ? new Date(
             item.aired.prop.to.year,
             item.aired.prop.to.month - 1,
-            item.aired.prop.to.day
+            item.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -439,12 +407,7 @@ export async function getSeason(
   }
 }
 
-export async function getTopAnime(
-  page: number,
-  limit: number,
-  filter: AnimeStatusFilter,
-  type: AnimeType
-) {
+export async function getTopAnime(page: number, limit: number, filter: AnimeStatusFilter, type: AnimeType) {
   if (!filter || !type) {
     return {
       success: false,
@@ -453,7 +416,7 @@ export async function getTopAnime(
   }
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${type}&?sfw&page=${page}&limit=${limit}`
+      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${type}&?sfw&page=${page}&limit=${limit}`,
     );
     const res = data;
     const pagination = {
@@ -471,10 +434,8 @@ export async function getTopAnime(
         english: item.title_english,
         native: item.title_japanese,
       },
-      image:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      bannerImage:
-        item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url,
       episodes: item.episodes,
 
@@ -482,7 +443,7 @@ export async function getTopAnime(
         ? new Date(
             item.aired.prop.from.year,
             item.aired.prop.from.month - 1,
-            item.aired.prop.from.day
+            item.aired.prop.from.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -493,7 +454,7 @@ export async function getTopAnime(
         ? new Date(
             item.aired.prop.to.year,
             item.aired.prop.to.month - 1,
-            item.aired.prop.to.day
+            item.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -534,9 +495,7 @@ export async function getEpisodes(id: number, page: number) {
   }
 
   try {
-    const response = await axios.get(
-      `${jikanBaseUrl}/anime/${id}/episodes?page=${page}`
-    );
+    const response = await axios.get(`${jikanBaseUrl}/anime/${id}/episodes?page=${page}`);
 
     // const pagination = response.data.pagination;
     const pagination = {
@@ -572,9 +531,7 @@ export async function getEpisodeInfo(jikanId: number, episodeNumber: number) {
   }
 
   try {
-    const response = await axios.get(
-      `${jikanBaseUrl}/anime/${jikanId}/episodes/${episodeNumber}`
-    );
+    const response = await axios.get(`${jikanBaseUrl}/anime/${jikanId}/episodes/${episodeNumber}`);
 
     const data = {
       number: response.data.data.mal_id,
@@ -643,7 +600,7 @@ export async function getProviderId(id: number) {
       try {
         const result = await hiAnime.search(title);
         return (
-          result.anime?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             animeId: item.id,
             name: item.name,
             romaji: item.romanji,
@@ -656,10 +613,7 @@ export async function getProviderId(id: number) {
     };
 
     // Fetch results from all providers
-    const fetchProviderResults = async (
-      modifiedString: string,
-      romanjiTitle: string
-    ) => {
+    const fetchProviderResults = async (modifiedString: string, romanjiTitle: string) => {
       const providerResults = await Promise.all([
         // searchAnitaku(romanjiTitle),
         searchAnimeZ(modifiedString),
@@ -696,11 +650,7 @@ export async function getProviderId(id: number) {
   }
 }
 /// fix pagination issues
-export async function getEpisodeswithInfo(
-  jikanId: number,
-  provider: AnimeProvider,
-  page: number = 1
-) {
+export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider, page: number = 1) {
   try {
     const data = await getProviderId(jikanId);
     const zoro = data.hiAnime;
@@ -711,7 +661,7 @@ export async function getEpisodeswithInfo(
       try {
         const result = await hiAnime.fetchInfo(animeId);
         return (
-          result.episodes?.map((item: any) => ({
+          result.data?.episodes?.map((item: any) => ({
             episodeId: item.episodeId,
             number: item.number,
             title: item.title,
@@ -727,7 +677,7 @@ export async function getEpisodeswithInfo(
       try {
         const result = await animeZ.fetchEpisodes(id);
         return (
-          result.episodes?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             episodeId: item.episodeId,
             number: item.number,
             category: item.category,
@@ -754,10 +704,8 @@ export async function getEpisodeswithInfo(
           };
         }
 
-        const matchingEpisodes = animezdata?.map((item) => {
-          const jikanEpisode = jikan.data.find(
-            (item2: any) => item2.number === item.number
-          );
+        const matchingEpisodes = animezdata?.map(item => {
+          const jikanEpisode = jikan.data.find((item2: any) => item2.number === item.number);
           return {
             data: data.data,
             episodeId: item.episodeId,
@@ -781,10 +729,8 @@ export async function getEpisodeswithInfo(
             hianime,
           };
 
-        const matchingEpisodes2 = hianime?.map((item) => {
-          const jikanEpisode2 = jikan2.data.find(
-            (item2: any) => item2.number === item.number
-          );
+        const matchingEpisodes2 = hianime?.map(item => {
+          const jikanEpisode2 = jikan2.data.find((item2: any) => item2.number === item.number);
           return {
             data: data.data,
             episodeId: item.episodeId,

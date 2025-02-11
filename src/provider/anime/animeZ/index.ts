@@ -1,9 +1,4 @@
-import {
-  fetchAnimeInfo,
-  fetchSources,
-  getAnimeEpisodes,
-  matchingSearcResponse,
-} from './animeZ.js';
+import { fetchAnimeInfo, fetchSources, getAnimeEpisodes, matchingSearcResponse } from './animeZ.js';
 import { category, servers } from './types.js';
 
 class AnimeZ {
@@ -33,11 +28,7 @@ class AnimeZ {
    * @param {category} [dub=category.SUB] - The language category (optional, defaults to subbed).
    * @returns {Promise<Object>} - An object containing streaming sources.
    */
-  async fetchSources(
-    episodeId: string,
-    server = servers.SU57,
-    dub = category.SUB
-  ) {
+  async fetchSources(episodeId: string, server = servers.SU57, dub = category.SUB) {
     return fetchSources(episodeId, server, dub);
   }
 

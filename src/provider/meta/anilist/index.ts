@@ -57,11 +57,7 @@ class Anilist {
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
    * @returns {Promise<Array>} - An array of popular anime.
    */
-  async fetchMostPopular(
-    page: number = 1,
-    perPage: number = 20,
-    format: Format = Format.TV
-  ) {
+  async fetchMostPopular(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
     return fetchPopular(page, perPage, format);
   }
 
@@ -72,11 +68,7 @@ class Anilist {
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV)..
    * @returns {Promise<Array>} - An array of top-rated anime.
    */
-  async fetchTop(
-    page: number = 1,
-    perPage: number = 20,
-    format: Format = Format.TV
-  ) {
+  async fetchTop(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
     return fetchTopRated(page, perPage, format);
   }
 
@@ -96,7 +88,7 @@ class Anilist {
     season: Seasons,
     seasonYear: number,
     sort: Sort = Sort.POPULARITY_DESC,
-    format: Format = Format.TV
+    format: Format = Format.TV,
   ) {
     return fetchSeason(page, perPage, season, seasonYear, sort, format);
   }
@@ -111,7 +103,7 @@ class Anilist {
   async fetchCharacters(
     Id: number,
     sort: Charactersort = Charactersort.RELEVANCE,
-    voiceActorsSort2: Charactersort = Charactersort.RELEVANCE
+    voiceActorsSort2: Charactersort = Charactersort.RELEVANCE,
   ) {
     return fetchAnimeCharacters(Id, sort, voiceActorsSort2);
   }

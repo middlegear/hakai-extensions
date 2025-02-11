@@ -5,10 +5,7 @@ import type { animeInfo } from './types.js';
 import { Dubbing } from '../hianime/types.js';
 import { animeZBaseUrl } from '../../index.js';
 
-export function animeZSearchResults(
-  $: cheerio.CheerioAPI,
-  selector: cheerio.SelectorType
-) {
+export function animeZSearchResults($: cheerio.CheerioAPI, selector: cheerio.SelectorType) {
   const anime: {
     id: string | null;
     title: string | null;
@@ -18,10 +15,7 @@ export function animeZSearchResults(
     anime.push({
       id: $(element).find('a').attr('href')?.split('/').at(1)?.trim() || null,
       title: $(element)?.find('a')?.attr('title') || null,
-      posterImage:
-        `${animeZBaseUrl}/${$(element)
-          .find('div.Image > figure > img')
-          .attr('src')}` || null,
+      posterImage: `${animeZBaseUrl}/${$(element).find('div.Image > figure > img').attr('src')}` || null,
       // episodes:
       //   Number(
       //     $(element)
@@ -43,11 +37,8 @@ export function animeZSearchResults(
   });
   let hasNextPage, totalPages, currentPage;
 
-  const pageSelector: cheerio.SelectorType =
-    ' div.Bot.text-center > nav > ul.pagination';
-  currentPage =
-    Number($(pageSelector).find('li.page-item.active > a.page-link').text()) ||
-    1;
+  const pageSelector: cheerio.SelectorType = ' div.Bot.text-center > nav > ul.pagination';
+  currentPage = Number($(pageSelector).find('li.page-item.active > a.page-link').text()) || 1;
   totalPages =
     Number(
       $(pageSelector)
@@ -57,7 +48,7 @@ export function animeZSearchResults(
         ?.split('=')
         .at(-1)
         ?.split('#')
-        .at(0)
+        .at(0),
     ) || 1;
   hasNextPage = totalPages > 1 ? true : false;
   // const pagination = {
@@ -84,10 +75,8 @@ export function animeZSearchSuggestions($: cheerio.CheerioAPI) {
     suggestion.push({
       id: $(element).find('a').attr('href')?.split('/').at(1)?.trim() || null,
       title: $(element)?.find('img')?.attr('alt') || null,
-      posterImage:
-        `${animeZBaseUrl}/${$(element).find('img').attr('src')}` || null,
-      altName:
-        $(element)?.find('h4 i').first().text().replace(/;|,/g, ',') || null,
+      posterImage: `${animeZBaseUrl}/${$(element).find('img').attr('src')}` || null,
+      altName: $(element)?.find('h4 i').first().text().replace(/;|,/g, ',') || null,
     });
   });
 
@@ -116,8 +105,7 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
     hasSub: boolean;
   }[] = [];
 
-  const episodesSelector: cheerio.SelectorType =
-    'ul#list_chapter_id_detail > li.wp-manga-chapter';
+  const episodesSelector: cheerio.SelectorType = 'ul#list_chapter_id_detail > li.wp-manga-chapter';
 
   $(episodesSelector).each((_, element) => {
     const text = $(element).find('a').text();
@@ -128,8 +116,8 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
     });
   });
 
-  const hasDub = episodes.some((item) => item.hasDub);
-  const hasSub = episodes.some((item) => item.hasSub);
+  const hasDub = episodes.some(item => item.hasDub);
+  const hasSub = episodes.some(item => item.hasSub);
 
   return {
     animeInfo,
@@ -145,16 +133,12 @@ export function getEpisodes($: cheerio.CheerioAPI) {
     category: string | null;
   }[] = [];
 
-  const episodesSelector: cheerio.SelectorType =
-    'ul#list_chapter_id_detail > li.wp-manga-chapter  ';
+  const episodesSelector: cheerio.SelectorType = 'ul#list_chapter_id_detail > li.wp-manga-chapter  ';
   $(episodesSelector).each((_, element) => {
     episodes.push({
       episodeId: $(element).find('a').attr('href')?.slice(1) || null,
-      number:
-        Number($(element).find('a').text().trim().split('-').at(0)) || null,
-      category: $(element).find('a').text().split('-').includes('Dub')
-        ? Dubbing.Dub
-        : Dubbing.Sub || null,
+      number: Number($(element).find('a').text().trim().split('-').at(0)) || null,
+      category: $(element).find('a').text().split('-').includes('Dub') ? Dubbing.Dub : Dubbing.Sub || null,
     });
   });
   episodes.reverse();

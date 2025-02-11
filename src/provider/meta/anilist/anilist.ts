@@ -17,14 +17,7 @@ import {
 
 import { USER_AGENT_HEADER } from '../../index.js';
 
-import {
-  MediaType,
-  Format,
-  Status,
-  Sort,
-  Seasons,
-  Charactersort,
-} from './types.js';
+import { MediaType, Format, Status, Sort, Seasons, Charactersort } from './types.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -35,11 +28,12 @@ export async function searchAnime(
   page: number,
   perPage: number,
   type: MediaType = MediaType.Anime,
-  isAdult: boolean = false
+  isAdult: boolean = false,
 ) {
   if (!search) {
     return {
       success: false,
+      status: 400,
       error: 'Missing required fields : search',
     };
   }
@@ -59,7 +53,7 @@ export async function searchAnime(
           Referer: 'https://anilist.co',
           Origin: 'https://anilist.co',
         },
-      }
+      },
     );
 
     const pagination = {
@@ -74,16 +68,10 @@ export async function searchAnime(
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
-      image:
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
       bannerImage:
-        item.bannerImage ??
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -99,22 +87,17 @@ export async function searchAnime(
       synopsis: item.description,
       season: item.season,
       startDate: item.startDate
-        ? new Date(
-            item.startDate.year,
-            item.startDate.month - 1,
-            item.startDate.day
-          ).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+            'en-US',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            },
+          )
         : null,
       endDate: item.endDate
-        ? new Date(
-            item.endDate.year,
-            item.endDate.month - 1,
-            item.endDate.day
-          ).toLocaleDateString('en-US', {
+        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -158,7 +141,7 @@ export async function fetchAnimeById(id: number) {
           Referer: Referer,
           Origin: Origin,
         },
-      }
+      },
     );
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
@@ -184,8 +167,7 @@ export async function fetchAnimeById(id: number) {
         response.data.data.Page.media.coverImage.medium,
       title: {
         romaji:
-          response.data.data.Page.media.title.romaji ??
-          response.data.data.Page.media.title.userPreferred,
+          response.data.data.Page.media.title.romaji ?? response.data.data.Page.media.title.userPreferred,
         english: response.data.data.Page.media.title.english,
         native: response.data.data.Page.media.title.native,
       },
@@ -193,9 +175,7 @@ export async function fetchAnimeById(id: number) {
       type: response.data.data.Page.media.type,
       status: response.data.data.Page.media.status,
       duration: response.data.data.Page.media.duration,
-      score:
-        response.data.data.Page.media.meanScore ??
-        response.data.data.Page.media.averageScore,
+      score: response.data.data.Page.media.meanScore ?? response.data.data.Page.media.averageScore,
       genres: response.data.data.Page.media.genres,
       episodes: response.data.data.Page.media.episodes,
       synopsis: response.data.data.Page.media.description,
@@ -204,9 +184,7 @@ export async function fetchAnimeById(id: number) {
         response.data.data.Page.media.studios.nodes.length > 0
           ? response.data.data.Page.media.studios.nodes[0].name
           : null,
-      producers: response.data.data.Page.media.studios.nodes.map(
-        (item2: any) => item2.name
-      ),
+      producers: response.data.data.Page.media.studios.nodes.map((item2: any) => item2.name),
     };
 
     return {
@@ -229,7 +207,7 @@ export async function fetchTopAiring(
   format: Format = Format.TV,
   status: Status = Status.RELEASING,
   isAdult: boolean = false,
-  sort: Sort = Sort.SCORE_DESC
+  sort: Sort = Sort.SCORE_DESC,
 ) {
   try {
     const variables = { page, perPage, type, format, status, isAdult, sort };
@@ -247,7 +225,7 @@ export async function fetchTopAiring(
           Origin: Origin,
           Referer: Referer,
         },
-      }
+      },
     );
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
@@ -261,16 +239,10 @@ export async function fetchTopAiring(
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
-      image:
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
       bannerImage:
-        item.bannerImage ??
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -286,22 +258,17 @@ export async function fetchTopAiring(
       synopsis: item.description,
       season: item.season,
       startDate: item.startDate
-        ? new Date(
-            item.startDate.year,
-            item.startDate.month - 1,
-            item.startDate.day
-          ).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+            'en-US',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            },
+          )
         : null,
       endDate: item.endDate
-        ? new Date(
-            item.endDate.year,
-            item.endDate.month - 1,
-            item.endDate.day
-          ).toLocaleDateString('en-US', {
+        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -329,7 +296,7 @@ export async function fetchPopular(
   format: Format,
   type: MediaType = MediaType.Anime,
   isAdult: boolean = false,
-  sort: Sort = Sort.POPULARITY_DESC
+  sort: Sort = Sort.POPULARITY_DESC,
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -347,7 +314,7 @@ export async function fetchPopular(
           Origin: Origin,
           Referer: Referer,
         },
-      }
+      },
     );
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
@@ -361,16 +328,10 @@ export async function fetchPopular(
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
-      image:
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
       bannerImage:
-        item.bannerImage ??
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -386,22 +347,17 @@ export async function fetchPopular(
       synopsis: item.description,
       season: item.season,
       startDate: item.startDate
-        ? new Date(
-            item.startDate.year,
-            item.startDate.month - 1,
-            item.startDate.day
-          ).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+            'en-US',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            },
+          )
         : null,
       endDate: item.endDate
-        ? new Date(
-            item.endDate.year,
-            item.endDate.month - 1,
-            item.endDate.day
-          ).toLocaleDateString('en-US', {
+        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -429,7 +385,7 @@ export async function fetchTopRated(
   format: Format,
   isAdult: boolean = false,
   type: MediaType = MediaType.Anime,
-  sort: Sort = Sort.SCORE_DESC
+  sort: Sort = Sort.SCORE_DESC,
 ) {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
@@ -447,7 +403,7 @@ export async function fetchTopRated(
           Origin: Origin,
           Referer: Referer,
         },
-      }
+      },
     );
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
@@ -461,16 +417,10 @@ export async function fetchTopRated(
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
-      image:
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
       bannerImage:
-        item.bannerImage ??
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -486,22 +436,17 @@ export async function fetchTopRated(
       synopsis: item.description,
       season: item.season,
       startDate: item.startDate
-        ? new Date(
-            item.startDate.year,
-            item.startDate.month - 1,
-            item.startDate.day
-          ).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+            'en-US',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            },
+          )
         : null,
       endDate: item.endDate
-        ? new Date(
-            item.endDate.year,
-            item.endDate.month - 1,
-            item.endDate.day
-          ).toLocaleDateString('en-US', {
+        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -531,7 +476,7 @@ export async function fetchSeason(
   sort: Sort,
   format: Format,
   isAdult: boolean = false,
-  type: MediaType = MediaType.Anime
+  type: MediaType = MediaType.Anime,
 ) {
   if (!season || !seasonYear) {
     return {
@@ -564,7 +509,7 @@ export async function fetchSeason(
           Origin: Origin,
           Referer: Referer,
         },
-      }
+      },
     );
     const pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
@@ -578,16 +523,10 @@ export async function fetchSeason(
     const res = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
-      image:
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
       bannerImage:
-        item.bannerImage ??
-        item.coverImage.extraLarge ??
-        item.coverImage.large ??
-        item.coverImage.medium,
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -603,22 +542,17 @@ export async function fetchSeason(
       synopsis: item.description,
       season: item.season,
       startDate: item.startDate
-        ? new Date(
-            item.startDate.year,
-            item.startDate.month - 1,
-            item.startDate.day
-          ).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
+        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+            'en-US',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            },
+          )
         : null,
       endDate: item.endDate
-        ? new Date(
-            item.endDate.year,
-            item.endDate.month - 1,
-            item.endDate.day
-          ).toLocaleDateString('en-US', {
+        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -643,7 +577,7 @@ export async function fetchSeason(
 export async function fetchAnimeCharacters(
   mediaId: number,
   sort: Charactersort,
-  voiceActorsSort2: Charactersort
+  voiceActorsSort2: Charactersort,
 ) {
   if (!mediaId) {
     return {
@@ -668,7 +602,7 @@ export async function fetchAnimeCharacters(
           Origin: Origin,
           Referer: Referer,
         },
-      }
+      },
     );
     return {
       success: true,
@@ -729,7 +663,7 @@ export async function fetchProviderId(id: number) {
       try {
         const result = await hiAnime.search(title);
         return (
-          result.anime?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             animeId: item.id,
             name: item.name,
             romaji: item.romanji,
@@ -740,10 +674,7 @@ export async function fetchProviderId(id: number) {
         return [];
       }
     };
-    const fetchProviderResults = async (
-      modifiedString: string,
-      userPref: string
-    ) => {
+    const fetchProviderResults = async (modifiedString: string, userPref: string) => {
       const providerResults = await Promise.all([
         // searchAnitaku(userPref),
         searchAnimeZ(modifiedString),

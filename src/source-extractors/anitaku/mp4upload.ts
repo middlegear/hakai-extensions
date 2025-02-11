@@ -9,9 +9,7 @@ export async function MP4Upload(videoUrl: URL) {
     });
 
     if (data.includes('player.src')) {
-      const match = data.match(
-        /type:\s*"(.*?)",\s*src:\s*"(https?:\/\/[^"]+)"/
-      ); // Match type and src
+      const match = data.match(/type:\s*"(.*?)",\s*src:\s*"(https?:\/\/[^"]+)"/); // Match type and src
       if (match) {
         return { type: match[1], src: match[2] };
       }

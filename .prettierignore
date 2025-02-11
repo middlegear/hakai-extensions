@@ -3,8 +3,7 @@
 
 # Ignore build and node_modules directories
 node_modules/
-dist/
-build/
+
 
 # Ignore specific files
 package-lock.json

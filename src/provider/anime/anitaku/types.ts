@@ -11,8 +11,8 @@ export type animeSearch = {
   subOrDub: string | null;
 };
 export enum subOrDub {
-  SUB = "sub",
-  DUB = "dub",
+  SUB = 'sub',
+  DUB = 'dub',
 }
 // export type pageInfo = {
 //   currentPage: number | null;
@@ -54,21 +54,21 @@ export type downloadUrl = {
 };
 
 export enum anitakuServers {
-  Vidstreaming = "vidstreaming",
-  GogoServer = "gogo server",
-  StreamWish = "streamwish",
-  Doodstream = "doodstream",
-  VidHide = "videhide",
-  MP4Upload = "mp4upload",
+  Vidstreaming = 'vidstreaming',
+  GogoServer = 'gogo server',
+  StreamWish = 'streamwish',
+  Doodstream = 'doodstream',
+  VidHide = 'videhide',
+  MP4Upload = 'mp4upload',
 }
 
 export type anitakuAnimeServers =
-  | "vidstreaming"
-  | "gogo server"
-  | "streamwish"
-  | "doodstream"
-  | "videhide"
-  | "mp4upload";
+  | 'vidstreaming'
+  | 'gogo server'
+  | 'streamwish'
+  | 'doodstream'
+  | 'videhide'
+  | 'mp4upload';
 
 export type scrappedAnimeInfo = {
   success: boolean;

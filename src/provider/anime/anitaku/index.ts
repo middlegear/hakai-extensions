@@ -1,9 +1,4 @@
-import {
-  fetchAnimeInfo,
-  fetchEpisodeSources,
-  fetchServers,
-  searchAnime,
-} from './anitaku.js';
+import { fetchAnimeInfo, fetchEpisodeSources, fetchServers, searchAnime } from './anitaku.js';
 
 import { anitakuServers } from './types.js';
 /**
@@ -43,10 +38,7 @@ class Anitaku {
    *
    * @returns streaming sources with a downloadURL
    */
-  async fetchSources(
-    episodeId: string,
-    server: anitakuServers = anitakuServers.MP4Upload
-  ) {
+  async fetchSources(episodeId: string, server: anitakuServers = anitakuServers.MP4Upload) {
     return fetchEpisodeSources(episodeId, server);
   }
 }
