@@ -3,6 +3,7 @@
 
 # Ignore build and node_modules directories
 node_modules/
+dist/
 
 
 # Ignore specific files
