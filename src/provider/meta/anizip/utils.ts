@@ -21,6 +21,7 @@ interface Mappings {
 }
 
 interface Episode {
+  episode: number;
   tvdbId: number;
   tvdbShowId: number;
   seasonNumber: number;
@@ -36,6 +37,7 @@ interface Episode {
 }
 
 interface ApiResponse {
+  images: any;
   titles: Title;
   mappings: Mappings;
   episodes: { [key: string]: Episode };
@@ -70,14 +72,14 @@ export function transformData(data: ApiResponse) {
   const transformedEpisodes = Object.values(data.episodes)
     .filter(episode => {
       const airDateTime = new Date(episode.airDateUtc);
-      airDateTime.setMinutes(airDateTime.getMinutes() + 30); // Add 30 minutes buffer
+      airDateTime.setMinutes(airDateTime.getMinutes() + 0); // Add 30 minutes buffer idk for now its 0
       return airDateTime <= now;
     })
     .map(episode => ({
       tvdbId: episode.tvdbId,
       tvdbShowId: episode.tvdbShowId || null,
-      season: episode.seasonNumber || null,
-      episodeNumber: episode.episodeNumber || null,
+      seasonNumber: episode.seasonNumber || null,
+      episodeAnimeNumber: Number(episode.episode) || null,
       absoluteEpisode: episode.absoluteEpisodeNumber || null,
       title: {
         english: episode.title?.en || episode.title?.['x-jat'] || null,
@@ -90,10 +92,11 @@ export function transformData(data: ApiResponse) {
       overview: episode.overview || 'No overview available' || null,
       image: episode.image || 'No image available' || null,
       rating: episode.rating ? parseFloat(episode.rating) : null,
-      aired: true, // Mark as aired
+      aired: true,
     }));
-
+  const images = data.images;
   return {
+    images: images,
     animeTitles: titles,
     mappings: mappings,
     episodes: transformedEpisodes,

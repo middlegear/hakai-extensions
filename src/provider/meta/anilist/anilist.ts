@@ -894,13 +894,14 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
           ]);
 
           const matchingResults = animeZ?.map((anime: any) => {
-            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeNumber);
+            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeAnimeNumber);
             return {
-              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
               rating: episodes?.rating ?? null,
               aired: episodes?.aired ?? null,
               episodeId: anime.episodeId ?? null,
               title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? null,
+              overview: episodes?.overview ?? 'No overview available',
               thumbnail: episodes?.image ?? null,
             };
           });
@@ -917,13 +918,14 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
           ]);
 
           const matchingResults2 = hianime?.map((anime: any) => {
-            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeNumber);
+            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeAnimeNumber);
             return {
-              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
               rating: episodes?.rating ?? null,
               aired: episodes?.aired ?? null,
               episodeId: anime.episodeId ?? null,
               title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? anime.title ?? null,
+              overview: episodes?.overview ?? 'No overview available',
               thumbnail: episodes?.image ?? null,
             };
           });
@@ -936,9 +938,16 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
       }
     }
   } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
     return {
       success: false,
-      data: [],
+      data: null,
       status: 200,
       error: error instanceof Error ? error.message : 'Unknown Err',
     };

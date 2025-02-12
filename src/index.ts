@@ -6,7 +6,8 @@ import { AnimeZ, HiAnime } from './provider/index.js';
 import { fetchTopAiring, getEpisodeswithInfo } from './provider/meta/anilist/anilist.js';
 import { Anilist } from './provider/meta/anilist/index.js';
 import { Seasons } from './provider/meta/anilist/types.js';
-import { getAnilistMapping } from './provider/meta/anizip/index.js';
+import { getAnilistMapping, getMalMapping } from './provider/meta/anizip/index.js';
+import { Jikan } from './provider/meta/jikan/index.js';
 import { AnimeProvider } from './types/types.js';
 
 // import {
@@ -53,15 +54,12 @@ const anitaku = new AnimeZ();
 //   .catch((err) => console.error(err));
 
 // const hianime = new HiAnime();
-const anilist = new Anilist();
-anilist
-  // .fetchAiring(1, 2)
-  // .fetchTopRatedAnime(1, 2)
-  // .fetchMostPopular(1, 25)
-  // .search('bleach')
-  // .fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 5)
-  .fetchEpisodes(97938, AnimeProvider.AnimeZ)
-  // getEpisodeswithInfo(176496, AnimeProvider.AnimeZ)
+const jikan = new Jikan();
+jikan
+
+  // .fetchMalEpisodeInfo(58567, 3)
+  .fetchAnimeEpisodes(52299, AnimeProvider.AnimeZ)
+
+  // getMalMapping(56784)
   .then((data: any) => console.log(data))
   .catch((err: any) => console.error(err));
-// ///boruto-naruto-next-generations-8143

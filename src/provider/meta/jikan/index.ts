@@ -13,7 +13,7 @@ import {
   getEpisodeswithInfo,
 } from './jikan.js';
 import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
-
+/// TOP ANIME I should have one for top airing, top rated,most popular
 class Jikan {
   /**
    * Searches for anime by query.
@@ -41,7 +41,7 @@ class Jikan {
    * @param {number} id - The MAL ID (Required).
    * @returns {Promise<any>} - The mapped providerId with anime details.
    */
-  async fetchAnimeId(id: number) {
+  async fetchProviderAnimeId(id: number) {
     return getProviderId(id);
   }
   /**
@@ -64,11 +64,11 @@ class Jikan {
 
   /**
    * Fetches top anime based on filters.
-   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.).
-   * @param {AnimeType} [type=AnimeType.TV] - The anime type.
    * @param {number} [page=1] - The page number.
    * @param {number} [limit=25] - Number of results per page.
-   * @returns {Promise<any>} - The top anime list.
+   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.).
+   * @param {AnimeType} [type=AnimeType.TV] - The anime type.
+   * @returns {Promise<Array>} - The top anime list.
    */
   async fetchTopAnime(page = 1, limit = 25, filter: AnimeStatusFilter, type: AnimeType = AnimeType.TV) {
     return getTopAnime(page, limit, filter, type);
@@ -115,7 +115,7 @@ class Jikan {
    * @param {number} [page=1] - The page number.
    * @returns {Promise<any>} - The anime episodes.
    */
-  async fetchEpisodes(id: number, page = 1) {
+  async fetchMalEpisodes(id: number, page = 1) {
     return getEpisodes(id, page);
   }
 
@@ -125,7 +125,7 @@ class Jikan {
    * @param {number} episodeNumber - The episode number (Required).
    * @returns {Promise<any>} - The episode details.
    */
-  async fetchEpisodeInfo(id: number, episodeNumber: number) {
+  async fetchMalEpisodeInfo(id: number, episodeNumber: number) {
     return getEpisodeInfo(id, episodeNumber);
   }
 }

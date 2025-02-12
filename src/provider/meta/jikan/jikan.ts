@@ -160,7 +160,7 @@ export async function getInfoById(Id: number) {
       endDate: data.data.aired.prop.to
         ? new Date(
             data.data.aired.prop.year,
-            data.data.aired.prop.month - 1,
+            data.data.aired.prop.month,
             data.data.aired.prop.to.day,
           ).toLocaleString('en-US', {
             year: 'numeric',
@@ -717,7 +717,7 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number) {
       synopsis: response.data.data.synopsis,
     };
     return {
-      succes: true,
+      success: true,
       status: 200,
       data: data,
     };
@@ -744,74 +744,78 @@ export async function getProviderId(id: number) {
       success: false,
       status: 400,
       data: null,
-      error: 'Missing required parameter: mal_id!',
+      error: 'Invalid or missing required parameter: id!',
     };
   }
 
   try {
-    const jikanData = await getInfoById(id);
-    const titles = jikanData?.data?.title;
-
-    if (!titles) {
-      return {
-        success: false,
-        status: 404,
-        data: null,
-        error: 'Anime title not found.',
-      };
+    const Jikan = await getInfoById(id);
+    if (!Jikan?.data?.title) {
+      throw new Error('Title not found.');
     }
 
-    const englishTitle = titles.english?.split(':')?.[0]?.trim() || '';
-    const romajiTitle = titles.romaji || '';
+    const titles = Jikan.data.title;
+    const englishTitle = titles.english?.split(':')?.at(0)?.trim() || '';
+    const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
-    const searchProvider = async (provider: any, title: string) => {
+    const searchAnimeZ = async (title: string) => {
       try {
-        const result = await provider.search(title);
+        const result = await new AnimeZ().search(title);
         return (
-          result?.data?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             animeId: item.id,
-            name: item.title ?? item.name,
-            romaji: item.romanji ?? '',
+            name: item.title,
           })) || []
         );
       } catch (error) {
-        console.error(`Error fetching from ${provider.constructor.name}:`, error);
+        console.error('Error fetching from AnimeZ:', error);
         return [];
       }
     };
 
-    const animeZ = new AnimeZ();
-    const hiAnime = new HiAnime();
+    const searchHiAnime = async (title: string) => {
+      try {
+        const result = await new HiAnime().search(title);
+        return (
+          result.data?.map((item: any) => ({
+            animeId: item.id,
+            name: item.name,
+            romaji: item.romanji,
+          })) || []
+        );
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return [];
+      }
+    };
 
-    // Fetch provider results
-    const [animeZResults, hiAnimeResults] = await Promise.all([
-      searchProvider(animeZ, englishTitle),
-      searchProvider(hiAnime, romajiTitle),
+    // Execute providers concurrently but independently
+    const [animeZResults, hiAnimeResults] = await Promise.allSettled([
+      searchAnimeZ(englishTitle),
+      searchHiAnime(userPref),
     ]);
 
-    const matchedAnimeZ = animeZtitle(titles, animeZResults);
-    const matchedHiAnime = hianimeTitle(titles, hiAnimeResults);
+    const data = {
+      animeInfo: Jikan,
+      hiAnime: hiAnimeResults.status === 'fulfilled' ? hianimeTitle(titles, hiAnimeResults.value) : null,
+      animeZ: animeZResults.status === 'fulfilled' ? animeZtitle(titles, animeZResults.value) : null,
+    };
 
     return {
       success: true,
       status: 200,
-      data: {
-        animeInfo: jikanData,
-        animeZ: matchedAnimeZ,
-        hiAnime: matchedHiAnime,
-      },
+      data,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
 
-/// fix pagination issues
 export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider) {
   if (!jikanId && !provider) {
     return {
@@ -867,13 +871,14 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
           ]);
 
           const matchingResults = animeZ?.map((anime: any) => {
-            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeNumber);
+            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeAnimeNumber);
             return {
-              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
               rating: episodes?.rating ?? null,
               aired: episodes?.aired ?? null,
               episodeId: anime.episodeId ?? null,
               title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? null,
+              overview: episodes?.overview ?? 'No overview available',
               thumbnail: episodes?.image ?? null,
             };
           });
@@ -890,13 +895,14 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
           ]);
 
           const matchingResults2 = hianime?.map((anime: any) => {
-            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeNumber);
+            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeAnimeNumber);
             return {
-              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
               rating: episodes?.rating ?? null,
               aired: episodes?.aired ?? null,
               episodeId: anime.episodeId ?? null,
               title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? anime.title ?? null,
+              overview: episodes?.overview ?? 'No overview available',
               thumbnail: episodes?.image ?? null,
             };
           });

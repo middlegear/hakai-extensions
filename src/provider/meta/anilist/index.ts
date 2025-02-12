@@ -114,7 +114,7 @@ class Anilist {
    * @param {AnimeProvider} [provider] - AnimeProvider (Optional, defaults to HiAnime)
    * @returns {Promise<Object>} -An object of animeInfo with episodes
    */
-  async fetchEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
     return getEpisodeswithInfo(id, provider);
   }
 }

@@ -25,6 +25,7 @@ export async function getAnilistMapping(id: number) {
     return {
       success: true,
       status: 200,
+      images: results.images,
       titles: results.animeTitles,
       episodes: results.episodes,
       mapping: results.mappings,
@@ -69,6 +70,7 @@ export async function getMalMapping(id: number) {
     return {
       success: true,
       status: 200,
+      images: results.images,
       titles: results.animeTitles,
       episodes: results.episodes,
       mapping: results.mappings,

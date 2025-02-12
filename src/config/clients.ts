@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 
 const client: AxiosRequestConfig = {
-  timeout: 5000,
+  timeout: 8000,
   headers: {
     Accept: ACCEPT_HEADER,
     'Content-Encoding': ACCEPT_ENCODING,
@@ -18,7 +18,8 @@ const client: AxiosRequestConfig = {
 };
 
 const axiosAnitaku: AxiosRequestConfig = {
-  timeout: 5000,
+  // timeout: 5000,
+  timeout: 8000,
   headers: {
     'User-Agent': anitaku_USER_AGENT_HEADER,
     Accept: ACCEPT_HEADER,
@@ -27,7 +28,8 @@ const axiosAnitaku: AxiosRequestConfig = {
 };
 
 const axiosZoro: AxiosRequestConfig = {
-  timeout: 4000,
+  // timeout: 5000,
+  timeout: 8000,
   headers: {
     Accept: ACCEPT_HEADER,
     'Content-Encoding': ACCEPT_ENCODING,

@@ -2,10 +2,12 @@ import { test, expect } from 'vitest';
 import { Anime } from '../src/provider/anime/anime.js';
 import { Dubbing, Servers } from '../src/provider/anime/hianime/types.js';
 const zoro = new Anime.HiAnime();
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 test('searches for anime based on query', async () => {
   const data = await zoro.search('bleach', 1);
   expect(data.success).not.toEqual(false);
   expect(data.data).not.toEqual([]);
+  await wait(300);
 });
 
 test('Fetches animeInfo including episodes', async () => {
@@ -13,12 +15,14 @@ test('Fetches animeInfo including episodes', async () => {
   expect(data.success).toEqual(true);
   expect(data.data?.animeInfo).not.toEqual(null);
   expect(data.data?.episodes).not.toEqual([]);
+  await wait(300);
 });
 
 test('fetches streaming servers', async () => {
   const data = await zoro.fetchEpisodeServers('solo-leveling-18718-episode-119497');
-
+  expect(data.success).toBe(true);
   expect(data.data).not.toEqual(null);
+  await wait(300);
 });
 
 test('Fetches streaming sources on HD1', async () => {
@@ -29,4 +33,6 @@ test('Fetches streaming sources on HD1', async () => {
   );
 
   expect(data.data?.sources).not.toEqual([]);
+
+  await wait(300);
 });

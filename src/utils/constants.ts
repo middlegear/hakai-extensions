@@ -1,5 +1,7 @@
 ///hiAnime
-export const zoroBaseUrl = 'https://hianime.to' as const;
+const altZoroBaseUrl = 'https://aniwatchtv.to' as const;
+const mainZoroBaseUrl = 'https://hianime.to' as const;
+export const zoroBaseUrl = altZoroBaseUrl;
 export const zoroSearch = `${zoroBaseUrl}/search` as const; ///keyword is the query params
 
 ////anitaku
