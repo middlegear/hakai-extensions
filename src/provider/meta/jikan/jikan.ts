@@ -10,6 +10,8 @@ import {
   // type JikanTitle,
 } from './mapperjikan.js';
 import { AnimeStatusFilter, AnimeType, Filters, Season } from './types.js';
+import { getMalMapping } from '../anizip/index.js';
+import { Jikan } from './index.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 export async function searchAnime(
@@ -810,7 +812,7 @@ export async function getProviderId(id: number) {
 }
 
 /// fix pagination issues
-export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider, page: number = 1) {
+export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider) {
   if (!jikanId && !provider) {
     return {
       success: false,
@@ -820,9 +822,9 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
     };
   }
   try {
-    const data = await getProviderId(jikanId);
-    const zoro = data.data?.hiAnime;
-    const animezId = data.data?.animeZ;
+    const Jikan = await getProviderId(jikanId);
+    const zoro = Jikan.data?.hiAnime;
+    const animezId = Jikan.data?.animeZ;
 
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
@@ -859,62 +861,51 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
     if (animezId && zoro) {
       switch (provider) {
         case AnimeProvider.AnimeZ:
-          const res = await Promise.all([
-            getEpisodes(jikanId, page),
+          const [animeZ, aniMapping] = await Promise.all([
             fetchEpisodesAnimeZ(animezId.animeId as string),
+            getMalMapping(jikanId),
           ]);
-          const [jikan, animezdata] = res;
 
-          if (animezdata && animezdata.length > 24) {
+          const matchingResults = animeZ?.map((anime: any) => {
+            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeNumber);
             return {
-              data: data.data,
-              success: data.success,
-              status: data.status,
-              animezdata,
-            };
-          }
-
-          const matchingEpisodes = animezdata?.map(item => {
-            const jikanEpisode = jikan.data.find((item2: any) => item2.number === item.number);
-            return {
-              data: data.data,
-              success: data.success,
-              status: data.status,
-              episodeId: item.episodeId,
-              number: item.number,
-              episodeTitle: jikanEpisode?.title || 'Unknown Title',
-              category: item.category,
+              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              rating: episodes?.rating ?? null,
+              aired: episodes?.aired ?? null,
+              episodeId: anime.episodeId ?? null,
+              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? null,
+              thumbnail: episodes?.image ?? null,
             };
           });
 
-          return matchingEpisodes;
-
+          return {
+            success: true,
+            info: Jikan.data?.animeInfo,
+            episodes: matchingResults,
+          };
         case AnimeProvider.HiAnime:
-          const [jikan2, hianime] = await Promise.all([
-            getEpisodes(jikanId, page),
+          const [hianime, aniMapping2] = await Promise.all([
             fetchEpisodesHianime(zoro.animeId as string),
+            getMalMapping(jikanId),
           ]);
 
-          if (hianime && hianime.length > 24)
+          const matchingResults2 = hianime?.map((anime: any) => {
+            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeNumber);
             return {
-              data: data.data,
-              success: data.success,
-              status: data.status,
-              hianime,
-            };
-
-          const matchingEpisodes2 = hianime?.map(item => {
-            const jikanEpisode2 = jikan2.data.find((item2: any) => item2.number === item.number);
-            return {
-              data: data.data,
-              success: data.success,
-              status: data.status,
-              episodeId: item.episodeId,
-              number: item.number,
-              title: jikanEpisode2.title,
+              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              rating: episodes?.rating ?? null,
+              aired: episodes?.aired ?? null,
+              episodeId: anime.episodeId ?? null,
+              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? anime.title ?? null,
+              thumbnail: episodes?.image ?? null,
             };
           });
-          return matchingEpisodes2;
+
+          return {
+            success: true,
+            info: Jikan.data?.animeInfo,
+            episodes: matchingResults2,
+          };
       }
     }
   } catch (error) {

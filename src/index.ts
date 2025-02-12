@@ -1,18 +1,13 @@
 ////main file where everything gets exported
 // export * as Anilist from './provider/meta/anilist/index.js'; the way to export stuff for building
-// import { getCharacters, getInfoById } from "./meta/jikan/jikan";
 
-// import {
-//   fetchAnimeInfo,
-//   fetchSources,
-//   matchingSearcResponse,
-// } from './provider/anime/animeZ/animeZ.js';
-// import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { AnimeZ, HiAnime } from './provider/index.js';
-import { fetchTopAiring } from './provider/meta/anilist/anilist.js';
+import { fetchTopAiring, getEpisodeswithInfo } from './provider/meta/anilist/anilist.js';
 import { Anilist } from './provider/meta/anilist/index.js';
 import { Seasons } from './provider/meta/anilist/types.js';
+import { getAnilistMapping } from './provider/meta/anizip/index.js';
+import { AnimeProvider } from './types/types.js';
 
 // import {
 //   getEpisodes,
@@ -65,7 +60,8 @@ anilist
   // .fetchMostPopular(1, 25)
   // .search('bleach')
   // .fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 5)
-  .fetchEpisodes(97938)
+  .fetchEpisodes(97938, AnimeProvider.AnimeZ)
+  // getEpisodeswithInfo(176496, AnimeProvider.AnimeZ)
   .then((data: any) => console.log(data))
   .catch((err: any) => console.error(err));
 // ///boruto-naruto-next-generations-8143

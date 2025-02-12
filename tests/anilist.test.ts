@@ -54,7 +54,7 @@ test('fetch seasonal anime', async () => {
 });
 
 test('fetch episodes', async () => {
-  const data = await anilist.fetchEpisodes(159322, AnimeProvider.HiAnime);
+  const data = await anilist.fetchEpisodes(159322, AnimeProvider.AnimeZ);
   expect(data?.success).not.toEqual(false);
   expect(data?.data).not.toEqual([]);
 });

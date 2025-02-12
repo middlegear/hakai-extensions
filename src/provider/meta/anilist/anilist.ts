@@ -19,6 +19,7 @@ import { USER_AGENT_HEADER } from '../../index.js';
 
 import { MediaType, Format, Status, Sort, Seasons, Charactersort } from './types.js';
 import { AnimeProvider } from '../../../types/types.js';
+import { getAnilistMapping } from '../anizip/index.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -781,9 +782,8 @@ export async function fetchProviderId(id: number) {
     const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
     const searchAnimeZ = async (title: string) => {
-      const animeZ = new AnimeZ();
       try {
-        const result = await animeZ.search(title);
+        const result = await new AnimeZ().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -797,9 +797,8 @@ export async function fetchProviderId(id: number) {
     };
 
     const searchHiAnime = async (title: string) => {
-      const hiAnime = new HiAnime();
       try {
-        const result = await hiAnime.search(title);
+        const result = await new HiAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -813,17 +812,16 @@ export async function fetchProviderId(id: number) {
       }
     };
 
-    const providerResults = await Promise.all([
-      searchAnimeZ(englishTitle || userPref),
+    // Execute providers concurrently but independently
+    const [animeZResults, hiAnimeResults] = await Promise.allSettled([
+      searchAnimeZ(englishTitle),
       searchHiAnime(userPref),
     ]);
 
-    const [animeZResults, hiAnimeResults] = providerResults;
-
     const data = {
       animeInfo: anilistData,
-      hiAnime: bestHianimeTitle(titles, hiAnimeResults),
-      animeZ: bestanimeZTitle(titles, animeZResults),
+      hiAnime: hiAnimeResults.status === 'fulfilled' ? bestHianimeTitle(titles, hiAnimeResults.value) : null,
+      animeZ: animeZResults.status === 'fulfilled' ? bestanimeZTitle(titles, animeZResults.value) : null,
     };
 
     return {
@@ -890,18 +888,50 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
     if (animezId && zoro) {
       switch (provider) {
         case AnimeProvider.AnimeZ:
-          const animeZ = await fetchEpisodesAnimeZ(animezId.animeId as string);
+          const [animeZ, aniMapping] = await Promise.all([
+            fetchEpisodesAnimeZ(animezId.animeId as string),
+            getAnilistMapping(anilistId),
+          ]);
+
+          const matchingResults = animeZ?.map((anime: any) => {
+            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeNumber);
+            return {
+              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              rating: episodes?.rating ?? null,
+              aired: episodes?.aired ?? null,
+              episodeId: anime.episodeId ?? null,
+              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? null,
+              thumbnail: episodes?.image ?? null,
+            };
+          });
+
           return {
             success: true,
-            data: anilistData.data?.animeInfo,
-            animeZ: animeZ,
+            info: anilistData.data?.animeInfo,
+            episodes: matchingResults,
           };
         case AnimeProvider.HiAnime:
-          const hianime = await fetchEpisodesHianime(zoro.animeId as string);
+          const [hianime, aniMapping2] = await Promise.all([
+            fetchEpisodesHianime(zoro.animeId as string),
+            getAnilistMapping(anilistId),
+          ]);
+
+          const matchingResults2 = hianime?.map((anime: any) => {
+            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeNumber);
+            return {
+              episodeNumber: episodes?.episodeNumber ?? anime.number ?? null,
+              rating: episodes?.rating ?? null,
+              aired: episodes?.aired ?? null,
+              episodeId: anime.episodeId ?? null,
+              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? anime.title ?? null,
+              thumbnail: episodes?.image ?? null,
+            };
+          });
+
           return {
             success: true,
-            data: anilistData.data?.animeInfo,
-            hianime: hianime,
+            info: anilistData.data?.animeInfo,
+            episodes: matchingResults2,
           };
       }
     }
