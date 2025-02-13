@@ -12,8 +12,27 @@ test('search anime using string', async () => {
   expect(data.data).not.toEqual([]);
   await wait(400);
 });
-test('fetch top anime', async () => {
-  const data = await jikan.fetchTopAnime(1, 25, AnimeStatusFilter.Popularity);
+test('fetch top upcoming anime', async () => {
+  const data = await jikan.fetchTopUpcoming(1, 25);
+  expect(data.data).not.toBe([]);
+  expect(data.success).toBe(true);
+  await wait(400);
+});
+test('fetch top airing anime', async () => {
+  const data = await jikan.fetchTopAiring();
+  expect(data.data).not.toBe([]);
+  expect(data.success).toBe(true);
+  await wait(400);
+});
+test('fetch most popular anime', async () => {
+  const data = await jikan.fetchMostPopular();
+  expect(data.data).not.toBe([]);
+  expect(data.success).toBe(true);
+  await wait(400);
+});
+
+test('fetch top movies category', async () => {
+  const data = await jikan.fetchTopMovies();
   expect(data.data).not.toBe([]);
   expect(data.success).toBe(true);
   await wait(400);

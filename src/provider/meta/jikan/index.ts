@@ -13,7 +13,7 @@ import {
   getEpisodeswithInfo,
 } from './jikan.js';
 import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
-/// TOP ANIME I should have one for top airing, top rated,most popular
+
 class Jikan {
   /**
    * Searches for anime by query.
@@ -23,7 +23,7 @@ class Jikan {
    * @param {AnimeType} [type=AnimeType.TV] - The anime type filter.
    * @returns {Promise<any>} - The search results.
    */
-  async search(query: string, page = 1, limit = 25) {
+  async search(query: string, page: number = 1, limit: number = 1) {
     return searchAnime(query, page, limit);
   }
 
@@ -46,12 +46,13 @@ class Jikan {
   }
   /**
    * Fetches anime provider episodes for an anime.
-   *@param {number} id - The MAL ID (Required).
+   * @param {number} id - The MAL ID (Required).
    * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
+   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1, dont be surpised by the order
    * @returns {Promise<any>} - The animeInfo with Episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
-    return getEpisodeswithInfo(id, provider);
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1) {
+    return getEpisodeswithInfo(id, provider, page);
   }
   /**
    * Fetches characters for a given anime.
@@ -64,16 +65,64 @@ class Jikan {
 
   /**
    * Fetches top anime based on filters.
-   * @param {number} [page=1] - The page number.
-   * @param {number} [limit=25] - Number of results per page.
-   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.).
-   * @param {AnimeType} [type=AnimeType.TV] - The anime type.
+   * @param {number} [page=1] - The page number. defaults to 1 Optional
+   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
+   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.). Optional
+   * @param {AnimeType} [type=AnimeType] - The anime type. Optional
    * @returns {Promise<Array>} - The top anime list.
    */
-  async fetchTopAnime(page = 1, limit = 25, filter: AnimeStatusFilter, type: AnimeType = AnimeType.TV) {
+  async fetchTopUpcoming(
+    page: number = 1,
+    limit: number = 25,
+    filter: AnimeStatusFilter = AnimeStatusFilter.Upcoming,
+    type: AnimeType = AnimeType.TV,
+  ) {
     return getTopAnime(page, limit, filter, type);
   }
 
+  /**
+   * Fetches top airing anime.
+   * @param {number} [page=1] - The page number. defaults to 1 Optional
+   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
+   * @returns {Promise<Array>} - The top airing list.
+   */
+  async fetchTopAiring(
+    page: number = 1,
+    limit: number = 25,
+    filter: AnimeStatusFilter = AnimeStatusFilter.Airing,
+    type: AnimeType = AnimeType.TV,
+  ) {
+    return getTopAnime(page, limit, filter, type);
+  }
+
+  /**
+   * Fetches top movies type category.
+   * @param {number} [page=1] - The page number. defaults to 1 Optional
+   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional.
+   * @returns {Promise<Array>} - The top Movie category
+   */
+  async fetchTopMovies(
+    page: number = 1,
+    limit: number = 25,
+    filter: AnimeStatusFilter = AnimeStatusFilter.Favourite,
+    type: AnimeType = AnimeType.Movie,
+  ) {
+    return getTopAnime(page, limit, filter, type);
+  }
+  /**
+   * Fetches most popular anime category.
+   * @param {number} [page=1] - The page number. defaults to 1 Optional
+   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
+   * @returns {Promise<Array>} - The most popular anime resource
+   */
+  async fetchMostPopular(
+    page: number = 1,
+    limit: number = 25,
+    filter: AnimeStatusFilter = AnimeStatusFilter.Popularity,
+    type: AnimeType = AnimeType.TV,
+  ) {
+    return getTopAnime(page, limit, filter, type);
+  }
   /**
    * Fetches seasonal anime for a given year and season.
    * @param {number} year - The target year (Required).

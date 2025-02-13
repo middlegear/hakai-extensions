@@ -53,13 +53,16 @@ const anitaku = new AnimeZ();
 //   .then((data) => console.log(data))
 //   .catch((err) => console.error(err));
 
-// const hianime = new HiAnime();
+const hianime = new HiAnime();
 const jikan = new Jikan();
-jikan
 
-  // .fetchMalEpisodeInfo(58567, 3)
-  .fetchAnimeEpisodes(52299, AnimeProvider.AnimeZ)
+jikan // .fetchProviderAnimeId(25519)
+  // .search('yuki-yuna-is-a-hero')
 
-  // getMalMapping(56784)
+  //   // .fetchMalEpisodeInfo(58567, 3)
+  //   // .fetchProviderAnimeId(34572)
+  .fetchTopUpcoming()
+
+  // getMalMapping(25519)
   .then((data: any) => console.log(data))
   .catch((err: any) => console.error(err));

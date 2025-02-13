@@ -110,12 +110,14 @@ class Anilist {
   }
   /**
    * Fetches animeInfo with Provider episodes using AnilistId
-   * @param {number} Id - The Anilist anime ID (Required).
-   * @param {AnimeProvider} [provider] - AnimeProvider (Optional, defaults to HiAnime)
+    
+   * @param {number} id - The AnilistId (Required).
+   * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
+   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1, dont be surpised by the order
    * @returns {Promise<Object>} -An object of animeInfo with episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime) {
-    return getEpisodeswithInfo(id, provider);
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1) {
+    return getEpisodeswithInfo(id, provider, page);
   }
 }
 

@@ -44,14 +44,14 @@ interface ApiResponse {
 }
 
 export function transformData(data: ApiResponse) {
-  // if (!data) {
-  //   return { animeTitles: {}, mappings: {}, episodes: [] };
-  // }
+  if (!data) {
+    return { animeTitles: {}, mappings: {}, episodes: [] };
+  }
   const titles = {
-    english: data.titles?.en || data.titles?.['x-jat'],
-    japanese: data.titles?.ja,
-    german: data.titles?.de,
-    romanizedJapanese: data.titles?.['x-jat'],
+    english: data.titles?.en || data.titles?.['x-jat'] || null,
+    japanese: data.titles?.ja || null,
+    german: data.titles?.de || null,
+    romanizedJapanese: data.titles?.['x-jat'] || null,
   };
 
   const mappings = {
@@ -94,7 +94,7 @@ export function transformData(data: ApiResponse) {
       rating: episode.rating ? parseFloat(episode.rating) : null,
       aired: true,
     }));
-  const images = data.images;
+  const images = data.images || null;
   return {
     images: images,
     animeTitles: titles,

@@ -133,16 +133,43 @@ export function getEpisodes($: cheerio.CheerioAPI) {
     category: string | null;
   }[] = [];
 
-  const episodesSelector: cheerio.SelectorType = 'ul#list_chapter_id_detail > li.wp-manga-chapter  ';
-  $(episodesSelector).each((_, element) => {
+  $('li.wp-manga-chapter').each((_, element) => {
     episodes.push({
-      episodeId: $(element).find('a').attr('href')?.slice(1) || null,
+      episodeId:
+        $(element)
+          ?.find('a')
+          ?.attr('href')
+          ?.replace(/^\/+|\/+$/g, '') || null,
       number: Number($(element).find('a').text().trim().split('-').at(0)) || null,
       category: $(element).find('a').text().split('-').includes('Dub') ? Dubbing.Dub : Dubbing.Sub || null,
     });
   });
-  episodes.reverse();
-  return {
-    episodes,
+  return episodes.reverse();
+}
+
+export function getAjaxEpisodesPagination($: cheerio.CheerioAPI) {
+  const currentPage = Number($('li > span.current').text()) || 1;
+  const pageNumbers: number[] = [];
+  $('li > a.page-link').each((i, elem) => {
+    const pageNumber = $(elem).text();
+    pageNumbers.push(Number(pageNumber));
+  });
+
+  let totalPages;
+  let hasNextPage;
+  totalPages = Math.max(...pageNumbers.filter(num => !isNaN(num)));
+  if (totalPages === -Infinity) {
+    totalPages = 1;
+  }
+
+  if (totalPages && currentPage) {
+    hasNextPage = totalPages > currentPage ? true : false;
+  }
+  const pagination = {
+    hasNextPage,
+    currentPage,
+    totalPages,
   };
+
+  return pagination;
 }

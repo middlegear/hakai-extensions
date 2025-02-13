@@ -35,10 +35,11 @@ class AnimeZ {
   /**
    * Fetches episode list for a given anime.
    * @param {string} id - The anime ID. Required.
+   * @param {number} [page=1] - The page number for pagination (optional, defaults to 1).
    * @returns {Promise<Array>} - An array containing episode details.
    */
-  async fetchEpisodes(id: string) {
-    return getAnimeEpisodes(id);
+  async fetchEpisodes(id: string, page: number = 1) {
+    return getAnimeEpisodes(id, page);
   }
 }
 

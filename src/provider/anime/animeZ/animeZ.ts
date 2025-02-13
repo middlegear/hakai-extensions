@@ -1,5 +1,11 @@
 import * as cheerio from 'cheerio';
-import { animeZSearchResults, animeZSearchSuggestions, extractAnimeZInfo, getEpisodes } from './scraper.js';
+import {
+  animeZSearchResults,
+  animeZSearchSuggestions,
+  extractAnimeZInfo,
+  getAjaxEpisodesPagination,
+  getEpisodes,
+} from './scraper.js';
 import { animeZBaseUrl, animeZClient } from '../../index.js';
 import { category, servers } from './types.js';
 import { ASource } from '../../../types/types.js';
@@ -241,8 +247,7 @@ export async function fetchAnimeInfo(animeId: string) {
     };
   }
 }
-//// the pagination of episodes are coming in as latest fix later
-export async function getAnimeEpisodes(animeId: string, dub: category = category.SUB) {
+export async function getAnimeEpisodes(animeId: string, page: number, dub: category = category.SUB) {
   if (!animeId)
     return {
       success: false,
@@ -250,20 +255,12 @@ export async function getAnimeEpisodes(animeId: string, dub: category = category
       status: 400,
       error: ' Missing required params: Id',
     };
+  const newId = animeId.split('-').at(-1);
 
   try {
-    const response = await animeZClient.get(`${animeZBaseUrl}/${animeId}`);
-    const data$: cheerio.CheerioAPI = cheerio.load(response.data);
-
-    const data = getEpisodes(data$);
-    if (!data.episodes) {
-      return {
-        success: true,
-        data: [],
-        error: 'Scraping errors',
-      };
-    }
-
+    const response = await animeZClient.get(
+      `${animeZBaseUrl}/?act=ajax&code=load_list_chapter&manga_id=${newId}&page_num=${page}`,
+    );
     if (!response.data) {
       return {
         success: false,
@@ -272,27 +269,52 @@ export async function getAnimeEpisodes(animeId: string, dub: category = category
         data: [],
       };
     }
+    const episode$: cheerio.CheerioAPI = cheerio.load(response.data.list_chap);
+    const nav$: cheerio.CheerioAPI = cheerio.load(response.data.nav);
+
+    const data = getEpisodes(episode$);
+
+    const pages = getAjaxEpisodesPagination(nav$);
+    if (!data && !pages) {
+      return {
+        success: true,
+        data: [],
+        error: 'Scraping errors',
+      };
+    }
     let episodes;
     switch (dub) {
       case category.DUB:
-        episodes = data.episodes?.filter(item => item.category === category.DUB);
+        episodes = data?.filter(item => item.category === category.DUB);
         break;
       case category.SUB:
-        episodes = data.episodes?.filter(item => item.category === category.SUB);
+        episodes = data?.filter(item => item.category === category.SUB);
         break;
       default:
-        episodes = data.episodes;
+        episodes = data;
     }
-
     return {
       success: true,
       status: 200,
+      hasNextPage: pages.hasNextPage,
+      currentPage: pages.currentPage,
+      totalPages: pages.totalPages,
       data: episodes,
     };
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
+        data: null,
+      };
+    }
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Contact dev if you see this ',
     };
   }
 }

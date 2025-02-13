@@ -28,5 +28,5 @@ export enum AnimeStatusFilter {
   Airing = 'airing',
   Popularity = 'bypopularity',
   Upcoming = 'upcoming',
-  Favourite = 'favourite',
+  Favourite = 'favorite',
 }

@@ -839,7 +839,7 @@ export async function fetchProviderId(id: number) {
   }
 }
 
-export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProvider) {
+export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProvider, page?: number) {
   if (!anilistId && !provider) {
     return {
       success: false,
@@ -869,17 +869,25 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
         return null;
       }
     };
-    const fetchEpisodesAnimeZ = async (id: string) => {
+    const fetchEpisodesAnimeZ = async (id: string, page: number) => {
       const animeZ = new AnimeZ();
       try {
-        const result = await animeZ.fetchEpisodes(id);
-        return (
-          result.data?.map((item: any) => ({
-            episodeId: item.episodeId,
-            number: item.number,
-            category: item.category,
-          })) || []
-        );
+        const result = await animeZ.fetchEpisodes(id, page);
+        const pagination = {
+          hasNextPage: result.hasNextPage || null,
+          currentPage: result.currentPage || null,
+          totalPages: result.totalPages || null,
+        };
+        const data = {
+          pagination: pagination,
+          result:
+            result.data?.map((item: any) => ({
+              episodeId: item.episodeId,
+              number: item.number,
+              category: item.category,
+            })) || [],
+        };
+        return data;
       } catch (error) {
         console.error('Error fetching from AnimeZ:', error);
         return null;
@@ -888,53 +896,80 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
     if (animezId && zoro) {
       switch (provider) {
         case AnimeProvider.AnimeZ:
-          const [animeZ, aniMapping] = await Promise.all([
-            fetchEpisodesAnimeZ(animezId.animeId as string),
-            getAnilistMapping(anilistId),
-          ]);
-
-          const matchingResults = animeZ?.map((anime: any) => {
-            const episodes = aniMapping.episodes?.find(item => anime.number === item.episodeAnimeNumber);
+          if (anilistId === 21 || anilistId === 269) {
+            const response = await fetchEpisodesAnimeZ(animezId.animeId as string, page as number);
             return {
-              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-              rating: episodes?.rating ?? null,
-              aired: episodes?.aired ?? null,
-              episodeId: anime.episodeId ?? null,
-              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? null,
-              overview: episodes?.overview ?? 'No overview available',
-              thumbnail: episodes?.image ?? null,
+              success: true,
+              info: anilistData.data?.animeInfo,
+              episodePagination: response?.pagination,
+              episodes: response?.result,
             };
-          });
+          } else {
+            const [animeZ, aniMapping] = await Promise.all([
+              fetchEpisodesAnimeZ(animezId.animeId as string, page as number),
+              getAnilistMapping(anilistId),
+            ]);
 
-          return {
-            success: true,
-            info: anilistData.data?.animeInfo,
-            episodes: matchingResults,
-          };
+            const episodeMap = new Map(aniMapping.episodes?.map(item => [item.episodeAnimeNumber, item]));
+
+            const matchingResults = animeZ?.result.map((anime: any) => {
+              const episodes = episodeMap.get(anime.number);
+
+              return {
+                episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
+                rating: episodes?.rating ?? null,
+                aired: episodes?.aired ?? null,
+                episodeId: anime.episodeId ?? null,
+                title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+                overview: episodes?.overview ?? 'No overview available',
+                thumbnail: episodes?.image ?? null,
+              };
+            });
+
+            if (animeZ)
+              return {
+                success: true,
+                info: anilistData.data?.animeInfo,
+                episodePagination: animeZ.pagination,
+                episodes: matchingResults,
+              };
+          }
         case AnimeProvider.HiAnime:
-          const [hianime, aniMapping2] = await Promise.all([
-            fetchEpisodesHianime(zoro.animeId as string),
-            getAnilistMapping(anilistId),
-          ]);
-
-          const matchingResults2 = hianime?.map((anime: any) => {
-            const episodes = aniMapping2.episodes?.find(item => anime.number === item.episodeAnimeNumber);
+          if (anilistId === 21 || anilistId === 269) {
+            const response = await fetchEpisodesHianime(zoro.animeId as string);
             return {
-              episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-              rating: episodes?.rating ?? null,
-              aired: episodes?.aired ?? null,
-              episodeId: anime.episodeId ?? null,
-              title: episodes?.title.english ?? episodes?.title.romanizedJapanese ?? anime.title ?? null,
-              overview: episodes?.overview ?? 'No overview available',
-              thumbnail: episodes?.image ?? null,
+              success: true,
+              info: anilistData.data?.animeInfo,
+              episodes: response,
             };
-          });
+          } else {
+            const [hianime, aniMapping2] = await Promise.all([
+              fetchEpisodesHianime(zoro.animeId as string),
+              getAnilistMapping(anilistId),
+            ]);
 
-          return {
-            success: true,
-            info: anilistData.data?.animeInfo,
-            episodes: matchingResults2,
-          };
+            const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+
+            const matchingResults2 = hianime?.map((anime: any) => {
+              const episodes = episodeMap2.get(anime.number);
+
+              return {
+                episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
+                rating: episodes?.rating ?? null,
+                aired: episodes?.aired ?? null,
+                episodeId: anime.episodeId ?? null,
+                title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+                overview: episodes?.overview ?? 'No overview available',
+                thumbnail: episodes?.image ?? null,
+              };
+            });
+
+            return {
+              success: true,
+              info: anilistData.data?.animeInfo,
+              episodes: matchingResults2,
+            };
+          }
       }
     }
   } catch (error) {

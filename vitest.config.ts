@@ -5,6 +5,6 @@ export default defineConfig({
     name: 'webscrapper',
     isolate: false,
     environment: 'node',
-    testTimeout: 120000,
+    testTimeout: 5000,
   },
 });
