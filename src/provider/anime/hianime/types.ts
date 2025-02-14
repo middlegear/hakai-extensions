@@ -41,22 +41,28 @@ export type SubServers = {
 };
 export type DubServers = SubServers;
 export type RawServers = SubServers;
-export type ScrappedServers = {
+export type ServerInfo = {
   sub: SubServers[];
   dub: DubServers[];
-  // raw: RawServers[];
   episodeNumber: number | null;
 };
 
 export enum Servers {
   HD1 = 'hd-1',
-  // StreamSB = "streamsb",
-  // StreamTape = "streamtape",
   HD2 = 'hd-2',
 }
-export type language = 'sub' | 'dub' | 'raw';
+
 export enum Dubbing {
   Dub = 'dub',
   Sub = 'sub',
-  Raw = 'raw',
+}
+
+export interface ErrorResponse {
+  success: boolean;
+  status: number;
+  error: string;
+}
+export interface SuccessResponse {
+  success: true;
+  status: number;
 }

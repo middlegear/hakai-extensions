@@ -116,8 +116,7 @@ let memoryBuff: Uint8Array | null;
 
 //fix this
 function getMemBuff(): Uint8Array {
-  return (memoryBuff =
-    null !== memoryBuff && 0 !== memoryBuff.byteLength ? memoryBuff : new Uint8Array(wasm.memory.buffer));
+  return (memoryBuff = null !== memoryBuff && 0 !== memoryBuff.byteLength ? memoryBuff : new Uint8Array(wasm.memory.buffer));
 }
 
 const encoder = new TextEncoder();
@@ -251,9 +250,7 @@ async function QN(QP: Response, Qn: WebAssembly.Imports) {
   let QT: ArrayBuffer, Qt: any;
 
   return 'function' == typeof Response && isResponse(QP)
-    ? ((QT = await QP.arrayBuffer()),
-      (Qt = await WebAssembly.instantiate(QT, Qn)),
-      Object.assign(Qt, { bytes: QT }))
+    ? ((QT = await QP.arrayBuffer()), (Qt = await WebAssembly.instantiate(QT, Qn)), Object.assign(Qt, { bytes: QT }))
     : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
       ? {
           instance: Qt,
@@ -632,11 +629,7 @@ async function loadWasm(url: any) {
   return void 0 !== wasm
     ? wasm
     : ((mod = initWasm()),
-      ({
-        instance: url,
-        module: mod,
-        bytes: buffer,
-      } = ((url = fetch(url)), void 0, await QN(await url, mod))),
+      ({ instance: url, module: mod, bytes: buffer } = ((url = fetch(url)), void 0, await QN(await url, mod))),
       assignWasm(url),
       buffer);
 }

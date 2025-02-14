@@ -19,15 +19,7 @@ import {
 
 import { USER_AGENT_HEADER } from '../../index.js';
 
-import {
-  AnimeProvider,
-  Charactersort,
-  Format,
-  MediaType,
-  Seasons,
-  Sort,
-  Status,
-} from '../../../types/types.js';
+import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
 const baseURL = `https://graphql.anilist.co`;
@@ -88,8 +80,7 @@ export async function searchAnime(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       color: item.coverImage.color,
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -107,26 +98,20 @@ export async function searchAnime(
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -246,10 +231,7 @@ export async function fetchAnimeById(id: number) {
             })
           : 'Unknown',
 
-      studio:
-        response.data.data.Media.studios.nodes.length > 0
-          ? response.data.data.Media.studios.nodes[0].name
-          : null,
+      studio: response.data.data.Media.studios.nodes.length > 0 ? response.data.data.Media.studios.nodes[0].name : null,
       producers: response.data.data.Media.studios.nodes.map((item2: any) => item2.name),
     };
 
@@ -320,8 +302,7 @@ export async function fetchUpcoming(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -334,14 +315,11 @@ export async function fetchUpcoming(
       synopsis: item.description,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -418,8 +396,7 @@ export async function fetchTopAiring(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -437,26 +414,20 @@ export async function fetchTopAiring(
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -534,8 +505,7 @@ export async function fetchPopular(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -553,26 +523,20 @@ export async function fetchPopular(
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -650,8 +614,7 @@ export async function fetchTopRated(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -669,26 +632,20 @@ export async function fetchTopRated(
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -783,8 +740,7 @@ export async function fetchSeason(
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
-      bannerImage:
-        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
         english: item.title.english,
@@ -802,26 +758,20 @@ export async function fetchSeason(
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -907,26 +857,20 @@ export async function getTrends(page: number, perPage: number) {
       season: item.season,
       startDate:
         item.startDate && item.startDate.year
-          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       endDate:
         item.endDate && item.endDate.year
-          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              },
-            )
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
           : 'Unknown',
 
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
@@ -1029,11 +973,7 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.An
     };
   }
 }
-export async function fetchAnimeCharacters(
-  mediaId: number,
-  sort: Charactersort,
-  voiceActorsSort2: Charactersort,
-) {
+export async function fetchAnimeCharacters(mediaId: number, sort: Charactersort, voiceActorsSort2: Charactersort) {
   if (!mediaId) {
     return {
       success: false,
@@ -1163,10 +1103,7 @@ export async function fetchProviderId(id: number) {
     };
 
     // Execute providers concurrently but independently
-    const [animeZResults, hiAnimeResults] = await Promise.allSettled([
-      searchAnimeZ(englishTitle),
-      searchHiAnime(userPref),
-    ]);
+    const [animeZResults, hiAnimeResults] = await Promise.allSettled([searchAnimeZ(englishTitle), searchHiAnime(userPref)]);
 
     const data = {
       animeInfo: anilistData,

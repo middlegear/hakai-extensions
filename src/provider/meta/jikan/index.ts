@@ -79,12 +79,7 @@ class Jikan {
    * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
    * @returns {Promise<Array>} - The top airing list.
    */
-  async fetchTopAiring(
-    page: number = 1,
-    limit: number = 25,
-    filter: Status = Status.Airing,
-    type: Format = Format.TV,
-  ) {
+  async fetchTopAiring(page: number = 1, limit: number = 25, filter: Status = Status.Airing, type: Format = Format.TV) {
     return getTopAnime(page, limit, filter, type);
   }
 

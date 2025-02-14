@@ -11,12 +11,12 @@ import { animeInfo, category, Episodes, ErrorResponse, servers, SuccessResponse 
 import { ASource } from '../../../types/types.js';
 import axios from 'axios';
 
-export type Anime = {
+export interface Anime {
   id: string | null;
   title: string | null;
   posterImage: string | null;
   altName?: string | null;
-};
+}
 
 export interface SuccessSearchResponse extends SuccessResponse {
   data: Anime[];
@@ -80,8 +80,8 @@ async function searchAnime(query: string, page: number): Promise<searchResults> 
       status: 200,
       data: anime,
       hasNextPage: hasNextPage,
-      totalPages: totalPages,
-      currentPage: currentPage,
+      currentPage: Number(currentPage) || 0,
+      totalPages: Number(totalPages) || 0,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -195,10 +195,7 @@ export async function matchSearchResponse(query: string, page: number): Promise<
   }
 
   try {
-    const [searchResult, suggestionResult] = await Promise.allSettled([
-      searchAnime(query, page),
-      searchSuggestions(query),
-    ]);
+    const [searchResult, suggestionResult] = await Promise.allSettled([searchAnime(query, page), searchSuggestions(query)]);
 
     const search = searchResult.status === 'fulfilled' ? searchResult.value : null;
     const suggestion = suggestionResult.status === 'fulfilled' ? suggestionResult.value : null;
@@ -217,10 +214,10 @@ export async function matchSearchResponse(query: string, page: number): Promise<
 
     return {
       success: true,
-      status: search?.status as number,
-      hasNextPage: search?.hasNextPage || false,
-      currentPage: search?.currentPage || page,
-      totalPages: search?.totalPages || 0,
+      status: Number(search?.status) || 200,
+      hasNextPage: Boolean(search?.hasNextPage) || false,
+      currentPage: Number(search?.currentPage) || page,
+      totalPages: Number(search?.totalPages) || 0,
       data: matchingResults,
     };
   } catch (error: any) {
@@ -393,7 +390,7 @@ export async function getAnimeEpisodes(
     return {
       success: true,
       status: 200,
-      hasNextPage: pages.hasNextPage as boolean,
+      hasNextPage: Boolean(pages.hasNextPage) || false,
       currentPage: pages.currentPage,
       totalPages: pages.totalPages,
       data: episodes,
@@ -430,11 +427,7 @@ export interface ErrorAnimeZSources extends ErrorResponse {
   data: null;
 }
 export type AnimeZSources = SuccessfulAnimeZSources | ErrorAnimeZSources;
-export async function fetchSources(
-  episodeId: string,
-  server: servers,
-  dub: category,
-): Promise<AnimeZSources> {
+export async function fetchSources(episodeId: string, server: servers, dub: category): Promise<AnimeZSources> {
   if (!episodeId) {
     return {
       success: false,

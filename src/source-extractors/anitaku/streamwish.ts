@@ -39,8 +39,7 @@ export async function StreamWish(videoUrl: URL) {
       console.log('No match found');
     }
     const links = p.match(/file:\s*"([^"]+\.m3u8[^"]*)"/) ?? [];
-    const subtitleMatches =
-      p?.match(/{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g) ?? [];
+    const subtitleMatches = p?.match(/{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g) ?? [];
     // console.log(links, subtitleMatches);
 
     const subtitles = subtitleMatches.map(sub => {

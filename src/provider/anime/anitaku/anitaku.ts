@@ -32,9 +32,7 @@ export async function searchAnime(query: string, page: number) {
       error: 'Missing required params : query',
     };
   try {
-    const response = await anitakuClient.get(
-      `${anitakuSearchUrl}?keyword=${encodeURIComponent(query)}&page=${page}`,
-    );
+    const response = await anitakuClient.get(`${anitakuSearchUrl}?keyword=${encodeURIComponent(query)}&page=${page}`);
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
     const resSelector: cheerio.SelectorType = 'div.last_episodes > ul.items > li';
 
@@ -68,13 +66,11 @@ export async function fetchAnimeInfo(animeId: string) {
     const infoSelector: cheerio.SelectorType = 'div.main_body > div.anime_info_body ';
 
     const resAnimeInfo = anitaku_extractAnimeInfo(data$, infoSelector);
-    const MovieId: cheerio.SelectorType =
-      'div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next';
+    const MovieId: cheerio.SelectorType = 'div.anime_info_body > div.anime_info_episodes > div.anime_info_episodes_next';
 
     const movieId = Number(data$(MovieId).find('input#movie_id.movie_id').attr('value')) || null;
 
-    const numberOfepisodesSelector: cheerio.SelectorType =
-      'div.main_body > div.anime_video_body > ul#episode_page';
+    const numberOfepisodesSelector: cheerio.SelectorType = 'div.main_body > div.anime_video_body > ul#episode_page';
     const totalEps = data$(numberOfepisodesSelector).find('li > a.active').attr('ep_end') || null;
 
     const resEpisodes = await axios.get(
@@ -163,9 +159,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
         }
         case anitakuServers.Doodstream: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.doodstream')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.doodstream')?.find('a')?.attr('data-video')}`,
           );
           break;
         }
@@ -177,9 +171,7 @@ export async function fetchEpisodeSources(episodeId: string, server: anitakuAnim
         }
         case anitakuServers.StreamWish: {
           serverUrl = new URL(
-            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.streamwish')
-              ?.find('a')
-              ?.attr('data-video')}`,
+            `${data$('div.anime_video_body > div.anime_muti_link > ul > li.streamwish')?.find('a')?.attr('data-video')}`,
           );
           break;
         }

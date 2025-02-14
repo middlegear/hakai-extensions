@@ -10,14 +10,20 @@ test('searches for anime based on query', async () => {
   await wait(300);
 });
 
-test('Fetches animeInfo including episodes', async () => {
+test('Fetches animeInfo ', async () => {
   const data = await zoro.fetchInfo('demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-18056');
   expect(data.success).toEqual(true);
-  expect(data.data?.animeInfo).not.toEqual(null);
-  expect(data.data?.episodes).not.toEqual([]);
+  expect(data.data).not.toEqual(null);
+  expect(data).not.toEqual([]);
   await wait(300);
 });
 
+test('Fetches episodes data ', async () => {
+  const data = await zoro.fetchInfo('demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-18056');
+  expect(data.success).toEqual(true);
+  expect(data.data).not.toEqual([]);
+  await wait(300);
+});
 test('fetches streaming servers', async () => {
   const data = await zoro.fetchEpisodeServers('solo-leveling-18718-episode-119497');
   expect(data.success).toBe(true);
@@ -26,11 +32,7 @@ test('fetches streaming servers', async () => {
 });
 
 test('Fetches streaming sources on HD1', async () => {
-  const data = await zoro.fetchSources(
-    'boruto-naruto-next-generations-8143-episode-47182',
-    Servers.HD1,
-    Dubbing.Dub,
-  );
+  const data = await zoro.fetchSources('boruto-naruto-next-generations-8143-episode-47182', Servers.HD1, Dubbing.Dub);
 
   expect(data.data?.sources).not.toEqual([]);
 

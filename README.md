@@ -11,3 +11,9 @@ safe limit for both providers  should be 174 episodes otherwise the abort the pr
 
 the fetching of animerelated anilist also returns manga remember to filter by type
 
+
+
+//// some bug fixes cause of changes splitting hiaime info from episodes
+anilist hianime
+jikan hianime
+tests for hianime

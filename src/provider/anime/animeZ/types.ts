@@ -23,8 +23,6 @@ export enum servers {
   SU57 = 'Rusia',
   Typhoon = 'EU',
 }
-
-///////
 export interface ErrorResponse {
   success: boolean;
   status: number;

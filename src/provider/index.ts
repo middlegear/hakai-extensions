@@ -13,7 +13,6 @@ import { MP4Upload } from '../source-extractors/anitaku/mp4upload.js';
 import { StreamWish } from '../source-extractors/anitaku/streamwish.js';
 import { VidHide } from '../source-extractors/anitaku/vidhide.js';
 import MegaCloud from '../source-extractors/hianime/megacloud/index.js';
-import { puppeteer } from '../source-extractors/hianime/puppeteer.js';
 
 ///
 import {
@@ -54,6 +53,5 @@ export {
   MP4Upload,
   StreamWish,
   VidHide,
-  puppeteer,
   MegaCloud,
 };

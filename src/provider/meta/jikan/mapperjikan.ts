@@ -40,9 +40,7 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
     normalizedResults.length > 0
       ? findBestMatch(
           normalizedRomanji,
-          normalizedResults
-            .filter(item => item.normalizedName.includes('dub'))
-            .map(item => item.normalizedName),
+          normalizedResults.filter(item => item.normalizedName.includes('dub')).map(item => item.normalizedName),
         ) ||
         findBestMatch(
           normalizedRomanji,
@@ -55,16 +53,12 @@ export function anitakuTitle(title: JikanTitle, results: result[]) {
   // Filter matches for sub and dub
   if (bestSubMatch !== null && bestSubMatch.bestMatch) {
     subres = normalizedResults.find(
-      item =>
-        item.normalizedName === bestSubMatch.bestMatch.target ||
-        item.normalizedId === bestSubMatch.bestMatch.target,
+      item => item.normalizedName === bestSubMatch.bestMatch.target || item.normalizedId === bestSubMatch.bestMatch.target,
     );
   }
   if (bestDubMatch !== null && bestDubMatch.bestMatch) {
     dubres = normalizedResults.find(
-      item =>
-        item.normalizedName === bestDubMatch.bestMatch.target ||
-        item.normalizedId === bestDubMatch.bestMatch.target,
+      item => item.normalizedName === bestDubMatch.bestMatch.target || item.normalizedId === bestDubMatch.bestMatch.target,
     );
   }
   return {
@@ -105,9 +99,7 @@ export function hianimeTitle(title: JikanTitle, results: result[]) {
 
   if (bestTitleMatch !== null && bestTitleMatch.bestMatch) {
     match = normalizedResults.find(
-      item =>
-        item.normalizeRomanji === bestTitleMatch.bestMatch.target ||
-        item.name === bestTitleMatch.bestMatch.target,
+      item => item.normalizeRomanji === bestTitleMatch.bestMatch.target || item.name === bestTitleMatch.bestMatch.target,
     );
   }
   return {
@@ -141,9 +133,7 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
 
   if (bestTitle !== null && bestTitle.bestMatch) {
     match = normalizedResults.find(
-      item =>
-        item.normalizedName === bestTitle.bestMatch.target ||
-        item.nomalizedAnimeId === bestTitle.bestMatch.target,
+      item => item.normalizedName === bestTitle.bestMatch.target || item.nomalizedAnimeId === bestTitle.bestMatch.target,
     );
   }
   return {

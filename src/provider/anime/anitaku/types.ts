@@ -62,13 +62,7 @@ export enum anitakuServers {
   MP4Upload = 'mp4upload',
 }
 
-export type anitakuAnimeServers =
-  | 'vidstreaming'
-  | 'gogo server'
-  | 'streamwish'
-  | 'doodstream'
-  | 'videhide'
-  | 'mp4upload';
+export type anitakuAnimeServers = 'vidstreaming' | 'gogo server' | 'streamwish' | 'doodstream' | 'videhide' | 'mp4upload';
 
 export type scrappedAnimeInfo = {
   success: boolean;

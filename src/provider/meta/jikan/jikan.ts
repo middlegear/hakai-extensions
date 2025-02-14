@@ -43,24 +43,19 @@ export async function searchAnime(query: string, page: number, limit: number) {
       episodes: item.episodes,
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -255,9 +250,7 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
   }
   const newFormat = filter.toLowerCase();
   try {
-    const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/now?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`,
-    );
+    const { data } = await axios.get(`${jikanBaseUrl}/seasons/now?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`);
     if (!data)
       return {
         success: false,
@@ -289,24 +282,19 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
 
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -390,24 +378,19 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
       episodes: item.episodes,
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -494,24 +477,19 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
 
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -552,9 +530,7 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
 }
 export async function getTopUpcoming(page: number, perPage: number, filter: Status) {
   try {
-    const { data } = await axios.get(
-      `${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`,
-    );
+    const { data } = await axios.get(`${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`);
     if (!data)
       return {
         success: false,
@@ -586,24 +562,19 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
 
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -681,24 +652,19 @@ export async function getTopAnime(page: number, limit: number, filter: Status, t
 
       startDate:
         item.aired.prop && item.aired.prop.from.year
-          ? new Date(
-              item.aired.prop.from.year,
-              item.aired.prop.from.month - 1,
-              item.aired.prop.from.day,
-            ).toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
+          ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
           : item.aired.from || 'Unknown',
 
       endDate:
         item.aired.prop && item.aired.prop.to.year
-          ? new Date(
-              item.aired.prop.to.year,
-              item.aired.prop.to.month - 1,
-              item.aired.prop.to.day,
-            ).toLocaleString('en-US', {
+          ? new Date(item.aired.prop.to.year, item.aired.prop.to.month - 1, item.aired.prop.to.day).toLocaleString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -893,10 +859,7 @@ export async function getProviderId(id: number) {
       }
     };
 
-    const [animeZResults, hiAnimeResults] = await Promise.allSettled([
-      searchAnimeZ(englishTitle),
-      searchHiAnime(userPref),
-    ]);
+    const [animeZResults, hiAnimeResults] = await Promise.allSettled([searchAnimeZ(englishTitle), searchHiAnime(userPref)]);
 
     const data = {
       animeInfo: Jikan,

@@ -40,16 +40,7 @@ export function animeZSearchResults($: cheerio.CheerioAPI, selector: cheerio.Sel
   const pageSelector: cheerio.SelectorType = ' div.Bot.text-center > nav > ul.pagination';
   currentPage = Number($(pageSelector).find('li.page-item.active > a.page-link').text()) || 1;
   totalPages =
-    Number(
-      $(pageSelector)
-        .find('li.page-item >a.page-link')
-        .last()
-        .attr('href')
-        ?.split('=')
-        .at(-1)
-        ?.split('#')
-        .at(0),
-    ) || 1;
+    Number($(pageSelector).find('li.page-item >a.page-link').last().attr('href')?.split('=').at(-1)?.split('#').at(0)) || 1;
   hasNextPage = totalPages > 1 ? true : false;
   // const pagination = {
   //   hasNextPage,
@@ -94,8 +85,7 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
 
   data.title = $(selector1).find('h2').text().trim() || null;
   data.posterImage =
-    `${animeZBaseUrl}/${$(selector1).find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image').attr('src')}` ||
-    null;
+    `${animeZBaseUrl}/${$(selector1).find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image').attr('src')}` || null;
   const href = $(selector1).find('a.text-info').attr('href');
 
   data.id = href?.split('/').at(-2) || null;

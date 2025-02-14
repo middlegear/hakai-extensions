@@ -41,15 +41,11 @@ export function bestAnitakuTitle(title: AnilistTitle, results: SearchResults[]) 
     normalizedResults.length > 0
       ? findBestMatch(
           normalizedRomajiTitle,
-          normalizedResults
-            .filter(title => title.normalizedRomaji.includes('dub'))
-            .map(title => title.normalizedRomaji),
+          normalizedResults.filter(title => title.normalizedRomaji.includes('dub')).map(title => title.normalizedRomaji),
         ) ||
         findBestMatch(
           normalizedRomajiTitle,
-          normalizedResults
-            .filter(title => title.normalizedId.includes('dub'))
-            .map(title => title.normalizedId),
+          normalizedResults.filter(title => title.normalizedId.includes('dub')).map(title => title.normalizedId),
         )
       : null;
 
@@ -58,17 +54,14 @@ export function bestAnitakuTitle(title: AnilistTitle, results: SearchResults[]) 
 
   if (bestResult !== null && bestResult.bestMatch) {
     subres = normalizedResults.find(
-      item =>
-        item.normalizedRomaji === bestResult.bestMatch.target ||
-        item.normalizedId === bestResult.bestMatch.target,
+      item => item.normalizedRomaji === bestResult.bestMatch.target || item.normalizedId === bestResult.bestMatch.target,
     );
   }
 
   if (bestDubResult !== null && bestDubResult.bestMatch) {
     dubres = normalizedResults.find(
       item =>
-        item.normalizedRomaji === bestDubResult.bestMatch.target ||
-        item.normalizedId === bestDubResult.bestMatch.target,
+        item.normalizedRomaji === bestDubResult.bestMatch.target || item.normalizedId === bestDubResult.bestMatch.target,
     );
   }
 
@@ -111,9 +104,7 @@ export function bestHianimeTitle(title: AnilistTitle, results: SearchResults[]) 
   let match = null;
   if (bestTitle !== null && bestTitle.bestMatch !== null) {
     match = normalizedResults.find(
-      item =>
-        item.normalizedname === bestTitle.bestMatch.target ||
-        item.normalizedRomaji === bestTitle.bestMatch.target,
+      item => item.normalizedname === bestTitle.bestMatch.target || item.normalizedRomaji === bestTitle.bestMatch.target,
     );
   }
   return {
@@ -147,9 +138,7 @@ export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
   let resultMatch;
   if (bestTitle && bestTitle.bestMatch) {
     resultMatch = normalizedResults.find(
-      item =>
-        item.normalizedName === bestTitle.bestMatch.target ||
-        item.normalizedId === bestTitle.bestMatch.target,
+      item => item.normalizedName === bestTitle.bestMatch.target || item.normalizedId === bestTitle.bestMatch.target,
     );
   }
   return {
