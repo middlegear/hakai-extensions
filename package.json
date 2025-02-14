@@ -22,19 +22,17 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.4",
     "@vitest/ui": "^3.0.5",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.1",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/string-similarity": "^4.0.2",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
-    "crypto-js": "^4.2.0",
-    "string-similarity": "^4.0.4"
+    "crypto-js": "^4.2.0"
   }
 }

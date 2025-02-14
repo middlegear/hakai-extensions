@@ -47,31 +47,33 @@ export async function searchAnime(
       },
       image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      trailer: item.trailer.embed_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
 
-      startDate: item.aired.prop.from
-        ? new Date(
-            item.aired.prop.from.year,
-            item.aired.prop.from.month - 1,
-            item.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: item.aired.prop.to
-        ? new Date(
-            item.aired.prop.to.year,
-            item.aired.prop.to.month - 1,
-            item.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
       type: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
@@ -134,31 +136,34 @@ export async function getInfoById(Id: number) {
       },
       image: data.data.images.jpg.large_image_url ?? data.data.images.webp.large_image_url,
       bannerImage: data.data.images.jpg.large_image_url ?? data.data.images.webp.large_image_url,
-      trailer: data.data.trailer.embed_url,
+      trailer: data.data.trailer.embed_url ?? data.data.trailer.url,
       episodes: data.data.episodes,
 
-      startDate: data.data.aired.prop.from
-        ? new Date(
-            data.data.aired.prop.from.year,
-            data.data.aired.prop.from.month - 1,
-            data.data.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: data.data.aired.prop.to
-        ? new Date(
-            data.data.aired.prop.year,
-            data.data.aired.prop.month,
-            data.data.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        data.data.aired.prop && data.data.aired.prop.from.year
+          ? new Date(
+              data.data.aired.prop.from.year,
+              data.data.aired.prop.from.month - 1,
+              data.data.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : data.data.aired.from || 'Unknown',
+
+      endDate:
+        data.data.aired.prop && data.data.aired.prop.to.year
+          ? new Date(
+              data.data.aired.prop.to.year,
+              data.data.aired.prop.to.month - 1,
+              data.data.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : data.data.aired.to || 'Unknown',
       type: data.data.type,
       status: data.data.status,
       genres: data.data.genres.map((item2: any) => item2.name),
@@ -190,7 +195,7 @@ export async function getInfoById(Id: number) {
     };
   }
 }
-///get anime characters need to implement actual characters
+
 export async function getAnimeCharacters(id: number) {
   if (!id) {
     return {
@@ -210,10 +215,25 @@ export async function getAnimeCharacters(id: number) {
         data: [],
         pagination: null,
       };
+    const res = data.data.map((item: any) => ({
+      role: item.role,
+      id: item.character.mal_id,
+      name: item.character.name,
+      image:
+        item.character.images.jpg.image_url ??
+        item.character.images.webp.image_url ??
+        item.character.images.webp.small_image_url,
+
+      voiceActors: item.voice_actors.map((item2: any) => ({
+        name: item2.person.name,
+        image: item2.person.images.jpg.image_url,
+        language: item2.language,
+      })),
+    }));
     return {
       success: true,
       status: 200,
-      data: data,
+      data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -271,31 +291,34 @@ export async function getCurrentSeason(filter: Filters, page: number, limit: num
       },
       image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      trailer: item.trailer.embed_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
 
-      startDate: item.aired.prop.from
-        ? new Date(
-            item.aired.prop.from.year,
-            item.aired.prop.from.month - 1,
-            item.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: item.aired.prop.to
-        ? new Date(
-            item.aired.prop.to.year,
-            item.aired.prop.to.month - 1,
-            item.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
+
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
       type: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
@@ -369,31 +392,33 @@ export async function getNextSeason(filter: Filters, page: number, limit: number
       },
       image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      trailer: item.trailer.embed_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
 
-      startDate: item.aired.prop.from
-        ? new Date(
-            item.aired.prop.from.year,
-            item.aired.prop.from.month - 1,
-            item.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: item.aired.prop.to
-        ? new Date(
-            item.aired.prop.to.year,
-            item.aired.prop.to.month - 1,
-            item.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
       type: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
@@ -468,31 +493,34 @@ export async function getSeason(year: number, season: Season, filter: Filters, p
       },
       image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      trailer: item.trailer.embed_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
 
-      startDate: item.aired.prop.from
-        ? new Date(
-            item.aired.prop.from.year,
-            item.aired.prop.from.month - 1,
-            item.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: item.aired.prop.to
-        ? new Date(
-            item.aired.prop.to.year,
-            item.aired.prop.to.month - 1,
-            item.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
+
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
       type: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
@@ -558,31 +586,34 @@ export async function getTopAnime(page: number, limit: number, filter?: AnimeSta
       },
       image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
-      trailer: item.trailer.embed_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
 
-      startDate: item.aired.prop.from
-        ? new Date(
-            item.aired.prop.from.year,
-            item.aired.prop.from.month - 1,
-            item.aired.prop.from.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      endDate: item.aired.prop.to
-        ? new Date(
-            item.aired.prop.to.year,
-            item.aired.prop.to.month - 1,
-            item.aired.prop.to.day,
-          ).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
+
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
 
       type: item.type,
       status: item.status,

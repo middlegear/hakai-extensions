@@ -1,4 +1,5 @@
-import { findBestMatch } from 'string-similarity';
+import { findBestMatch } from '../../../utils/string-similarity.js';
+// import { findBestMatch } from 'string-similarity';
 
 type result = {
   animeId: string;

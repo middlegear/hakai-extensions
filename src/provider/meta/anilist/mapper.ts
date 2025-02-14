@@ -1,4 +1,4 @@
-import { findBestMatch } from 'string-similarity';
+import { findBestMatch } from '../../../utils/string-similarity.js';
 
 export type AnilistTitle = {
   english: string;

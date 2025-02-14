@@ -9,6 +9,8 @@ import {
   fetchSeason,
   fetchAnimeCharacters,
   getEpisodeswithInfo,
+  getTrends,
+  getRelated,
 } from './anilist.js';
 import { Format, Seasons, Charactersort } from './types.js';
 
@@ -93,12 +95,26 @@ class Anilist {
   ) {
     return fetchSeason(season, seasonYear, page, perPage, format);
   }
-
+  /**
+   * Fetch trending anime
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @returns {Promise<Array>} - An array of trendingAnime
+   */
+  async fetchTrending(page: number = 1, perPage: number = 20) {
+    return getTrends(page, perPage);
+  }
+  /**
+   * Fetches related information about an anime.
+   * @param {number} id - The Anilist anime ID (Required).
+   * @returns {Promise<Array>} - An array containing related anime information.
+   */
+  async fetchRelatedAnime(id: number) {
+    return getRelated(id);
+  }
   /**
    * Fetches characters from an anime.
    * @param {number} Id - The Anilist anime ID (Required).
-   * @param {Charactersort} [sort=Charactersort.RELEVANCE] - Sorting order for characters (Optional, defaults to Relevance).
-   * @param {Charactersort} [voiceActorsSort2=Charactersort.RELEVANCE] - Sorting order for voice actors (Optional, defaults to Relevance).
    * @returns {Promise<Array>} - An array of anime characters.
    */
   async fetchCharacters(

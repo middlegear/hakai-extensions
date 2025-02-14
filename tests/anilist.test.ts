@@ -23,6 +23,18 @@ test('fetch animeInfo', async () => {
   expect(data.success).toEqual(true);
 });
 
+test('fetch related anime', async () => {
+  const data = await anilist.fetchRelatedAnime(115230);
+  expect(data.data).not.toEqual([]);
+  expect(data.success).toEqual(true);
+});
+
+test('fetch trending anime', async () => {
+  const data = await anilist.fetchTrending();
+  expect(data.data).not.toEqual([]);
+  expect(data.success).toEqual(true);
+});
+
 test('fetch animeId mapping', async () => {
   const data = await anilist.fetchMapping(169755);
   expect(data.success).toEqual(true);

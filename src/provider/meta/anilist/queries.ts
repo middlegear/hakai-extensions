@@ -12,6 +12,16 @@ export const fetchByIdQuery = `query ($id: Int ) {
     format
     status
     description
+      startDate {
+        year
+        month
+        day
+      }
+      endDate {
+        year
+        month
+        day
+      }
     season
     meanScore
     averageScore
@@ -156,6 +166,7 @@ export const popularAnimeQuery = `query Query($page: Int, $perPage: Int, $type: 
       }
       averageScore
       meanScore
+    
     }
     
   }
@@ -202,6 +213,7 @@ export const seasonQuery = `query Query($page: Int, $perPage: Int, $type: MediaT
         site
         thumbnail
       }
+       format
       bannerImage
       coverImage {
         extraLarge
@@ -266,7 +278,8 @@ export const searchQuery = `query Query($page: Int, $perPage: Int, $search: Stri
         large
         medium
         color
-      }
+      } 
+      format
       averageScore
       meanScore
       studios {
@@ -310,6 +323,81 @@ export const characterQuery = `query Media($mediaId: Int, $sort: [CharacterSort]
             medium
           }
           languageV2
+        }
+      }
+    }
+  }
+}`;
+
+export const mediaTrendQuery = `query Query($page: Int, $perPage: Int) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+    media(type: ANIME, sort: [TRENDING_DESC, POPULARITY_DESC], isAdult: false) {
+      id
+      idMal
+      title {
+        romaji
+        english
+        native
+        userPreferred
+      }
+      studios {
+        nodes {
+          name
+        }
+      }
+      status
+      description
+      endDate {
+        year
+        month
+        day
+      }
+      season
+      episodes 
+      averageScore
+      meanScore
+      popularity
+      coverImage {
+        extraLarge
+        large
+        medium
+        color
+      }
+      format
+      genres
+    }
+  }
+}`;
+export const relatedQuery = `query Media($mediaId: Int, $type: MediaType) {
+  Media(id: $mediaId, type: $type) {
+    relations {
+      edges {
+        node {
+          id
+          idMal
+          title {
+            romaji
+            english
+            native
+            userPreferred
+          }
+          type
+          bannerImage
+          coverImage {
+            extraLarge
+            large
+            medium
+            color
+          }
+          averageScore
+          meanScore
         }
       }
     }

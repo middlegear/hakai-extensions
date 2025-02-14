@@ -3,11 +3,18 @@
 
 import { Servers, Dubbing } from './provider/anime/hianime/types.js';
 import { AnimeZ, HiAnime } from './provider/index.js';
-import { fetchTopAiring, getEpisodeswithInfo } from './provider/meta/anilist/anilist.js';
+import {
+  fetchAnimeById,
+  fetchTopAiring,
+  getEpisodeswithInfo,
+  getRelated,
+  getTrends,
+} from './provider/meta/anilist/anilist.js';
 import { Anilist } from './provider/meta/anilist/index.js';
 import { Seasons } from './provider/meta/anilist/types.js';
 import { getAnilistMapping, getMalMapping } from './provider/meta/anizip/index.js';
 import { Jikan } from './provider/meta/jikan/index.js';
+import { getAnimeCharacters } from './provider/meta/jikan/jikan.js';
 import { AnimeProvider } from './types/types.js';
 
 // import {
@@ -54,15 +61,14 @@ const anitaku = new AnimeZ();
 //   .catch((err) => console.error(err));
 
 const hianime = new HiAnime();
-const jikan = new Jikan();
+const jikan = new Anilist();
 
-jikan // .fetchProviderAnimeId(25519)
-  // .search('yuki-yuna-is-a-hero')
+jikan
+  .fetchRelatedAnime(115230)
+  // .fetchTrending()
+  // getAnimeCharacters(269)
 
-  //   // .fetchMalEpisodeInfo(58567, 3)
-  //   // .fetchProviderAnimeId(34572)
-  .fetchTopUpcoming()
-
+  // .fetchInfo(21)
   // getMalMapping(25519)
   .then((data: any) => console.log(data))
   .catch((err: any) => console.error(err));

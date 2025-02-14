@@ -10,7 +10,9 @@ import {
   airingQuery,
   characterQuery,
   fetchByIdQuery,
+  mediaTrendQuery,
   popularAnimeQuery,
+  relatedQuery,
   searchQuery,
   seasonQuery,
 } from './queries.js';
@@ -88,6 +90,7 @@ export async function searchAnime(
       },
       trailer: item.trailer,
       type: item.type,
+      format: item.format,
       status: item.status,
       duration: item.duration,
       score: item.meanScore ?? item.averageScore,
@@ -95,23 +98,30 @@ export async function searchAnime(
       episodes: item.episodes,
       synopsis: item.description,
       season: item.season,
-      startDate: item.startDate
-        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-            'en-US',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            },
-          )
-        : null,
-      endDate: item.endDate
-        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
@@ -195,6 +205,7 @@ export async function fetchAnimeById(id: number) {
       },
       trailer: response.data.data.Media.trailer,
       type: response.data.data.Media.type,
+      format: response.data.data.Media.format,
       status: response.data.data.Media.status,
       duration: response.data.data.Media.duration,
       score: response.data.data.Media.meanScore ?? response.data.data.media.averageScore,
@@ -202,6 +213,32 @@ export async function fetchAnimeById(id: number) {
       episodes: response.data.data.Media.episodes,
       synopsis: response.data.data.Media.description,
       season: response.data.data.Media.season,
+      startDate:
+        response.data.data.Media.startDate && response.data.data.Media.startDate.year
+          ? new Date(
+              response.data.data.Media.startDate.year,
+              response.data.data.Media.startDate.month - 1,
+              response.data.data.Media.startDate.day,
+            ).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : 'Unknown',
+
+      endDate:
+        response.data.data.Media.endDate && response.data.data.Media.endDate.year
+          ? new Date(
+              response.data.data.Media.endDate.year,
+              response.data.data.Media.endDate.month - 1,
+              response.data.data.Media.endDate.day,
+            ).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : 'Unknown',
+
       studio:
         response.data.data.Media.studios.nodes.length > 0
           ? response.data.data.Media.studios.nodes[0].name
@@ -287,6 +324,7 @@ export async function fetchTopAiring(
       },
       trailer: item.trailer,
       type: item.type,
+      format: item.format,
       status: item.status,
       duration: item.duration,
       score: item.meanScore ?? item.averageScore,
@@ -294,23 +332,30 @@ export async function fetchTopAiring(
       episodes: item.episodes,
       synopsis: item.description,
       season: item.season,
-      startDate: item.startDate
-        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-            'en-US',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            },
-          )
-        : null,
-      endDate: item.endDate
-        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
@@ -395,6 +440,7 @@ export async function fetchPopular(
       },
       trailer: item.trailer,
       type: item.type,
+      format: item.format,
       status: item.status,
       duration: item.duration,
       score: item.meanScore ?? item.averageScore,
@@ -402,23 +448,30 @@ export async function fetchPopular(
       episodes: item.episodes,
       synopsis: item.description,
       season: item.season,
-      startDate: item.startDate
-        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-            'en-US',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            },
-          )
-        : null,
-      endDate: item.endDate
-        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
@@ -503,6 +556,7 @@ export async function fetchTopRated(
       },
       trailer: item.trailer,
       type: item.type,
+      format: item.format,
       status: item.status,
       duration: item.duration,
       score: item.meanScore ?? item.averageScore,
@@ -510,23 +564,30 @@ export async function fetchTopRated(
       episodes: item.episodes,
       synopsis: item.description,
       season: item.season,
-      startDate: item.startDate
-        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-            'en-US',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            },
-          )
-        : null,
-      endDate: item.endDate
-        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
@@ -628,6 +689,7 @@ export async function fetchSeason(
       },
       trailer: item.trailer,
       type: item.type,
+      format: item.format,
       status: item.status,
       duration: item.duration,
       score: item.meanScore ?? item.averageScore,
@@ -635,23 +697,30 @@ export async function fetchSeason(
       episodes: item.episodes,
       synopsis: item.description,
       season: item.season,
-      startDate: item.startDate
-        ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
-            'en-US',
-            {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            },
-          )
-        : null,
-      endDate: item.endDate
-        ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
       studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
@@ -678,7 +747,185 @@ export async function fetchSeason(
     };
   }
 }
+export async function getTrends(page: number, perPage: number) {
+  const variables = {
+    page,
+    perPage,
+  };
+  try {
+    const response = await axios.post(
+      baseURL,
+      {
+        query: mediaTrendQuery,
+        variables,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
+          Origin: Origin,
+          Referer: Referer,
+        },
+      },
+    );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
 
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      format: item.format,
+      status: item.status,
+      popularity: item.popularity,
+      score: item.meanScore ?? item.averageScore,
+      genres: item.genres,
+      episodes: item.episodes,
+      synopsis: item.description,
+      season: item.season,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      endDate:
+        item.endDate && item.endDate.year
+          ? new Date(item.endDate.year, item.endDate.month - 1, item.endDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios?.nodes.map((item2: any) => item2.name),
+    }));
+    return {
+      success: true,
+      status: 200,
+      pagination: pagination,
+      data: res,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      status: 500,
+      data: [],
+      error: error instanceof Error ? error.message : 'Unknown err',
+    };
+  }
+}
+
+export async function getRelated(mediaId: number, type: MediaType = MediaType.Anime) {
+  if (!mediaId)
+    return {
+      success: false,
+      status: 400,
+      data: [],
+      pagination: null,
+      error: 'Missing a required param : season | seasonYear',
+    };
+  const variables = {
+    mediaId,
+    type,
+  };
+  try {
+    const response = await axios.post(
+      baseURL,
+      {
+        query: relatedQuery,
+        variables,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': USER_AGENT_HEADER,
+          Origin: Origin,
+          Referer: Referer,
+        },
+      },
+    );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+      };
+
+    const res = response.data.data.Media.relations.edges.map((item: any) => ({
+      anilistId: item.node.id,
+      malId: item.node.idMal,
+      title: {
+        romaji: item.node.title.romaji ?? item.node.title.userPreferred,
+        english: item.node.title.english,
+        native: item.node.title.native,
+      },
+      type: item.node.type,
+      score: item.node.averageScore ?? item.node.meanScore,
+      image: item.node.coverImage.extraLarge ?? item.node.coverImage.large ?? item.node.coverImage.medium,
+      bannerImage: item.node.bannerImage ?? item.node.coverImage.extraLarge ?? item.node.coverImage.large,
+      color: item.node.coverImage.color ?? null,
+    }));
+
+    return {
+      success: true,
+      status: 200,
+      data: res,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Err',
+    };
+  }
+}
 export async function fetchAnimeCharacters(
   mediaId: number,
   sort: Charactersort,
