@@ -86,19 +86,19 @@ export function animeZSearchSuggestions($: cheerio.CheerioAPI) {
 }
 export function extractAnimeZInfo($: cheerio.CheerioAPI) {
   const selector1: cheerio.SelectorType = ' div.Content > div.TpRwCont';
-  const animeInfo: animeInfo = {
+  const data: animeInfo = {
     id: null,
     title: null,
     posterImage: null,
   };
 
-  animeInfo.title = $(selector1).find('h2').text().trim() || null;
-  animeInfo.posterImage =
+  data.title = $(selector1).find('h2').text().trim() || null;
+  data.posterImage =
     `${animeZBaseUrl}/${$(selector1).find('img.attachment-img-mov-md.size-img-mov-md.wp-post-image').attr('src')}` ||
     null;
   const href = $(selector1).find('a.text-info').attr('href');
 
-  animeInfo.id = href?.split('/').at(-2) || null;
+  data.id = href?.split('/').at(-2) || null;
   const episodes: {
     hasDub: boolean;
     hasSub: boolean;
@@ -119,8 +119,7 @@ export function extractAnimeZInfo($: cheerio.CheerioAPI) {
   const hasSub = episodes.some(item => item.hasSub);
 
   return {
-    animeInfo,
-    // episodes,
+    data,
     hasDub,
     hasSub,
   };

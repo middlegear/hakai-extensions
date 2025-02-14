@@ -7,14 +7,37 @@ import {
   getEpisodes,
 } from './scraper.js';
 import { animeZBaseUrl, animeZClient } from '../../index.js';
-import { category, servers } from './types.js';
+import { animeInfo, category, Episodes, ErrorResponse, servers, SuccessResponse } from './types.js';
 import { ASource } from '../../../types/types.js';
 import axios from 'axios';
 
-async function searchAnime(query: string, page: number) {
+export type Anime = {
+  id: string | null;
+  title: string | null;
+  posterImage: string | null;
+  altName?: string | null;
+};
+
+export interface SuccessSearchResponse extends SuccessResponse {
+  data: Anime[];
+  hasNextPage: boolean;
+  totalPages: number;
+  currentPage: number;
+}
+export interface SearchErrorResponse extends ErrorResponse {
+  data: [];
+  hasNextPage: boolean;
+  totalPages: number;
+  currentPage: number;
+}
+export type searchResults = SuccessSearchResponse | SearchErrorResponse;
+async function searchAnime(query: string, page: number): Promise<searchResults> {
   if (!query) {
     return {
       success: false,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
       status: 400,
       error: 'Missing required parameter: query',
       data: [],
@@ -39,6 +62,9 @@ async function searchAnime(query: string, page: number) {
       return {
         success: false,
         status: 204,
+        hasNextPage: false,
+        totalPages: 0,
+        currentPage: 0,
         error: 'Received empty response from the server.',
         data: [],
       };
@@ -47,30 +73,23 @@ async function searchAnime(query: string, page: number) {
     const $ = cheerio.load(response.data);
     const selector = 'main > section > ul.MovieList.Rows.AX.A06.B04.C03.E20 > li.TPostMv';
 
-    const data = animeZSearchResults($, selector);
-
-    if (!data || !data.anime || data.anime.length === 0) {
-      return {
-        hasNextPage: false,
-        totalPages: 0,
-        currentPage: page,
-        anime: [],
-        message: 'Scraping error.',
-      };
-    }
+    const { anime, hasNextPage, totalPages, currentPage } = animeZSearchResults($, selector);
 
     return {
       success: true,
       status: 200,
-      hasNextPage: data.hasNextPage,
-      totalPages: data.totalPages,
-      currentPage: data.currentPage,
-      data: data.anime,
+      data: anime,
+      hasNextPage: hasNextPage,
+      totalPages: totalPages,
+      currentPage: currentPage,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return {
         success: false,
+        hasNextPage: false,
+        totalPages: 0,
+        currentPage: 0,
         status: error.response?.status || 500,
         error: `Request failed: ${error.message}`,
         data: [],
@@ -80,13 +99,22 @@ async function searchAnime(query: string, page: number) {
     return {
       success: false,
       status: 500,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
       error: error instanceof Error ? error.message : 'Contac dev is you see this.',
       data: [],
     };
   }
 }
-
-async function searchSuggestions(query: string) {
+export interface SuccessSuggestionsResponse extends SuccessResponse {
+  data: Anime[];
+}
+export interface SuggestionErrorResponse extends ErrorResponse {
+  data: [];
+}
+export type searchSuggestions = SuccessSuggestionsResponse | SuggestionErrorResponse;
+async function searchSuggestions(query: string): Promise<searchSuggestions> {
   if (!query)
     return {
       success: false,
@@ -124,6 +152,7 @@ async function searchSuggestions(query: string) {
     if (!data) {
       return {
         success: false,
+        status: 204,
         error: 'Scraping Error',
         data: [],
       };
@@ -144,15 +173,21 @@ async function searchSuggestions(query: string) {
     }
     return {
       success: false,
+      data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }
 }
-export async function matchingSearcResponse(query: string, page: number) {
-  if (!query.trim()) {
+
+export type matchResponse = SuccessSearchResponse | SearchErrorResponse;
+export async function matchSearchResponse(query: string, page: number): Promise<matchResponse> {
+  if (!query) {
     return {
       success: false,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
       status: 400,
       error: 'Missing required parameter: query',
       data: [],
@@ -182,6 +217,7 @@ export async function matchingSearcResponse(query: string, page: number) {
 
     return {
       success: true,
+      status: search?.status as number,
       hasNextPage: search?.hasNextPage || false,
       currentPage: search?.currentPage || page,
       totalPages: search?.totalPages || 0,
@@ -190,17 +226,35 @@ export async function matchingSearcResponse(query: string, page: number) {
   } catch (error: any) {
     return {
       success: false,
+      status: 500,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
+      error: error instanceof Error ? error.message : 'Contac dev is you see this.',
       data: [],
-      status: error.response?.status || 500,
-      error: error.message || 'An unexpected error occurred.',
     };
   }
 }
 
-export async function fetchAnimeInfo(animeId: string) {
+export interface SuccessInfoResponse extends SuccessResponse {
+  data: animeInfo;
+  hasDub: boolean;
+  hasSub: boolean;
+}
+export interface AnimeInfoError extends ErrorResponse {
+  status: number;
+  data: null;
+  hasDub: boolean;
+  hasSub: boolean;
+}
+
+export type AnimeZInfoResponse = SuccessInfoResponse | AnimeInfoError;
+export async function fetchAnimeInfo(animeId: string): Promise<AnimeZInfoResponse> {
   if (!animeId)
     return {
       success: false,
+      hasDub: false,
+      hasSub: false,
       status: 400,
       error: ' Missing required params: Id',
       data: null,
@@ -209,31 +263,40 @@ export async function fetchAnimeInfo(animeId: string) {
     const response = await animeZClient.get(`${animeZBaseUrl}/${animeId}`);
     const data$: cheerio.CheerioAPI = cheerio.load(response.data);
 
-    const data = extractAnimeZInfo(data$);
-    if (!data.animeInfo) {
+    const { hasDub, hasSub, data } = extractAnimeZInfo(data$);
+    if (!data) {
       return {
         success: false,
+        hasDub: false,
+        hasSub: false,
         error: 'Scraping Error',
+        status: 204,
         data: null,
       };
     }
     if (!response.data) {
       return {
         success: false,
+        hasDub: false,
+        hasSub: false,
         status: 204,
         error: 'Received empty response from server',
-        data: [],
+        data: null,
       };
     }
     return {
       success: true,
       status: 200,
-      data: data,
+      hasDub: hasDub,
+      hasSub: hasSub,
+      data: data as animeInfo,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return {
         success: false,
+        hasDub: false,
+        hasSub: false,
         status: error.response?.status || 500,
         error: `Request failed ${error.message}`,
         data: null,
@@ -241,16 +304,43 @@ export async function fetchAnimeInfo(animeId: string) {
     }
     return {
       success: false,
+      hasDub: false,
+      hasSub: false,
       status: 500,
       data: null,
       error: error instanceof Error ? error.message : 'Contact dev if you see this ',
     };
   }
 }
-export async function getAnimeEpisodes(animeId: string, page: number, dub: category = category.SUB) {
+
+export interface SuccessEpisodeResponse extends SuccessResponse {
+  hasNextPage: boolean;
+  data: Episodes[];
+  totalPages: number;
+  currentPage: number;
+  status: number;
+}
+
+export interface ErrorEpisodeResponse extends ErrorResponse {
+  hasNextPage: boolean;
+  totalPages: number;
+  data: [];
+  currentPage: number;
+  status: number;
+}
+
+export type AnimeZEpisodes = SuccessEpisodeResponse | ErrorEpisodeResponse;
+export async function getAnimeEpisodes(
+  animeId: string,
+  page: number,
+  dub: category = category.SUB,
+): Promise<AnimeZEpisodes> {
   if (!animeId)
     return {
       success: false,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
       data: [],
       status: 400,
       error: ' Missing required params: Id',
@@ -265,8 +355,11 @@ export async function getAnimeEpisodes(animeId: string, page: number, dub: categ
       return {
         success: false,
         status: 204,
-        error: 'Received empty response from server',
+        hasNextPage: false,
+        totalPages: 0,
+        currentPage: 0,
         data: [],
+        error: 'Received empty response from server',
       };
     }
     const episode$: cheerio.CheerioAPI = cheerio.load(response.data.list_chap);
@@ -279,6 +372,10 @@ export async function getAnimeEpisodes(animeId: string, page: number, dub: categ
       return {
         success: true,
         data: [],
+        hasNextPage: false,
+        totalPages: 0,
+        currentPage: 0,
+        status: 204,
         error: 'Scraping errors',
       };
     }
@@ -296,7 +393,7 @@ export async function getAnimeEpisodes(animeId: string, page: number, dub: categ
     return {
       success: true,
       status: 200,
-      hasNextPage: pages.hasNextPage,
+      hasNextPage: pages.hasNextPage as boolean,
       currentPage: pages.currentPage,
       totalPages: pages.totalPages,
       data: episodes,
@@ -307,19 +404,37 @@ export async function getAnimeEpisodes(animeId: string, page: number, dub: categ
         success: false,
         status: error.response?.status || 500,
         error: `Request failed ${error.message}`,
-        data: null,
+        data: [],
+        hasNextPage: false,
+        totalPages: 0,
+        currentPage: 0,
       };
     }
     return {
       success: false,
       status: 500,
-      data: null,
+      hasNextPage: false,
+      totalPages: 0,
+      currentPage: 0,
+      data: [],
       error: error instanceof Error ? error.message : 'Contact dev if you see this ',
     };
   }
 }
-
-export async function fetchSources(episodeId: string, server: servers, dub: category) {
+export interface SuccessfulAnimeZSources extends SuccessResponse {
+  data: ASource;
+  Note: string;
+  Referer: string;
+}
+export interface ErrorAnimeZSources extends ErrorResponse {
+  data: null;
+}
+export type AnimeZSources = SuccessfulAnimeZSources | ErrorAnimeZSources;
+export async function fetchSources(
+  episodeId: string,
+  server: servers,
+  dub: category,
+): Promise<AnimeZSources> {
   if (!episodeId) {
     return {
       success: false,
@@ -464,7 +579,7 @@ export async function fetchSources(episodeId: string, server: servers, dub: cate
             status: 200,
             data: data,
             Note: 'Use proxy ',
-            referer: serverUrl.href,
+            Referer: serverUrl.href,
           };
         } catch (error) {
           if (axios.isAxiosError(error)) {
@@ -500,4 +615,10 @@ export async function fetchSources(episodeId: string, server: servers, dub: cate
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }
+  return {
+    success: false,
+    status: 500,
+    data: null,
+    error: 'IF YOU SEE THIS JUST KNOW THE LOGIC IS FUCKED UP REWORK THIS SHIT',
+  };
 }

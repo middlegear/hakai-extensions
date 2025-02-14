@@ -2,14 +2,12 @@ export type anime = {
   id: string | null;
   title: string | null;
   posterImage: string | null;
-  episodes?: number | null;
-  dub?: string | null;
-  romanji?: string | null;
 };
 
 export type Episodes = {
-  id: string | null;
-  title: string | null;
+  episodeId: string | null;
+  number: number | null;
+  category: string | null;
 };
 export type animeInfo = {
   id: string | null;
@@ -24,4 +22,15 @@ export enum servers {
   F35 = 'F35 ',
   SU57 = 'Rusia',
   Typhoon = 'EU',
+}
+
+///////
+export interface ErrorResponse {
+  success: boolean;
+  status: number;
+  error: string;
+}
+export interface SuccessResponse {
+  success: true;
+  status: number;
 }

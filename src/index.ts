@@ -6,12 +6,13 @@ import { AnimeZ, HiAnime } from './provider/index.js';
 import {
   fetchAnimeById,
   fetchTopAiring,
+  fetchUpcoming,
   getEpisodeswithInfo,
   getRelated,
   getTrends,
 } from './provider/meta/anilist/anilist.js';
 import { Anilist } from './provider/meta/anilist/index.js';
-import { Seasons } from './provider/meta/anilist/types.js';
+
 import { getAnilistMapping, getMalMapping } from './provider/meta/anizip/index.js';
 import { Jikan } from './provider/meta/jikan/index.js';
 import { getAnimeCharacters } from './provider/meta/jikan/jikan.js';
@@ -64,7 +65,8 @@ const hianime = new HiAnime();
 const jikan = new Anilist();
 
 jikan
-  .fetchRelatedAnime(115230)
+  .fetchInfo(269)
+
   // .fetchTrending()
   // getAnimeCharacters(269)
 

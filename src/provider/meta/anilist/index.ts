@@ -1,4 +1,4 @@
-import { AnimeProvider } from '../../../types/types.js';
+import { AnimeProvider, Charactersort, Format, Seasons } from '../../../types/types.js';
 import {
   searchAnime,
   fetchAnimeById,
@@ -11,8 +11,8 @@ import {
   getEpisodeswithInfo,
   getTrends,
   getRelated,
+  fetchUpcoming,
 } from './anilist.js';
-import { Format, Seasons, Charactersort } from './types.js';
 
 class Anilist {
   /**
@@ -103,6 +103,15 @@ class Anilist {
    */
   async fetchTrending(page: number = 1, perPage: number = 20) {
     return getTrends(page, perPage);
+  }
+  /**
+   * Fetch upcoming anime
+   * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
+   * @returns {Promise<Array>} - An array of  upcoming anime resource
+   */
+  async fetchTopUpcoming(page: number, perPage: number) {
+    return fetchUpcoming(page, perPage);
   }
   /**
    * Fetches related information about an anime.

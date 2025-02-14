@@ -1,4 +1,4 @@
-export const fetchByIdQuery = `query ($id: Int ) { 
+export const fetchByIdQuery = `query ($id: Int , $asHtml:Boolean = true) { 
   Media (id: $id, type: ANIME ) { 
     id
     idMal
@@ -11,7 +11,7 @@ export const fetchByIdQuery = `query ($id: Int ) {
     type
     format
     status
-    description
+    description(asHtml: $asHtml)
       startDate {
         year
         month
@@ -50,7 +50,7 @@ export const fetchByIdQuery = `query ($id: Int ) {
   }
 }`;
 
-export const airingQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $format: MediaFormat, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort]) {
+export const topQuery = `query Query($page: Int, $perPage: Int, $type: MediaType, $format: MediaFormat, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort]) {
   Page(page: $page, perPage: $perPage) {
     pageInfo {
       total

@@ -1,16 +1,10 @@
 import axios from 'axios';
-import { AnimeProvider } from '../../../types/types.js';
+import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
 import { AnimeZ, HiAnime } from '../../index.js';
 import { animeZtitle, hianimeTitle } from './mapperjikan.js';
-import { AnimeStatusFilter, AnimeType, Filters, Season } from './types.js';
 import { getMalMapping } from '../anizip/index.js';
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
-export async function searchAnime(
-  query: string,
-  page: number,
-  limit: number,
-  type: AnimeType = AnimeType.TV,
-) {
+export async function searchAnime(query: string, page: number, limit: number) {
   if (!query) {
     return {
       success: false,
@@ -20,9 +14,7 @@ export async function searchAnime(
     };
   }
   try {
-    const { data } = await axios.get(
-      `${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}&type=${type}`,
-    );
+    const { data } = await axios.get(`${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}`);
     if (!data)
       return {
         success: false,
@@ -252,7 +244,7 @@ export async function getAnimeCharacters(id: number) {
   }
 }
 
-export async function getCurrentSeason(filter: Filters, page: number, limit: number) {
+export async function getCurrentSeason(filter: Format, page: number, limit: number) {
   if (!filter) {
     return {
       success: false,
@@ -261,9 +253,10 @@ export async function getCurrentSeason(filter: Filters, page: number, limit: num
       error: 'Missing required parameter : filter!',
     };
   }
+  const newFormat = filter.toLowerCase();
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/now?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/seasons/now?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {
@@ -353,7 +346,7 @@ export async function getCurrentSeason(filter: Filters, page: number, limit: num
   }
 }
 
-export async function getNextSeason(filter: Filters, page: number, limit: number) {
+export async function getNextSeason(filter: Format, page: number, limit: number) {
   if (!filter) {
     return {
       success: false,
@@ -362,9 +355,10 @@ export async function getNextSeason(filter: Filters, page: number, limit: number
       error: 'Missing required parameter :filter!',
     };
   }
+  const newFormat = filter.toLowerCase();
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/upcoming?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/seasons/upcoming?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {
@@ -453,7 +447,7 @@ export async function getNextSeason(filter: Filters, page: number, limit: number
   }
 }
 
-export async function getSeason(year: number, season: Season, filter: Filters, page: number, limit: number) {
+export async function getSeason(year: number, season: Seasons, filter: Format, page: number, limit: number) {
   if (!year || !season || !filter) {
     return {
       success: false,
@@ -463,8 +457,10 @@ export async function getSeason(year: number, season: Season, filter: Filters, p
     };
   }
   try {
+    const newSeason = season.toLowerCase();
+    const newFormat = filter.toLowerCase();
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/${year}/${season}?filter=${filter}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/seasons/${year}/${newSeason}?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {
@@ -554,11 +550,105 @@ export async function getSeason(year: number, season: Season, filter: Filters, p
     };
   }
 }
-
-export async function getTopAnime(page: number, limit: number, filter?: AnimeStatusFilter, type?: AnimeType) {
+export async function getTopUpcoming(page: number, perPage: number, filter: Status) {
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${type}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`,
+    );
+    if (!data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+    const res = data;
+    const pagination = {
+      hasNextPage: res.pagination.has_next_page,
+      lastPage: res.pagination.last_visible_page,
+      currentPage: page,
+      total: res.pagination.items.total,
+      perPage: res.pagination.items.per_page,
+    };
+
+    const topAnime = res.data.map((item: any) => ({
+      malId: item.mal_id,
+      title: {
+        romaji: item.title,
+        english: item.title_english,
+        native: item.title_japanese,
+      },
+      image: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
+      trailer: item.trailer.embed_url ?? item.trailer.url,
+      episodes: item.episodes,
+
+      startDate:
+        item.aired.prop && item.aired.prop.from.year
+          ? new Date(
+              item.aired.prop.from.year,
+              item.aired.prop.from.month - 1,
+              item.aired.prop.from.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.from || 'Unknown',
+
+      endDate:
+        item.aired.prop && item.aired.prop.to.year
+          ? new Date(
+              item.aired.prop.to.year,
+              item.aired.prop.to.month - 1,
+              item.aired.prop.to.day,
+            ).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : item.aired.to || 'Unknown',
+
+      type: item.type,
+      status: item.status,
+      genres: item.genres.map((item2: any) => item2.name),
+      duration: item.duration,
+      score: item.score,
+      synopsis: item.synopsis,
+      season: item.season,
+      studio: item.studios,
+      producers: item.producers,
+    }));
+
+    return {
+      success: true,
+      status: 200,
+      pagination: pagination,
+      data: topAnime,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      data: [],
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err ',
+    };
+  }
+}
+export async function getTopAnime(page: number, limit: number, filter: Status, type: Format) {
+  const newType = type.toLowerCase();
+
+  try {
+    const { data } = await axios.get(
+      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${newType}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {

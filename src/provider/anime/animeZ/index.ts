@@ -1,4 +1,13 @@
-import { fetchAnimeInfo, fetchSources, getAnimeEpisodes, matchingSearcResponse } from './animeZ.js';
+import {
+  type AnimeZEpisodes,
+  type AnimeZInfoResponse,
+  type AnimeZSources,
+  fetchAnimeInfo,
+  fetchSources,
+  getAnimeEpisodes,
+  type matchResponse,
+  matchSearchResponse,
+} from './animeZ.js';
 import { category, servers } from './types.js';
 
 class AnimeZ {
@@ -6,10 +15,10 @@ class AnimeZ {
    * Searches for anime based on the provided query.
    * @param {string} query - The search query string. Required.
    * @param {number} [page=1] - The page number for pagination (optional, defaults to 1).
-   * @returns {Promise<Array>} - An array of anime related to the search query.
+   * @returns {Promise<searchResults> } - An array of anime related to the search query.
    */
-  async search(query: string, page: number = 1) {
-    return matchingSearcResponse(query, page);
+  async search(query: string, page: number = 1): Promise<matchResponse> {
+    return matchSearchResponse(query, page);
   }
 
   /**
@@ -17,7 +26,7 @@ class AnimeZ {
    * @param {string} animeId - The unique identifier for the anime.
    * @returns {Promise<Object>} - An object containing anime details .
    */
-  async fetchInfo(animeId: string) {
+  async fetchInfo(animeId: string): Promise<AnimeZInfoResponse> {
     return fetchAnimeInfo(animeId);
   }
 
@@ -28,7 +37,7 @@ class AnimeZ {
    * @param {category} [dub=category.SUB] - The language category (optional, defaults to subbed).
    * @returns {Promise<Object>} - An object containing streaming sources.
    */
-  async fetchSources(episodeId: string, dub = category.SUB, server = servers.SU57) {
+  async fetchSources(episodeId: string, dub = category.SUB, server = servers.SU57): Promise<AnimeZSources> {
     return fetchSources(episodeId, server, dub);
   }
 
@@ -38,7 +47,7 @@ class AnimeZ {
    * @param {number} [page=1] - The page number for pagination (optional, defaults to 1).
    * @returns {Promise<Array>} - An array containing episode details.
    */
-  async fetchEpisodes(id: string, page: number = 1) {
+  async fetchEpisodes(id: string, page: number = 1): Promise<AnimeZEpisodes> {
     return getAnimeEpisodes(id, page);
   }
 }

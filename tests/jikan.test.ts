@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import { Jikan } from '../src/provider/meta/jikan/index.js';
-import { AnimeStatusFilter, Season } from '../src/provider/meta/jikan/types.js';
-import { AnimeProvider } from '../src/types/types.js';
+
+import { AnimeProvider, Seasons } from '../src/types/types.js';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -39,7 +39,7 @@ test('fetch top movies category', async () => {
 });
 
 test('fetch anime by season', async () => {
-  const data = await jikan.fetchSeason(2023, Season.Fall);
+  const data = await jikan.fetchSeason(2023, Seasons.FALL);
   expect(data.data).not.toEqual([]);
   expect(data.success).toBe(true);
   await wait(400);

@@ -1,4 +1,4 @@
-import { AnimeProvider } from '../../../types/types.js';
+import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
 import {
   getAnimeCharacters,
   getCurrentSeason,
@@ -11,8 +11,8 @@ import {
   getEpisodes,
   getProviderId,
   getEpisodeswithInfo,
+  getTopUpcoming,
 } from './jikan.js';
-import { AnimeType, AnimeStatusFilter, Season, Filters } from './types.js';
 
 class Jikan {
   /**
@@ -67,17 +67,10 @@ class Jikan {
    * Fetches top anime based on filters.
    * @param {number} [page=1] - The page number. defaults to 1 Optional
    * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
-   * @param {AnimeStatusFilter} filter - The filter type (airing, upcoming, etc.). Optional
-   * @param {AnimeType} [type=AnimeType] - The anime type. Optional
    * @returns {Promise<Array>} - The top anime list.
    */
-  async fetchTopUpcoming(
-    page: number = 1,
-    limit: number = 25,
-    filter: AnimeStatusFilter = AnimeStatusFilter.Upcoming,
-    type: AnimeType = AnimeType.TV,
-  ) {
-    return getTopAnime(page, limit, filter, type);
+  async fetchTopUpcoming(page: number = 1, limit: number = 25, status: Status = Status.Upcoming) {
+    return getTopUpcoming(page, limit, status);
   }
 
   /**
@@ -89,8 +82,8 @@ class Jikan {
   async fetchTopAiring(
     page: number = 1,
     limit: number = 25,
-    filter: AnimeStatusFilter = AnimeStatusFilter.Airing,
-    type: AnimeType = AnimeType.TV,
+    filter: Status = Status.Airing,
+    type: Format = Format.TV,
   ) {
     return getTopAnime(page, limit, filter, type);
   }
@@ -104,8 +97,8 @@ class Jikan {
   async fetchTopMovies(
     page: number = 1,
     limit: number = 25,
-    filter: AnimeStatusFilter = AnimeStatusFilter.Favourite,
-    type: AnimeType = AnimeType.Movie,
+    filter: Status = Status.Favourite,
+    type: Format = Format.MOVIE,
   ) {
     return getTopAnime(page, limit, filter, type);
   }
@@ -118,8 +111,8 @@ class Jikan {
   async fetchMostPopular(
     page: number = 1,
     limit: number = 25,
-    filter: AnimeStatusFilter = AnimeStatusFilter.Popularity,
-    type: AnimeType = AnimeType.TV,
+    filter: Status = Status.Popularity,
+    type: Format = Format.TV,
   ) {
     return getTopAnime(page, limit, filter, type);
   }
@@ -127,35 +120,35 @@ class Jikan {
    * Fetches seasonal anime for a given year and season.
    * @param {number} year - The target year (Required).
    * @param {Season} season - The target season (winter, fall, etc.).
-   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {Format} [Format = Format.TV] - The format type defaults to tv
    * @param {number} [page=1] - The page number.
    * @param {number} [limit=25] - Number of results per page.
    * @returns {Promise<any>} - The seasonal anime list.
    */
-  async fetchSeason(year: number, season: Season, page = 1, limit = 25, filter: Filters = Filters.TV) {
-    return getSeason(year, season, filter, page, limit);
+  async fetchSeason(year: number, season: Seasons, page = 1, limit = 25, format: Format = Format.TV) {
+    return getSeason(year, season, format, page, limit);
   }
 
   /**
    * Fetches currently airing seasonal anime.
-   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {Format} [Format = Format.TV] - The format type defaults to tv
    * @param {number} [page=1] - The page number.
    * @param {number} [limit=25] - Number of results per page.
    * @returns {Promise<any>} - The current seasonal anime.
    */
-  async fetchCurrentSeason(filter: Filters = Filters.TV, page = 1, limit = 25) {
-    return getCurrentSeason(filter, page, limit);
+  async fetchCurrentSeason(format: Format = Format.TV, page = 1, limit = 25) {
+    return getCurrentSeason(format, page, limit);
   }
 
   /**
    * Fetches anime for the upcoming season.
-   * @param {Filters} [filter=Filters.TV] - The filter type.
+   * @param {Format} [Format = Format.TV] - The format type defaults to tv
    * @param {number} [page=1] - The page number.
    * @param {number} [limit=25] - Number of results per page.
    * @returns {Promise<any>} - The upcoming season's anime.
    */
-  async fetchNextSeason(filter: Filters = Filters.TV, page = 1, limit = 25) {
-    return getNextSeason(filter, page, limit);
+  async fetchNextSeason(format: Format = Format.TV, page = 1, limit = 25) {
+    return getNextSeason(format, page, limit);
   }
 
   /**

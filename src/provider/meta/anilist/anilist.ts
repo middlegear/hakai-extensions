@@ -7,7 +7,6 @@ import {
 import { AnimeZ, Anitaku, HiAnime } from '../../index.js';
 
 import {
-  airingQuery,
   characterQuery,
   fetchByIdQuery,
   mediaTrendQuery,
@@ -15,12 +14,20 @@ import {
   relatedQuery,
   searchQuery,
   seasonQuery,
+  topQuery,
 } from './queries.js';
 
 import { USER_AGENT_HEADER } from '../../index.js';
 
-import { MediaType, Format, Status, Sort, Seasons, Charactersort } from './types.js';
-import { AnimeProvider } from '../../../types/types.js';
+import {
+  AnimeProvider,
+  Charactersort,
+  Format,
+  MediaType,
+  Seasons,
+  Sort,
+  Status,
+} from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
 const baseURL = `https://graphql.anilist.co`;
@@ -267,7 +274,103 @@ export async function fetchAnimeById(id: number) {
     };
   }
 }
+export async function fetchUpcoming(
+  page: number,
+  perPage: number,
+  type: MediaType = MediaType.Anime,
+  status: Status = Status.NOT_YET_RELEASED,
+  isAdult: boolean = false,
+  sort: Sort = Sort.POPULARITY_DESC,
+) {
+  try {
+    const variables = { page, perPage, type, status, isAdult, sort };
+    const response = await axios.post(
+      baseURL,
+      {
+        query: topQuery,
+        variables,
+      },
+      {
+        headers: {
+          'User-Agent': USER_AGENT_HEADER,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Origin: Origin,
+          Referer: Referer,
+        },
+      },
+    );
+    if (!response.data)
+      return {
+        success: false,
+        status: 204,
+        error: 'Server returned an empty response',
+        data: [],
+        pagination: null,
+      };
+    const pagination = {
+      hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
+      total: response.data.data.Page.pageInfo.total,
+      lastPage: response.data.data.Page.pageInfo.lastPage,
+      currentPage: response.data.data.Page.pageInfo.currentPage,
+      perPage: response.data.data.Page.pageInfo.perPage,
+    };
+    const res = response.data.data.Page.media.map((item: any) => ({
+      malId: item.idMal,
+      anilistId: item.id,
+      image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
 
+      bannerImage:
+        item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
+      title: {
+        romaji: item.title.romaji ?? item.title.userPreferred,
+        english: item.title.english,
+        native: item.title.native,
+      },
+      trailer: item.trailer,
+      type: item.type,
+      status: item.status,
+      genres: item.genres,
+      synopsis: item.description,
+      startDate:
+        item.startDate && item.startDate.year
+          ? new Date(item.startDate.year, item.startDate.month - 1, item.startDate.day).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              },
+            )
+          : 'Unknown',
+
+      studio: item.studios.nodes.length > 0 ? item.studios.nodes[0].name : null,
+      producers: item.studios.nodes.map((item2: any) => item2.name),
+    }));
+
+    return {
+      success: true,
+      status: 200,
+      pagination: pagination,
+      data: res,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: [],
+        pagination: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      data: [],
+      pagination: null,
+      error: error instanceof Error ? error.message : 'Unknown Err',
+    };
+  }
+}
 export async function fetchTopAiring(
   page: number,
   perPage: number,
@@ -282,7 +385,7 @@ export async function fetchTopAiring(
     const response = await axios.post(
       baseURL,
       {
-        query: airingQuery,
+        query: topQuery,
         variables,
       },
       {

@@ -60,10 +60,3 @@ export enum Dubbing {
   Sub = 'sub',
   Raw = 'raw',
 }
-export type scrappedAnime = {
-  success: boolean;
-  anime: Anime[];
-  hasNextPage?: boolean;
-  totalPages?: number | null;
-  currentPage?: number | null;
-};

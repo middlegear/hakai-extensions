@@ -1,7 +1,7 @@
 import { Anilist } from '../src/provider/meta/anilist/index.js';
 import { test, expect } from 'vitest';
-import { Seasons } from '../src/provider/meta/anilist/types.js';
-import { AnimeProvider } from '../src/types/types.js';
+
+import { AnimeProvider, Seasons } from '../src/types/types.js';
 
 const anilist = new Anilist();
 
@@ -61,6 +61,12 @@ test('fetch top rated anime', async () => {
 
 test('fetch seasonal anime', async () => {
   const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 10);
+  expect(data.success).not.toEqual(false);
+  expect(data.data).not.toEqual([]);
+});
+
+test('fetch upcoming anime', async () => {
+  const data = await anilist.fetchTopUpcoming(1, 10);
   expect(data.success).not.toEqual(false);
   expect(data.data).not.toEqual([]);
 });
