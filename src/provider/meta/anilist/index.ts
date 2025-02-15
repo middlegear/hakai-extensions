@@ -12,6 +12,8 @@ import {
   getTrends,
   getRelated,
   fetchUpcoming,
+  type AnilistSearch,
+  type AnilistInfo,
 } from './anilist.js';
 
 class Anilist {
@@ -20,18 +22,18 @@ class Anilist {
    * @param {string} search - The search query string (Required).
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
-   * @returns {Promise<Array>} - An array of anime related to the search query.
+   * @returns {Promise<AnilistSearch>} - An array of anime related to the search query.
    */
-  async search(search: string, page: number = 1, perPage: number = 20) {
+  async search(search: string, page: number = 1, perPage: number = 20): Promise<AnilistSearch> {
     return searchAnime(search, page, perPage);
   }
 
   /**
    * Fetches detailed information about an anime.
    * @param {number} id - The Anilist anime ID (Required).
-   * @returns {Promise<Object>} - An object containing detailed anime information.
+   * @returns { Promise<AnilistInfo>} - An object containing detailed anime information.
    */
-  async fetchInfo(id: number) {
+  async fetchInfo(id: number): Promise<AnilistInfo> {
     return fetchAnimeById(id);
   }
 

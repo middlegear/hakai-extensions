@@ -144,7 +144,7 @@ export function bestanimeZTitle(title: AnilistTitle, result: SearchResults[]) {
   return {
     animeId: resultMatch?.animeId || null,
     name: resultMatch?.name || null,
-    alts: resultMatch?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
+    altName: resultMatch?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating || null,
   };
 }

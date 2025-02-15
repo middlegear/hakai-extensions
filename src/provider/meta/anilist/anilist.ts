@@ -4,7 +4,7 @@ import {
   bestHianimeTitle,
   bestanimeZTitle,
 } from './mapper.js';
-import { AnimeZ, Anitaku, HiAnime } from '../../index.js';
+import { AnimeZ, HiAnime } from '../../index.js';
 
 import {
   characterQuery,
@@ -16,9 +16,7 @@ import {
   seasonQuery,
   topQuery,
 } from './queries.js';
-
 import { USER_AGENT_HEADER } from '../../index.js';
-
 import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
@@ -26,16 +24,80 @@ const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
 const Origin = 'https://anilist.co';
 
+export interface ErrorResponse {
+  success: boolean;
+  status: number;
+  error: string;
+}
+export interface SuccessResponse {
+  success: true;
+  status: number;
+}
+export type AnilistData = {
+  malId: number;
+  anilistId: number;
+  image: string;
+  color: string;
+  bannerImage: string;
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+  };
+  trailer: string;
+  type: string;
+  format: string;
+  status: string;
+  duration: number;
+  score: number;
+  genres: string;
+  episodes: number;
+  synopsis: string;
+  season: string;
+  startDate: string;
+  endDate: string;
+  studio: string;
+  producers: string[];
+};
+export type Pagination = {
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+};
+export interface SuccessAnilistResponse extends SuccessResponse {
+  data: AnilistData[];
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+}
+export interface ErrorAnilistResponse extends ErrorResponse {
+  data: [];
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+}
+export type AnilistSearch = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function searchAnime(
   search: string,
   page: number,
   perPage: number,
   type: MediaType = MediaType.Anime,
   isAdult: boolean = false,
-) {
+): Promise<AnilistSearch> {
   if (!search) {
     return {
       success: false,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       status: 400,
       data: [],
       error: 'Missing required fields : search',
@@ -65,9 +127,13 @@ export async function searchAnime(
         status: 204,
         error: 'Server returned an empty response',
         data: [],
-        pagination: null,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
@@ -75,7 +141,7 @@ export async function searchAnime(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -121,26 +187,49 @@ export async function searchAnime(
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Contact dev ',
     };
   }
 }
-export async function fetchAnimeById(id: number) {
+
+///
+export interface SuccessAnilistInfoRes extends SuccessResponse {
+  data: AnilistData;
+}
+export interface ErrorAnilistInfoRes extends ErrorResponse {
+  data: null;
+}
+export type AnilistInfo = SuccessAnilistInfoRes | ErrorAnilistInfoRes;
+export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
   if (!id) {
     return {
       success: false,
@@ -175,7 +264,7 @@ export async function fetchAnimeById(id: number) {
         data: null,
       };
 
-    const res = {
+    const res: AnilistData = {
       malId: response.data.data.Media.idMal,
       anilistId: response.data.data.Media.id,
       image:
@@ -256,6 +345,8 @@ export async function fetchAnimeById(id: number) {
     };
   }
 }
+
+export type AnilistUpcoming = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchUpcoming(
   page: number,
   perPage: number,
@@ -263,7 +354,7 @@ export async function fetchUpcoming(
   status: Status = Status.NOT_YET_RELEASED,
   isAdult: boolean = false,
   sort: Sort = Sort.POPULARITY_DESC,
-) {
+): Promise<AnilistUpcoming> {
   try {
     const variables = { page, perPage, type, status, isAdult, sort };
     const response = await axios.post(
@@ -288,20 +379,23 @@ export async function fetchUpcoming(
         status: 204,
         error: 'Server returned an empty response',
         data: [],
-        pagination: null,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
       currentPage: response.data.data.Page.pageInfo.currentPage,
       perPage: response.data.data.Page.pageInfo.perPage,
     };
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
-
       bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
@@ -329,26 +423,44 @@ export async function fetchUpcoming(
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      currentPage: 0,
+      status: 500,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
-      pagination: null,
+
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
+
+//
+
+export type AnilistTopAiring = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchTopAiring(
   page: number,
   perPage: number,
@@ -357,7 +469,7 @@ export async function fetchTopAiring(
   status: Status = Status.RELEASING,
   isAdult: boolean = false,
   sort: Sort = Sort.SCORE_DESC,
-) {
+): Promise<AnilistTopAiring> {
   try {
     const variables = { page, perPage, type, format, status, isAdult, sort };
     const response = await axios.post(
@@ -381,17 +493,21 @@ export async function fetchTopAiring(
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
       currentPage: response.data.data.Page.pageInfo.currentPage,
       perPage: response.data.data.Page.pageInfo.perPage,
     };
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -437,27 +553,40 @@ export async function fetchTopAiring(
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      currentPage: 0,
+      status: 500,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
-      pagination: null,
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
-
+export type AnilistMostPopular = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchPopular(
   page: number,
   perPage: number,
@@ -465,7 +594,7 @@ export async function fetchPopular(
   type: MediaType = MediaType.Anime,
   isAdult: boolean = false,
   sort: Sort = Sort.POPULARITY_DESC,
-) {
+): Promise<AnilistMostPopular> {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
     const response = await axios.post(
@@ -489,10 +618,14 @@ export async function fetchPopular(
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
@@ -500,7 +633,7 @@ export async function fetchPopular(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -545,13 +678,22 @@ export async function fetchPopular(
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
@@ -559,13 +701,17 @@ export async function fetchPopular(
     return {
       success: false,
       status: 500,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
-      pagination: null,
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
-
+export type AnilistTopRated = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchTopRated(
   page: number,
   perPage: number,
@@ -573,7 +719,7 @@ export async function fetchTopRated(
   isAdult: boolean = false,
   type: MediaType = MediaType.Anime,
   sort: Sort = Sort.SCORE_DESC,
-) {
+): Promise<AnilistTopRated> {
   try {
     const variables = { page, perPage, type, format, isAdult, sort };
     const response = await axios.post(
@@ -597,10 +743,14 @@ export async function fetchTopRated(
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
@@ -608,8 +758,7 @@ export async function fetchTopRated(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    // const res = response.data.data.Page.media;
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -653,26 +802,41 @@ export async function fetchTopRated(
     }));
     return {
       success: true,
-      pagination: pagination,
+      status: 200,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
+      data: [],
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
-
+export type AnilistSeason = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchSeason(
   season: Seasons,
   seasonYear: number,
@@ -682,13 +846,17 @@ export async function fetchSeason(
   isAdult: boolean = false,
   type: MediaType = MediaType.Anime,
   sort: Sort = Sort.POPULARITY_DESC,
-) {
+): Promise<AnilistSeason> {
   if (!season || !seasonYear) {
     return {
       success: false,
       status: 400,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
-      pagination: null,
       error: 'Missing a required param : season | seasonYear',
     };
   }
@@ -724,10 +892,14 @@ export async function fetchSeason(
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
@@ -735,7 +907,7 @@ export async function fetchSeason(
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -780,27 +952,43 @@ export async function fetchSeason(
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
-      data: [],
-      pagination: null,
       status: 500,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
+      data: [],
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
-export async function getTrends(page: number, perPage: number) {
+
+//
+export type AnilistTrends = SuccessAnilistResponse | ErrorAnilistResponse;
+export async function getTrends(page: number, perPage: number): Promise<AnilistTrends> {
   const variables = {
     page,
     perPage,
@@ -827,10 +1015,14 @@ export async function getTrends(page: number, perPage: number) {
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: response.data.data.Page.pageInfo.hasNextPage,
       total: response.data.data.Page.pageInfo.total,
       lastPage: response.data.data.Page.pageInfo.lastPage,
@@ -838,7 +1030,7 @@ export async function getTrends(page: number, perPage: number) {
       perPage: response.data.data.Page.pageInfo.perPage,
     };
 
-    const res = response.data.data.Page.media.map((item: any) => ({
+    const res: AnilistData[] = response.data.data.Page.media.map((item: any) => ({
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
@@ -879,13 +1071,22 @@ export async function getTrends(page: number, perPage: number) {
     return {
       success: true,
       status: 200,
-      pagination: pagination,
+      hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      perPage: pagination.perPage,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        currentPage: 0,
+        total: 0,
+        lastPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
@@ -893,19 +1094,43 @@ export async function getTrends(page: number, perPage: number) {
     return {
       success: false,
       status: 500,
+      hasNextPage: false,
+      currentPage: 0,
+      total: 0,
+      lastPage: 0,
+      perPage: 0,
       data: [],
       error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
-
-export async function getRelated(mediaId: number, type: MediaType = MediaType.Anime) {
+export type RelatedAnilistData = {
+  anilistId: number;
+  malId: number;
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+  };
+  type: string;
+  score: number;
+  image: string;
+  bannerImage: string;
+  color: string;
+};
+export interface SuccessRelatedRes extends SuccessResponse {
+  data: RelatedAnilistData[];
+}
+export interface ErrorRelatedRes extends ErrorResponse {
+  data: [];
+}
+export type AnilistRelatedData = SuccessRelatedRes | ErrorRelatedRes;
+export async function getRelated(mediaId: number, type: MediaType = MediaType.Anime): Promise<AnilistRelatedData> {
   if (!mediaId)
     return {
       success: false,
       status: 400,
       data: [],
-      pagination: null,
       error: 'Missing a required param : season | seasonYear',
     };
   const variables = {
@@ -937,7 +1162,7 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.An
         data: [],
       };
 
-    const res = response.data.data.Media.relations.edges.map((item: any) => ({
+    const res: RelatedAnilistData[] = response.data.data.Media.relations.edges.map((item: any) => ({
       anilistId: item.node.id,
       malId: item.node.idMal,
       title: {
@@ -973,12 +1198,45 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.An
     };
   }
 }
-export async function fetchAnimeCharacters(mediaId: number, sort: Charactersort, voiceActorsSort2: Charactersort) {
+type character = {
+  role: string;
+  id: number;
+  name: string;
+  image: string;
+  voiceActors: voiceActors[];
+};
+type voiceActors = {
+  name: string;
+  image: string;
+  language: string;
+};
+export type ACharacters = {
+  anilistId: number;
+  malId: number;
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+  };
+  characters: character[];
+};
+export interface SuccessAnilistCharacterRes extends SuccessResponse {
+  data: ACharacters;
+}
+export interface ErrorAnilistCharacterRes extends ErrorResponse {
+  data: null;
+}
+export type AnilistCharacters = SuccessAnilistCharacterRes | ErrorAnilistCharacterRes;
+export async function fetchAnimeCharacters(
+  mediaId: number,
+  sort: Charactersort,
+  voiceActorsSort2: Charactersort,
+): Promise<AnilistCharacters> {
   if (!mediaId) {
     return {
       success: false,
       status: 400,
-      data: [],
+      data: null,
       error: 'Missing required parameter : mediaid!',
     };
   }
@@ -1008,7 +1266,7 @@ export async function fetchAnimeCharacters(mediaId: number, sort: Charactersort,
         error: 'Server returned an empty response',
         data: null,
       };
-    const res = {
+    const res: ACharacters = {
       malId: response.data.data.Media.idMal,
       anilistId: response.data.data.Media.id,
       title: {
@@ -1051,12 +1309,37 @@ export async function fetchAnimeCharacters(mediaId: number, sort: Charactersort,
   }
 }
 
-export async function fetchProviderId(id: number) {
+type AnimeZRes = {
+  animeId: string;
+  name: string;
+  altName: string;
+  score: number;
+};
+type hianimeRes = {
+  animeId: string;
+  name: string;
+  romaji: string;
+  score: number;
+};
+export interface SuccessAnilistProviderId extends SuccessAnilistInfoRes {
+  data: AnilistData;
+  animeZ: AnimeZRes;
+  hiAnime: hianimeRes;
+}
+export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
+  data: null;
+  animeZ: null;
+  hiAnime: null;
+}
+export type AnilistProviderId = SuccessAnilistProviderId | ErrorAnilistProviderId;
+export async function fetchProviderId(id: number): Promise<AnilistProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
+      animeZ: null,
+      hiAnime: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1078,6 +1361,7 @@ export async function fetchProviderId(id: number) {
           result.data?.map((item: any) => ({
             animeId: item.id,
             name: item.title,
+            romaji: item.altName,
           })) || []
         );
       } catch (error) {
@@ -1102,11 +1386,9 @@ export async function fetchProviderId(id: number) {
       }
     };
 
-    // Execute providers concurrently but independently
     const [animeZResults, hiAnimeResults] = await Promise.allSettled([searchAnimeZ(englishTitle), searchHiAnime(userPref)]);
 
     const data = {
-      animeInfo: anilistData,
       hiAnime: hiAnimeResults.status === 'fulfilled' ? bestHianimeTitle(titles, hiAnimeResults.value) : null,
       animeZ: animeZResults.status === 'fulfilled' ? bestanimeZTitle(titles, animeZResults.value) : null,
     };
@@ -1114,19 +1396,57 @@ export async function fetchProviderId(id: number) {
     return {
       success: true,
       status: 200,
-      data,
+      data: anilistData.data,
+      hiAnime: data.hiAnime as hianimeRes,
+      animeZ: data.animeZ as AnimeZRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
+      animeZ: null,
+      hiAnime: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
+type pagination = {
+  hasNextPage: boolean;
+  currentPage: number;
+  totalPages: number;
+};
+type animeRes = {
+  episodeId: string;
+  number: number;
+  title?: string;
+  // category?: string;
+};
 
-export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProvider, page?: number) {
+type CrossMatchedEpisodes = {
+  episodeNumber: number;
+  rating: number;
+  aired: boolean;
+  episodeId: string;
+  title: string;
+  overview: string;
+  thumbnail: string;
+};
+
+export interface SuccessEpisodesres extends SuccessResponse {
+  data: AnilistData;
+  pagination?: pagination;
+  episodes: animeRes[] | CrossMatchedEpisodes[];
+}
+export interface ErrorEpisodesres extends ErrorResponse {
+  data: null;
+}
+export type AnilistEpisodes = SuccessEpisodesres | ErrorEpisodesres;
+export async function getEpisodeswithInfo(
+  anilistId: number,
+  provider: AnimeProvider,
+  page: number,
+): Promise<AnilistEpisodes> {
   if (!anilistId && !provider) {
     return {
       success: false,
@@ -1137,20 +1457,18 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
   }
   try {
     const anilistData = await fetchProviderId(anilistId);
-    const zoro = anilistData.data?.hiAnime;
-    const animezId = anilistData.data?.animeZ;
+    const zoro = anilistData.hiAnime;
+    const animezId = anilistData.animeZ;
 
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
       try {
-        const result = await hiAnime.fetchInfo(animeId);
-        return (
-          result.data?.episodes?.map((item: any) => ({
-            episodeId: item.episodeId,
-            number: item.number,
-            title: item.title,
-          })) || []
-        );
+        const result = await hiAnime.fetchEpisodes(animeId);
+        return result.data.map((item: any) => ({
+          episodeId: item.episodeId,
+          number: item.number,
+          title: item.title,
+        }));
       } catch (error) {
         console.error('Error fetching from HiAnime:', error);
         return null;
@@ -1161,18 +1479,17 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
       try {
         const result = await animeZ.fetchEpisodes(id, page);
         const pagination = {
-          hasNextPage: result.hasNextPage || null,
-          currentPage: result.currentPage || null,
-          totalPages: result.totalPages || null,
+          hasNextPage: result.hasNextPage,
+          currentPage: result.currentPage,
+          totalPages: result.totalPages,
         };
         const data = {
           pagination: pagination,
-          result:
-            result.data?.map((item: any) => ({
-              episodeId: item.episodeId,
-              number: item.number,
-              category: item.category,
-            })) || [],
+          result: result.data?.map((item: any) => ({
+            episodeId: item.episodeId as string,
+            number: item.number as number,
+            // category: item.category as string,
+          })),
         };
         return data;
       } catch (error) {
@@ -1187,9 +1504,10 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
             const response = await fetchEpisodesAnimeZ(animezId.animeId as string, page as number);
             return {
               success: true,
-              info: anilistData.data?.animeInfo,
-              episodePagination: response?.pagination,
-              episodes: response?.result,
+              status: 200,
+              data: anilistData.data,
+              pagination: response?.pagination as pagination,
+              episodes: response?.result as animeRes[],
             };
           } else {
             const [animeZ, aniMapping] = await Promise.all([
@@ -1213,12 +1531,13 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
               };
             });
 
-            if (animeZ)
+            if (animeZ && matchingResults)
               return {
                 success: true,
-                info: anilistData.data?.animeInfo,
-                episodePagination: animeZ.pagination,
-                episodes: matchingResults,
+                status: 200,
+                data: anilistData.data,
+                pagination: animeZ.pagination as pagination,
+                episodes: matchingResults as CrossMatchedEpisodes[],
               };
           }
         case AnimeProvider.HiAnime:
@@ -1226,8 +1545,9 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
             const response = await fetchEpisodesHianime(zoro.animeId as string);
             return {
               success: true,
-              info: anilistData.data?.animeInfo,
-              episodes: response,
+              status: 200,
+              data: anilistData.data,
+              episodes: response as animeRes[],
             };
           } else {
             const [hianime, aniMapping2] = await Promise.all([
@@ -1253,8 +1573,9 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
 
             return {
               success: true,
-              info: anilistData.data?.animeInfo,
-              episodes: matchingResults2,
+              status: 200,
+              data: anilistData.data,
+              episodes: matchingResults2 as CrossMatchedEpisodes[],
             };
           }
       }
@@ -1270,8 +1591,14 @@ export async function getEpisodeswithInfo(anilistId: number, provider: AnimeProv
     return {
       success: false,
       data: null,
-      status: 200,
+      status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
+  return {
+    success: false,
+    data: null,
+    status: 500,
+    error: 'yea its messed up',
+  };
 }

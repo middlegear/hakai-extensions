@@ -898,9 +898,9 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
       try {
-        const result = await hiAnime.fetchInfo(animeId);
+        const result = await hiAnime.fetchEpisodes(animeId);
         return (
-          result.data?.episodes?.map((item: any) => ({
+          result.data?.map((item: any) => ({
             episodeId: item.episodeId,
             number: item.number,
             title: item.title,
