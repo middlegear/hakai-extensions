@@ -1,5 +1,4 @@
 import { findBestMatch } from '../../../utils/string-similarity.js';
-// import { findBestMatch } from 'string-similarity';
 
 type result = {
   animeId: string;
@@ -139,7 +138,7 @@ export function animeZtitle(title: JikanTitle, results: result[]) {
   return {
     animeId: match?.animeId || null,
     name: match?.name || null,
-    alt: match?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
+    altName: match?.alt || 'Sometimes the anime provider Maybe Good, Sometimes Maybe Shit',
     score: bestTitle?.bestMatch.rating,
   };
 }

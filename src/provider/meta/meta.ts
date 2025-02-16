@@ -6,4 +6,4 @@ class Meta {
   static Jikan = Jikan;
 }
 
-export default Meta;
+export { Meta };

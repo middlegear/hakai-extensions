@@ -4,11 +4,73 @@ import { AnimeZ, HiAnime } from '../../index.js';
 import { animeZtitle, hianimeTitle } from './mapperjikan.js';
 import { getMalMapping } from '../anizip/index.js';
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
-export async function searchAnime(query: string, page: number, limit: number) {
+
+export interface ErrorResponse {
+  success: boolean;
+  status: number;
+  error: string;
+}
+export interface SuccessResponse {
+  success: true;
+  status: number;
+}
+export type JIkanData = {
+  malId: number;
+  image: string;
+  bannerImage: string;
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+  };
+  trailer: string;
+  format: string;
+  status: string;
+  duration: number;
+  score: number;
+  genres: string;
+  episodes: number;
+  synopsis: string;
+  season: string;
+  startDate: string;
+  endDate: string;
+  studio: string;
+  producers: string[];
+};
+export type Pagination = {
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+};
+export interface SuccessJIkanRes extends SuccessResponse {
+  data: JIkanData[];
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+}
+export interface ErrorJIkanRes extends ErrorResponse {
+  data: [];
+  hasNextPage: boolean;
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+}
+export type JIkanSearch = SuccessJIkanRes | ErrorJIkanRes;
+export async function searchAnime(query: string, page: number, limit: number): Promise<JIkanSearch> {
   if (!query) {
     return {
       success: false,
       status: 400,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       error: 'Missing required fields : search',
     };
@@ -20,17 +82,21 @@ export async function searchAnime(query: string, page: number, limit: number) {
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: data.pagination.has_next_page,
       lastPage: data.pagination.last_visible_page,
       currentPage: page,
       total: data.pagination.items.total,
       perPage: data.pagination.items.per_page,
     };
-    const search = data.data.map((item: any) => ({
+    const search: JIkanData[] = data.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -61,7 +127,7 @@ export async function searchAnime(query: string, page: number, limit: number) {
               day: 'numeric',
             })
           : item.aired.to || 'Unknown',
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -74,28 +140,48 @@ export async function searchAnime(query: string, page: number, limit: number) {
 
     return {
       success: true,
-      pagination: pagination,
       status: 200,
-      data: search,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: search as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
-      error: error instanceof Error ? error.message : 'Contact dev ',
+      error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
-
-export async function getInfoById(Id: number) {
+export interface SuccessJIkanInfo extends SuccessResponse {
+  data: JIkanData;
+}
+export interface ErrorJikanInfo extends ErrorResponse {
+  data: null;
+}
+export type JikanInfo = SuccessJIkanInfo | ErrorJikanInfo;
+export async function getInfoById(Id: number): Promise<JikanInfo> {
   if (!Id) {
     return {
       success: false,
@@ -112,9 +198,8 @@ export async function getInfoById(Id: number) {
         status: 204,
         error: 'Server returned an empty response',
         data: null,
-        pagination: null,
       };
-    const animeInfo = {
+    const animeInfo: JIkanData = {
       malId: data.data.mal_id,
       title: {
         romaji: data.data.title,
@@ -151,7 +236,7 @@ export async function getInfoById(Id: number) {
               day: 'numeric',
             })
           : data.data.aired.to || 'Unknown',
-      type: data.data.type,
+      format: data.data.type,
       status: data.data.status,
       genres: data.data.genres.map((item2: any) => item2.name),
       duration: data.data.duration,
@@ -164,7 +249,7 @@ export async function getInfoById(Id: number) {
     return {
       success: true,
       status: 200,
-      data: animeInfo,
+      data: animeInfo as JIkanData,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -182,8 +267,26 @@ export async function getInfoById(Id: number) {
     };
   }
 }
-
-export async function getAnimeCharacters(id: number) {
+type Char = {
+  role: string;
+  id: number;
+  name: string;
+  image: string;
+  voiceActors: voiceActors[];
+};
+type voiceActors = {
+  name: string;
+  image: string;
+  language: string;
+};
+export interface SuccessCharJikanRes extends SuccessResponse {
+  data: Char[];
+}
+export interface ErrorCharJikanRes extends ErrorResponse {
+  data: [];
+}
+export type JikanCharacters = SuccessCharJikanRes | ErrorCharJikanRes;
+export async function getAnimeCharacters(id: number): Promise<JikanCharacters> {
   if (!id) {
     return {
       success: false,
@@ -200,9 +303,8 @@ export async function getAnimeCharacters(id: number) {
         status: 204,
         error: 'Server returned an empty response',
         data: [],
-        pagination: null,
       };
-    const res = data.data.map((item: any) => ({
+    const res: Char[] = data.data.map((item: any) => ({
       role: item.role,
       id: item.character.mal_id,
       name: item.character.name,
@@ -220,7 +322,7 @@ export async function getAnimeCharacters(id: number) {
     return {
       success: true,
       status: 200,
-      data: res,
+      data: res as Char[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -239,11 +341,18 @@ export async function getAnimeCharacters(id: number) {
   }
 }
 
-export async function getCurrentSeason(filter: Format, page: number, limit: number) {
+export type JikanSeason = SuccessJIkanRes | ErrorJIkanRes;
+
+export async function getCurrentSeason(page: number, limit: number, filter: Format): Promise<JikanSeason> {
   if (!filter) {
     return {
       success: false,
       status: 400,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       error: 'Missing required parameter : filter!',
     };
@@ -256,19 +365,23 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
 
     const res = data;
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
-    const currentSeason = res.data.map((item: any) => ({
+    const currentSeason: JIkanData[] = res.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -279,7 +392,6 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
       bannerImage: item.images.jpg.large_image_url ?? item.images.webp.large_image_url,
       trailer: item.trailer.embed_url ?? item.trailer.url,
       episodes: item.episodes,
-
       startDate:
         item.aired.prop && item.aired.prop.from.year
           ? new Date(item.aired.prop.from.year, item.aired.prop.from.month - 1, item.aired.prop.from.day).toLocaleString(
@@ -300,7 +412,7 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
               day: 'numeric',
             })
           : item.aired.to || 'Unknown',
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -314,19 +426,33 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: currentSeason,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: currentSeason as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
@@ -334,11 +460,16 @@ export async function getCurrentSeason(filter: Format, page: number, limit: numb
   }
 }
 
-export async function getNextSeason(filter: Format, page: number, limit: number) {
+export async function getNextSeason(page: number, limit: number, filter: Format): Promise<JikanSeason> {
   if (!filter) {
     return {
       success: false,
       status: 400,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       error: 'Missing required parameter :filter!',
     };
@@ -353,11 +484,15 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
     const res = data;
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
@@ -365,7 +500,7 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
       perPage: res.pagination.items.per_page,
     };
 
-    const NextSeason = res.data.map((item: any) => ({
+    const NextSeason: JIkanData[] = res.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -396,7 +531,7 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
               day: 'numeric',
             })
           : item.aired.to || 'Unknown',
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -410,19 +545,33 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: NextSeason,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: NextSeason as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
@@ -430,13 +579,24 @@ export async function getNextSeason(filter: Format, page: number, limit: number)
   }
 }
 
-export async function getSeason(year: number, season: Seasons, filter: Format, page: number, limit: number) {
-  if (!year || !season || !filter) {
+export async function getSeason(
+  year: number,
+  season: Seasons,
+  filter: Format,
+  page: number,
+  limit: number,
+): Promise<JikanSeason> {
+  if (!year || !season) {
     return {
       success: false,
       status: 400,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
-      error: 'Missing required parameter : year!|| ,season || ,Filters',
+      error: 'Missing required parameter : year & season',
     };
   }
   try {
@@ -450,12 +610,16 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
 
     const res = data;
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
@@ -463,7 +627,7 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
       perPage: res.pagination.items.per_page,
     };
 
-    const Season = res.data.map((item: any) => ({
+    const Season: JIkanData[] = res.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -495,7 +659,7 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
               day: 'numeric',
             })
           : item.aired.to || 'Unknown',
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -509,26 +673,41 @@ export async function getSeason(year: number, season: Seasons, filter: Format, p
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: Season,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: Season as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
-export async function getTopUpcoming(page: number, perPage: number, filter: Status) {
+export type JikanTopAnime = SuccessJIkanRes | ErrorJIkanRes;
+export async function getTopUpcoming(page: number, perPage: number, filter: Status): Promise<JikanTopAnime> {
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`);
     if (!data)
@@ -536,11 +715,15 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
     const res = data;
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
@@ -548,7 +731,7 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
       perPage: res.pagination.items.per_page,
     };
 
-    const topAnime = res.data.map((item: any) => ({
+    const topAnime: JIkanData[] = res.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -581,7 +764,7 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
             })
           : item.aired.to || 'Unknown',
 
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -595,26 +778,40 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: topAnime,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: topAnime as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
-export async function getTopAnime(page: number, limit: number, filter: Status, type: Format) {
+export async function getTopAnime(page: number, limit: number, filter: Status, type: Format): Promise<JikanTopAnime> {
   const newType = type.toLowerCase();
 
   try {
@@ -626,11 +823,15 @@ export async function getTopAnime(page: number, limit: number, filter: Status, t
         success: false,
         status: 204,
         error: 'Server returned an empty response',
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
-        pagination: null,
       };
     const res = data;
-    const pagination = {
+    const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
       currentPage: page,
@@ -638,7 +839,7 @@ export async function getTopAnime(page: number, limit: number, filter: Status, t
       perPage: res.pagination.items.per_page,
     };
 
-    const topAnime = res.data.map((item: any) => ({
+    const topAnime: JIkanData[] = res.data.map((item: any) => ({
       malId: item.mal_id,
       title: {
         romaji: item.title,
@@ -670,8 +871,7 @@ export async function getTopAnime(page: number, limit: number, filter: Status, t
               day: 'numeric',
             })
           : item.aired.to || 'Unknown',
-
-      type: item.type,
+      format: item.type,
       status: item.status,
       genres: item.genres.map((item2: any) => item2.name),
       duration: item.duration,
@@ -685,32 +885,69 @@ export async function getTopAnime(page: number, limit: number, filter: Status, t
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: topAnime,
+      hasNextPage: pagination.hasNextPage,
+      total: pagination.total,
+      lastPage: pagination.lastPage,
+      currentPage: pagination.currentPage,
+      perPage: pagination.perPage,
+      data: topAnime as JIkanData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        total: 0,
+        lastPage: 0,
+        currentPage: 0,
+        perPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      perPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
-
-export async function getEpisodes(id: number, page: number) {
+type episodePagination = {
+  hasNextPage: boolean;
+  lastPage: number;
+};
+type EpisodeRes = {
+  number: number;
+  title: string;
+  filler: boolean;
+  recap?: boolean;
+  score?: number;
+};
+export interface SuccessJikanEpisodes extends SuccessResponse {
+  data: EpisodeRes[];
+  hasNextPage: boolean;
+  lastPage: number;
+}
+export interface ErrorJikanEpisodes extends ErrorResponse {
+  data: [];
+  hasNextPage: boolean;
+  lastPage: number;
+}
+export type JikanEpisodes = SuccessJikanEpisodes | ErrorJikanEpisodes;
+export async function getEpisodes(id: number, page: number): Promise<JikanEpisodes> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: [],
+      hasNextPage: false,
+      lastPage: 0,
       error: 'Missing required parameter : Malid!',
     };
   }
@@ -723,43 +960,56 @@ export async function getEpisodes(id: number, page: number) {
         status: 204,
         error: 'Server returned an empty response',
         data: [],
-        pagination: null,
+        hasNextPage: false,
+        lastPage: 0,
       };
-    const pagination = {
+    const pagination: episodePagination = {
       hasNextPage: response.data.pagination.has_next_page,
       lastPage: response.data.pagination.last_visible_page,
     };
 
-    const data = response.data.data.map((item: any) => ({
+    const data: EpisodeRes[] = response.data.data.map((item: any) => ({
       number: item.mal_id,
       title: item.title,
       filler: item.filler,
       recap: item.recap,
+      score: item.score,
     }));
     return {
       success: true,
       status: 200,
-      pagination: pagination,
-      data: data,
+      hasNextPage: pagination.hasNextPage,
+      lastPage: pagination.lastPage,
+      data: data as EpisodeRes[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        hasNextPage: false,
+        lastPage: 0,
         data: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
+      hasNextPage: false,
+      lastPage: 0,
       data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
 }
-
-export async function getEpisodeInfo(Id: number, episodeNumber: number) {
+export interface SuccessJikanEpisodesInfo extends SuccessResponse {
+  data: EpisodeRes;
+}
+export interface ErrorJikanEpisodesInfo extends ErrorResponse {
+  data: null;
+}
+export type JikanEpisodeInfo = SuccessJikanEpisodesInfo | ErrorJikanEpisodesInfo;
+export async function getEpisodeInfo(Id: number, episodeNumber: number): Promise<JikanEpisodeInfo> {
   if (!Id && !episodeNumber) {
     return {
       success: false,
@@ -777,7 +1027,6 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number) {
         status: 204,
         error: 'Server returned an empty response',
         data: null,
-        pagination: null,
       };
     const data = {
       number: response.data.data.mal_id,
@@ -808,12 +1057,37 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number) {
   }
 }
 
-export async function getProviderId(id: number) {
+type AnimeZRes = {
+  animeId: string;
+  name: string;
+  altName: string;
+  score: number;
+};
+type hianimeRes = {
+  animeId: string;
+  name: string;
+  romaji: string;
+  score: number;
+};
+export interface SuccessJikanProviderId extends SuccessJIkanInfo {
+  data: JIkanData;
+  animeZ: AnimeZRes;
+  hiAnime: hianimeRes;
+}
+export interface ErrorJikanProviderId extends ErrorJikanInfo {
+  data: null;
+  animeZ: null;
+  hiAnime: null;
+}
+export type JikanProviderId = SuccessJikanProviderId | ErrorJikanProviderId;
+export async function getProviderId(id: number): Promise<JikanProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
+      animeZ: null,
+      hiAnime: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -835,6 +1109,7 @@ export async function getProviderId(id: number) {
           result.data?.map((item: any) => ({
             animeId: item.id,
             name: item.title,
+            romaji: item.altName,
           })) || []
         );
       } catch (error) {
@@ -870,18 +1145,57 @@ export async function getProviderId(id: number) {
     return {
       success: true,
       status: 200,
-      data,
+      data: Jikan.data,
+      hiAnime: data.hiAnime as hianimeRes,
+      animeZ: data.animeZ as AnimeZRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
+      animeZ: null,
+      hiAnime: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
-export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvider, page?: number) {
+type pagination = {
+  hasNextPage: boolean;
+  currentPage: number;
+  totalPages: number;
+};
+type animeRes = {
+  episodeId: string;
+  number: number;
+  title?: string;
+  // category?: string;
+};
+
+type CrossMatchedEpisodes = {
+  episodeNumber: number;
+  rating: number;
+  aired: boolean;
+  episodeId: string;
+  title: string;
+  overview: string;
+  thumbnail: string;
+};
+
+export interface SuccessEpisodesres extends SuccessResponse {
+  data: JIkanData;
+  pagination?: pagination;
+  episodes: animeRes[] | CrossMatchedEpisodes[];
+}
+export interface ErrorEpisodesres extends ErrorResponse {
+  data: null;
+}
+export type JikanMatchedEpisodes = SuccessEpisodesres | ErrorEpisodesres;
+export async function getEpisodeswithInfo(
+  jikanId: number,
+  provider: AnimeProvider,
+  page: number,
+): Promise<JikanMatchedEpisodes> {
   if (!jikanId && !provider) {
     return {
       success: false,
@@ -892,8 +1206,8 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
   }
   try {
     const Jikan = await getProviderId(jikanId);
-    const zoro = Jikan.data?.hiAnime;
-    const animezId = Jikan.data?.animeZ;
+    const zoro = Jikan.hiAnime;
+    const animezId = Jikan.animeZ;
 
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
@@ -942,9 +1256,11 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
             const response = await fetchEpisodesAnimeZ(animezId.animeId as string, page as number);
             return {
               success: true,
-              info: Jikan.data?.animeInfo,
-              episodePagination: response?.pagination,
-              episodes: response?.result,
+
+              status: 200,
+              data: Jikan.data,
+              pagination: response?.pagination as pagination,
+              episodes: response?.result as animeRes[],
             };
           } else {
             const [animeZ, aniMapping] = await Promise.all([
@@ -971,9 +1287,10 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
             if (animeZ)
               return {
                 success: true,
-                info: Jikan.data?.animeInfo,
-                episodePagination: animeZ.pagination,
-                episodes: matchingResults,
+                status: 200,
+                data: Jikan.data,
+                pagination: animeZ.pagination as pagination,
+                episodes: matchingResults as CrossMatchedEpisodes[],
               };
           }
         case AnimeProvider.HiAnime:
@@ -981,8 +1298,9 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
             const response = await fetchEpisodesHianime(zoro.animeId as string);
             return {
               success: true,
-              info: Jikan.data?.animeInfo,
-              episodes: response,
+              status: 200,
+              data: Jikan.data,
+              episodes: response as animeRes[],
             };
           } else {
             const [hianime, aniMapping2] = await Promise.all([
@@ -1008,8 +1326,9 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
 
             return {
               success: true,
-              info: Jikan.data?.animeInfo,
-              episodes: matchingResults2,
+              status: 200,
+              data: Jikan.data,
+              episodes: matchingResults2 as CrossMatchedEpisodes[],
             };
           }
       }
@@ -1029,4 +1348,10 @@ export async function getEpisodeswithInfo(jikanId: number, provider: AnimeProvid
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
+  return {
+    success: false,
+    data: null,
+    status: 500,
+    error: 'yea its messed up',
+  };
 }

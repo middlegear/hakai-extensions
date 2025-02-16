@@ -14,6 +14,16 @@ import {
   fetchUpcoming,
   type AnilistSearch,
   type AnilistInfo,
+  type AnilistUpcoming,
+  type AnilistTopAiring,
+  type AnilistMostPopular,
+  type AnilistTopRated,
+  type AnilistSeason,
+  type AnilistTrends,
+  type AnilistRelatedData,
+  type AnilistCharacters,
+  type AnilistEpisodes,
+  type AnilistProviderId,
 } from './anilist.js';
 
 class Anilist {
@@ -40,9 +50,9 @@ class Anilist {
   /**
    * Fetches anime information by provider ID.
    * @param {number} id - The Anilist anime ID (Required).
-   * @returns {Promise<Object>} - An object containing provider IDs and anime info.
+   * @returns { Promise<AnilistProviderId>} - An object containing provider IDs and anime info.
    */
-  async fetchMapping(id: number) {
+  async fetchMapping(id: number): Promise<AnilistProviderId> {
     return fetchProviderId(id);
   }
 
@@ -50,9 +60,9 @@ class Anilist {
    * Fetches top airing anime.
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
-   * @returns {Promise<Array>} - An array of top-airing anime.
+   * @returns { Promise<AnilistTopAiring> } - An array of top-airing anime.
    */
-  async fetchAiring(page: number = 1, perPage: number = 20) {
+  async fetchAiring(page: number = 1, perPage: number = 20): Promise<AnilistTopAiring> {
     return fetchTopAiring(page, perPage);
   }
 
@@ -61,9 +71,9 @@ class Anilist {
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
-   * @returns {Promise<Array>} - An array of popular anime.
+   * @returns { Promise<AnilistMostPopular>} - An array of popular anime.
    */
-  async fetchMostPopular(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
+  async fetchMostPopular(page: number = 1, perPage: number = 20, format: Format = Format.TV): Promise<AnilistMostPopular> {
     return fetchPopular(page, perPage, format);
   }
 
@@ -72,9 +82,9 @@ class Anilist {
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV)..
-   * @returns {Promise<Array>} - An array of top-rated anime.
+   * @returns { Promise<AnilistTopRated>} - An array of top-rated anime.
    */
-  async fetchTopRatedAnime(page: number = 1, perPage: number = 20, format: Format = Format.TV) {
+  async fetchTopRatedAnime(page: number = 1, perPage: number = 20, format: Format = Format.TV): Promise<AnilistTopRated> {
     return fetchTopRated(page, perPage, format);
   }
 
@@ -86,7 +96,7 @@ class Anilist {
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
    * @param {Format} [format=Format.TV] - Anime format (Optional, defaults to TV).
    * @param {Sort} [sort=Sort.POPULARITY_DESC] - Sorting order (Optional, defaults to Popularity Descending).
-   * @returns {Promise<Array>} - An array of seasonal anime.
+   * @returns { Promise<AnilistSeason>} - An array of seasonal anime.
    */
   async fetchSeasonalAnime(
     season: Seasons,
@@ -94,45 +104,45 @@ class Anilist {
     page: number = 1,
     perPage: number = 20,
     format: Format = Format.TV,
-  ) {
+  ): Promise<AnilistSeason> {
     return fetchSeason(season, seasonYear, page, perPage, format);
   }
   /**
    * Fetch trending anime
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
-   * @returns {Promise<Array>} - An array of trendingAnime
+   * @returns {Promise<AnilistTrends>} - An array of trendingAnime
    */
-  async fetchTrending(page: number = 1, perPage: number = 20) {
+  async fetchTrending(page: number = 1, perPage: number = 20): Promise<AnilistTrends> {
     return getTrends(page, perPage);
   }
   /**
    * Fetch upcoming anime
    * @param {number} [page=1] - Page number for pagination (Optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (Optional, defaults to 20).
-   * @returns {Promise<Array>} - An array of  upcoming anime resource
+   * @returns { Promise<AnilistUpcoming>} - An array of  upcoming anime resource
    */
-  async fetchTopUpcoming(page: number, perPage: number) {
+  async fetchTopUpcoming(page: number = 1, perPage: number = 20): Promise<AnilistUpcoming> {
     return fetchUpcoming(page, perPage);
   }
   /**
    * Fetches related information about an anime.
    * @param {number} id - The Anilist anime ID (Required).
-   * @returns {Promise<Array>} - An array containing related anime information.
+   * @returns { Promise<AnilistRelatedData>} - An array containing related anime information.
    */
-  async fetchRelatedAnime(id: number) {
+  async fetchRelatedAnime(id: number): Promise<AnilistRelatedData> {
     return getRelated(id);
   }
   /**
    * Fetches characters from an anime.
    * @param {number} Id - The Anilist anime ID (Required).
-   * @returns {Promise<Array>} - An array of anime characters.
+   * @returns {Promise<AnilistCharacters>} - An array of anime characters.
    */
   async fetchCharacters(
     Id: number,
     sort: Charactersort = Charactersort.RELEVANCE,
     voiceActorsSort2: Charactersort = Charactersort.RELEVANCE,
-  ) {
+  ): Promise<AnilistCharacters> {
     return fetchAnimeCharacters(Id, sort, voiceActorsSort2);
   }
   /**
@@ -140,10 +150,10 @@ class Anilist {
     
    * @param {number} id - The AnilistId (Required).
    * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
-   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1, dont be surpised by the order
-   * @returns {Promise<Object>} -An object of animeInfo with episodes
+   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1
+   * @returns {Promise<AnilistEpisodes>} -An object of animeInfo with episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1) {
+  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1): Promise<AnilistEpisodes> {
     return getEpisodeswithInfo(id, provider, page);
   }
 }

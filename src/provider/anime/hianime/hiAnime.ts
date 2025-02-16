@@ -1,6 +1,5 @@
 import * as cheerio from 'cheerio';
 import { Servers, Dubbing, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
-
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -99,7 +98,6 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
     };
   }
 }
-///
 
 export interface AnimeInfoSuccess extends SuccessResponse {
   data: AnimeInfo;
@@ -164,7 +162,6 @@ export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
     };
   }
 }
-////
 
 export interface EpisodeSuccessInfoResponse extends SuccessResponse {
   data: EpisodeInfo[];

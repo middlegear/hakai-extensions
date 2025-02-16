@@ -1,7 +1,5 @@
 import * as cheerio from 'cheerio';
-
 import type { animeInfo } from './types.js';
-
 import { Dubbing } from '../hianime/types.js';
 import { animeZBaseUrl } from '../../index.js';
 

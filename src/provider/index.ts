@@ -1,4 +1,3 @@
-// file to handle imports and exports
 import { animeZClient, anitakuClient, zoroClient } from '../config/clients.js';
 import {
   USER_AGENT_HEADER,
@@ -7,14 +6,13 @@ import {
   animeZ_USER_AGENT_HEADER,
   anitaku_USER_AGENT_HEADER,
 } from '../config/headers.js';
-//
+
 import { GogoServer } from '../source-extractors/anitaku/gogoserver.js';
 import { MP4Upload } from '../source-extractors/anitaku/mp4upload.js';
 import { StreamWish } from '../source-extractors/anitaku/streamwish.js';
 import { VidHide } from '../source-extractors/anitaku/vidhide.js';
 import MegaCloud from '../source-extractors/hianime/megacloud/index.js';
 
-///
 import {
   animeZBaseUrl,
   anitakuAjaxLoadEpisodes,

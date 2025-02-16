@@ -45,7 +45,6 @@ export type AnilistData = {
     native: string;
   };
   trailer: string;
-  type: string;
   format: string;
   status: string;
   duration: number;
@@ -153,7 +152,6 @@ export async function searchAnime(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
       format: item.format,
       status: item.status,
       duration: item.duration,
@@ -192,7 +190,7 @@ export async function searchAnime(
       total: pagination.total,
       lastPage: pagination.lastPage,
       perPage: pagination.perPage,
-      data: res,
+      data: res as AnilistData[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -221,7 +219,6 @@ export async function searchAnime(
   }
 }
 
-///
 export interface SuccessAnilistInfoRes extends SuccessResponse {
   data: AnilistData;
 }
@@ -285,7 +282,6 @@ export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
         native: response.data.data.Media.title.native,
       },
       trailer: response.data.data.Media.trailer,
-      type: response.data.data.Media.type,
       format: response.data.data.Media.format,
       status: response.data.data.Media.status,
       duration: response.data.data.Media.duration,
@@ -403,7 +399,7 @@ export async function fetchUpcoming(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
+      format: item.format,
       status: item.status,
       genres: item.genres,
       synopsis: item.description,
@@ -452,13 +448,10 @@ export async function fetchUpcoming(
       lastPage: 0,
       perPage: 0,
       data: [],
-
       error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
-
-//
 
 export type AnilistTopAiring = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchTopAiring(
@@ -511,7 +504,6 @@ export async function fetchTopAiring(
       malId: item.idMal,
       anilistId: item.id,
       image: item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
-
       bannerImage: item.bannerImage ?? item.coverImage.extraLarge ?? item.coverImage.large ?? item.coverImage.medium,
       title: {
         romaji: item.title.romaji ?? item.title.userPreferred,
@@ -519,7 +511,6 @@ export async function fetchTopAiring(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
       format: item.format,
       status: item.status,
       duration: item.duration,
@@ -645,7 +636,6 @@ export async function fetchPopular(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
       format: item.format,
       status: item.status,
       duration: item.duration,
@@ -770,7 +760,6 @@ export async function fetchTopRated(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
       format: item.format,
       status: item.status,
       duration: item.duration,
@@ -919,7 +908,6 @@ export async function fetchSeason(
         native: item.title.native,
       },
       trailer: item.trailer,
-      type: item.type,
       format: item.format,
       status: item.status,
       duration: item.duration,
@@ -986,7 +974,6 @@ export async function fetchSeason(
   }
 }
 
-//
 export type AnilistTrends = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function getTrends(page: number, perPage: number): Promise<AnilistTrends> {
   const variables = {
