@@ -72,7 +72,7 @@ test('fetch upcoming anime', async () => {
 });
 
 test('fetch episodes', async () => {
-  const data = await anilist.fetchAnimeEpisodes(159322, AnimeProvider.AnimeZ);
+  const data = await anilist.fetchAnimeEpisodes(159322, AnimeProvider.HiAnime);
   expect(data?.success).not.toEqual(false);
   expect(data?.data).not.toEqual(null);
 });
