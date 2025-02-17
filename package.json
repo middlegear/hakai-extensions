@@ -1,26 +1,28 @@
 {
-  "name": "Hakai",
+  "name": "@BravinJoshua/hakai",
   "version": "0.0.1",
-  "description": "",
+  "description": "scraper package serving anime media infomation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "test": "vitest --ui",
-    "test-anilist": "vitest --ui anilist",
-    "test-jikan": "vitest --ui  jikan",
-    "test-animez": "vitest --ui animez",
-    "test-hianime": "vitest --ui hianime",
+    "test": "vitest run --config vitest.config.ts",
     "lint": "tsc",
     "start": "node dist/index.js",
-    "dev": "pnpm lint && pnpm build && pnpm start",
+    "ci": "pnpm lint && pnpm build",
     "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@types/node": "^22.13.4",
     "@vitest/ui": "^3.0.5",
