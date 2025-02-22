@@ -1,5 +1,5 @@
 {
-  "name": "@bravinjoshua/hakai",
+  "name": "hakai",
   "version": "1.0.0",
   "description": "scraper package serving anime media infomation",
   "main": "dist/index.js",
@@ -10,7 +10,7 @@
     "build": "tsup",
     "test": "vitest run --config vitest.config.ts ",
     "lint": "tsc",
-    "ci": "tsc && npm test && tsup",
+    "ci": "tsc && npm test && npm run build",
     "format": "prettier --write ."
   },
   "files": [
