@@ -23,8 +23,12 @@
   ],
   "author": "bravinjoshua",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bravinjoshua/hakai.git"
+  },
   "publishConfig": {
-    "@bravinjoshua:registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",

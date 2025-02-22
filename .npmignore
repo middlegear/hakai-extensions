@@ -1,0 +1,12 @@
+.github
+
+node_modules
+src
+tests
+
+README.md
+animez.md
+
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
