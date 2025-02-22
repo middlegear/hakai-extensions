@@ -1,5 +1,5 @@
 {
-  "name": "@BravinJoshua/hakai",
+  "name": "@bravinjoshua/hakai",
   "version": "0.0.1",
   "description": "scraper package serving anime media infomation",
   "main": "dist/index.js",
@@ -10,18 +10,21 @@
     "build": "tsup",
     "test": "vitest run --config vitest.config.ts",
     "lint": "tsc",
-    "start": "node dist/index.js",
-    "ci": "pnpm lint && pnpm build",
+    "ci": "tsc && pnpm test && tsup",
     "format": "prettier --write ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "LICENSE"
   ],
+  "keywords": [
+    "scraper"
+  ],
+  "author": "bravinjoshua",
+  "license": "MIT",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "@bravinjoshua:registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
