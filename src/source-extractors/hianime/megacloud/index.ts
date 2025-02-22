@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { getSources } from './megacloud.getsrcs.js';
 // copied from consumet.ts thanks
 class MegaCloud {

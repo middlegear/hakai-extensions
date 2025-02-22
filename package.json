@@ -10,13 +10,11 @@
     "build": "tsup",
     "test": "vitest run --config vitest.config.ts ",
     "lint": "tsc",
-    "ci": "tsc && npm test && npm run build",
+    "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write ."
   },
   "files": [
-    "dist",
-    "package.json",
-    "LICENSE"
+    "dist"
   ],
   "keywords": [
     "scraper"

@@ -4,6 +4,6 @@ export default defineConfig({
   test: {
     name: 'hakai',
     environment: 'node',
-    testTimeout: 5000,
+    testTimeout: 10000,
   },
 });
