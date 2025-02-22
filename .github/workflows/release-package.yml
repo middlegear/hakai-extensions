@@ -12,8 +12,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - run: npm ci
+      - run: npm run build  # ✅ This generates the dist folder
       - run: npm test
+
+      # Save the build artifact (optional)
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
 
   publish-gpr:
     needs: build
@@ -21,13 +36,32 @@ jobs:
     permissions:
       packages: write
       contents: read
+    if: github.ref == 'refs/heads/main' # Ensure only main branch releases
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - run: npm ci
+
+      # Restore the built dist folder from artifacts (optional)
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+
+      # Double-check dist exists before publishing
+      - run: ls -l dist  # ✅ Debugging step
+
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
