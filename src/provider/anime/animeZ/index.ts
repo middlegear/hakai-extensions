@@ -9,7 +9,9 @@ import {
   matchSearchResponse,
 } from './animeZ.js';
 import { category, servers } from './types.js';
-
+/**
+ * @deprecated broke too soonn will fix later
+ */
 class AnimeZ {
   /**
    * Searches for anime based on the provided query.

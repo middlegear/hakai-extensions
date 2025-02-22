@@ -1,6 +1,6 @@
 {
-  "name": "hakai",
-  "version": "1.0.0",
+  "name": "hakai-extensions",
+  "version": "0.0.1",
   "description": "scraper package serving anime media infomation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
