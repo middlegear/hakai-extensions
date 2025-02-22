@@ -10,7 +10,6 @@
     "build": "tsup",
     "test": "vitest run --config vitest.config.ts",
     "lint": "tsc",
-    "ci": "tsc && pnpm test && tsup",
     "format": "prettier --write ."
   },
   "files": [
