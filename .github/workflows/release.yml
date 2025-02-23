@@ -1,0 +1,70 @@
+name: Create Release
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+ 
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from package.json
+        id: version
+        run: |
+          NEW_VERSION=$(jq -r .version package.json)
+          echo "Current version in package.json: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract latest version from CHANGELOG.md
+        id: changelog_version
+        run: |
+          CHANGELOG_VERSION=$(awk -F '[][]' '/^## \[/{print $2; exit}' CHANGELOG.md)
+          echo "Latest version in CHANGELOG.md: $CHANGELOG_VERSION"
+          echo "changelog_version=$CHANGELOG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Bump package.json version to match CHANGELOG.md
+        id: bump_version
+        run: |
+          if [ "${{ steps.version.outputs.new_version }}" != "${{ steps.changelog_version.outputs.changelog_version }}" ]; then
+            echo "Version mismatch detected!"
+            echo "Bumping package.json version to ${{ steps.changelog_version.outputs.changelog_version }}"
+            jq --arg new_version "${{ steps.changelog_version.outputs.changelog_version }}" '.version = $new_version' package.json > temp.json && mv temp.json package.json
+            echo "Updated package.json version to ${{ steps.changelog_version.outputs.changelog_version }}"
+            echo "new_version=${{ steps.changelog_version.outputs.changelog_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "Versions match! No need to bump."
+          fi
+
+      - name: Commit updated package.json (if version was bumped)
+        if: steps.bump_version.outputs.new_version != ''
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add package.json
+          git commit -m "Bump version to ${{ steps.bump_version.outputs.new_version }} [skip ci]"
+          git push
+
+      - name: Extract release notes from CHANGELOG.md
+        id: changelog
+        run: |
+          NEW_VERSION=${{ steps.bump_version.outputs.new_version || steps.version.outputs.new_version }}
+          RELEASE_NOTES=$(awk -v version="[$NEW_VERSION]" '/^## / {if ($2 == version) {flag=1; next} else {flag=0}} flag' CHANGELOG.md)
+          echo "Release notes: $RELEASE_NOTES"
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.bump_version.outputs.new_version || steps.version.outputs.new_version }}  # Release tag (e.g., v1.0.0)
+          release_name: Release v${{ steps.bump_version.outputs.new_version || steps.version.outputs.new_version }}  # Release title
+          body: ${{ steps.changelog.outputs.release_notes }}  # Release description from CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
