@@ -10,16 +10,17 @@ type Source = {
   type: string | null;
 };
 export type ASource = {
-  intro: {
+  intro?: {
     start: number | null;
     end: number | null;
   };
-  outro: {
+  outro?: {
     start: number | null;
     end: number | null;
   };
   subtitles: Subtitles[];
   sources: Source[];
+  download?: string;
 };
 
 export enum MediaType {

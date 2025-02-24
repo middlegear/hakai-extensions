@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Servers, Dubbing, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
+import { Servers, SubOrDub, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -292,7 +292,7 @@ export interface ErrorSourceRes extends ErrorResponse {
   data: null;
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
-export async function fetchEpisodeSources(episodeid: string, server: Servers, category: Dubbing): Promise<SourceResponse> {
+export async function fetchEpisodeSources(episodeid: string, server: Servers, category: SubOrDub): Promise<SourceResponse> {
   if (!episodeid) {
     return {
       success: false,

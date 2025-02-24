@@ -1,14 +1,14 @@
 // solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
 // copied from consumet.ts thanks
-// @ts-nocheck
+
 import { decoded_png } from './megacloud.decodedpng.js';
 import util from 'util';
 import CryptoJS from 'crypto-js';
 import { webcrypto } from 'crypto';
-import { USER_AGENT_HEADER } from '../../../config/headers.js';
+import { USER_AGENT_HEADER } from '../../provider/index.js';
 
 const user_agent = USER_AGENT_HEADER;
-
+//@ts-ignore
 const crypto = webcrypto as unknown as Crypto;
 let wasm: any;
 let arr = new Array(128).fill(void 0);
@@ -167,6 +167,7 @@ function isNull(test: any) {
 
 function getDataView() {
   return (dataView =
+    //@ts-ignore
     dataView === null || isDetached(dataView.buffer) || dataView.buffer !== wasm.memory.buffer
       ? new DataView(wasm.memory.buffer)
       : dataView);
@@ -245,13 +246,15 @@ function Qj(QP: ArrayLike<number>, Qn: any) {
 function isResponse(obj: Object) {
   return Object.prototype.toString.call(obj) === '[object Response]';
 }
-
+//@ts-ignore
 async function QN(QP: Response, Qn: WebAssembly.Imports) {
   let QT: ArrayBuffer, Qt: any;
 
   return 'function' == typeof Response && isResponse(QP)
-    ? ((QT = await QP.arrayBuffer()), (Qt = await WebAssembly.instantiate(QT, Qn)), Object.assign(Qt, { bytes: QT }))
-    : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
+    ? //@ts-ignore
+      ((QT = await QP.arrayBuffer()), (Qt = await WebAssembly.instantiate(QT, Qn)), Object.assign(Qt, { bytes: QT }))
+    : //@ts-ignore
+      (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
       ? {
           instance: Qt,
           module: QP,
@@ -620,7 +623,9 @@ function QZ(QP: any) {
   return void 0 !== wasm
     ? wasm
     : ((Qn = initWasm()),
+      //@ts-ignore
       QP instanceof WebAssembly.Module || (QP = new WebAssembly.Module(QP)),
+      //@ts-ignore
       assignWasm(new WebAssembly.Instance(QP, Qn)));
 }
 
@@ -769,6 +774,7 @@ export async function getSources(embed_url: string, site: string) {
     let Q5 = fake_window.navigate();
     Q5 = new Uint8Array(Q5);
     let Q8: any;
+    //@ts-ignore
     Q8 = resp_json.t != 0 ? (i(Q5, Q1), Q5) : ((Q8 = resp_json.k), i(Q8, Q1), Q8);
 
     // @ts-ignore

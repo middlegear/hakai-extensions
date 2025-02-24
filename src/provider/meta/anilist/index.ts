@@ -2,7 +2,7 @@ import { Charactersort, Format, Seasons } from '../../../types/types.js';
 import {
   searchAnime,
   fetchAnimeById,
-  fetchProviderId,
+  getHianimeProviderId,
   fetchTopAiring,
   fetchPopular,
   fetchTopRated,
@@ -48,12 +48,12 @@ class Anilist {
   }
 
   /**
-   * Fetches anime information by provider ID.
+   * Fetches anime information returning a provider animeId.
    * @param {number} id - The Anilist anime ID (Required).
-   * @returns { Promise<AnilistProviderId>} - An object containing provider IDs and anime info.
+   * @returns { Promise<AnilistProviderId>} - An object containing provider animeId and anime info.
    */
-  async fetchMapping(id: number): Promise<AnilistProviderId> {
-    return fetchProviderId(id);
+  async fetchHianimeMapping(id: number): Promise<AnilistProviderId> {
+    return getHianimeProviderId(id);
   }
 
   /**

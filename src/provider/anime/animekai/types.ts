@@ -17,3 +17,25 @@ export type searchRes = {
   dub: number;
   episodes: number;
 };
+export type Info = {
+  animeId: null | string;
+  title: null | string;
+  posterImage: null | string;
+  romaji: null | string;
+
+  type: null | string;
+  synopsis: null | string;
+  episodes: {
+    sub: null | number;
+    dub: null | number;
+  };
+  totalEpisodes: null | number;
+};
+
+export enum Servers {
+  MegaUp = 'megaup',
+}
+export enum SubOrDub {
+  SUB = 'sub',
+  DUB = 'dub',
+}

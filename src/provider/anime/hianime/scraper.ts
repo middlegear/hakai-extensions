@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import type { Anime, AnimeInfo, Dubbing, EpisodeInfo, ServerInfo } from './types.js';
+import type { Anime, AnimeInfo, EpisodeInfo, ServerInfo, SubOrDub } from './types.js';
 
 export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.SelectorType) {
   const anime: Anime[] = [];
@@ -147,7 +147,7 @@ export function extractServerData($: cheerio.CheerioAPI) {
   return { servers };
 }
 
-export function extractAnimeServerId($: cheerio.CheerioAPI, servernumber: Number, category: Dubbing) {
+export function extractAnimeServerId($: cheerio.CheerioAPI, servernumber: Number, category: SubOrDub) {
   return (
     $(`.ps_-block.ps_-block-sub.servers-${category} .ps__-list .server-item`)
       ?.map((_, element) => ($(element).attr('data-server-id') == `${servernumber}` ? $(element) : null))

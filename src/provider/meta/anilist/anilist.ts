@@ -1309,7 +1309,7 @@ export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
   hiAnime: null;
 }
 export type AnilistProviderId = SuccessAnilistProviderId | ErrorAnilistProviderId;
-export async function fetchProviderId(id: number): Promise<AnilistProviderId> {
+export async function getHianimeProviderId(id: number): Promise<AnilistProviderId> {
   if (!id) {
     return {
       success: false,
@@ -1405,7 +1405,7 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     };
   }
   try {
-    const anilistData = await fetchProviderId(anilistId);
+    const anilistData = await getHianimeProviderId(anilistId);
     const zoro = anilistData.hiAnime;
 
     const fetchEpisodesHianime = async (animeId: string) => {

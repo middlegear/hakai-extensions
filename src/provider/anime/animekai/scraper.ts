@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { Info } from './types';
 
 export function extractsearchresults($: cheerio.CheerioAPI) {
   const searchresults: {
@@ -26,18 +27,55 @@ export function extractsearchresults($: cheerio.CheerioAPI) {
     });
   });
 
-  let currentPage, hasNextPage, totalPages;
+  const res = {
+    currentPage: 0,
+    hasNextPage: false,
+    totalPages: 0,
+  };
 
   const pagination = $('ul.pagination');
-  currentPage = Number(pagination.find('.page-item.active span.page-link').text().trim()) || 1;
-  totalPages = pagination.find('.page-item:last-child a.page-link').attr('href')?.split('page=')[1];
-  if (totalPages || totalPages === '') {
-    totalPages = currentPage;
+  res.currentPage = Number(pagination.find('.page-item.active span.page-link').text().trim()) || 1;
+  const nextPage = pagination.find('.page-item.active').next().find('a.page-link').attr('href')?.split('page=')[1];
+  if (nextPage != undefined && nextPage != '') {
+    res.hasNextPage = true;
+  }
+  const totalPages = pagination.find('.page-item:last-child a.page-link').attr('href')?.split('page=')[1];
+  if (totalPages === undefined || totalPages === '') {
+    res.totalPages = res.currentPage;
   } else {
-    totalPages = Number(totalPages) || 0;
+    res.totalPages = Number(totalPages) || 0;
   }
-  if (totalPages > 1) {
-    hasNextPage = true || false;
+  if (searchresults.length === 0) {
+    res.currentPage = 0;
+    res.hasNextPage = false;
+    res.totalPages = 0;
   }
-  return { hasNextPage, currentPage, totalPages, searchresults };
+
+  return { res, searchresults };
+}
+export function extractAnimeInfo($: cheerio.CheerioAPI) {
+  const animeInfo: Info = {
+    animeId: null,
+    title: null,
+    romaji: null,
+    posterImage: null,
+
+    type: null,
+    synopsis: null,
+    episodes: {
+      sub: null,
+      dub: null,
+    },
+    totalEpisodes: null,
+  };
+  animeInfo.animeId = $('div.sharethis-inline-share-buttons').attr('data-url')?.split('/').at(-1) || null;
+  animeInfo.title = $('.entity-scroll > .title').text() || null;
+  animeInfo.romaji = $('.entity-scroll > .title').attr('data-jp')?.trim() || null;
+  animeInfo.posterImage = $('div.poster > div >img').attr('src') || null;
+  animeInfo.synopsis = $('.entity-scroll > .desc').text().trim() || null;
+  animeInfo.type = $('.entity-scroll > .info').children().last().text().toUpperCase() || null;
+  animeInfo.episodes.sub = Number($('.entity-scroll > .info').find('.info span.sub')?.text() || null);
+  animeInfo.episodes.dub = Number($('.entity-scroll > .info').find('.info span.dub')?.text() || null);
+  animeInfo.totalEpisodes = Number($('.entity-scroll > .info').find('.info span.sub')?.text() || null);
+  return { animeInfo };
 }

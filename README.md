@@ -1,63 +1,155 @@
 
-## Overview
 
-The **hakai-extensions** is a TypeScript package designed to fetch detailed anime-related data from the Anilist/Jikan API. It provides a comprehensive set of methods to search for anime, retrieve detailed information, fetch characters, episodes, and more.
+#  Hakai Extensions  
 
-## Some Methods
 
-- **Search Anime**: Search for anime by title with pagination support.
-- **Fetch Anime Details**: Retrieve detailed information about an anime by its Anilist ID.
-- **Top Airing Anime**: Fetch a list of top airing anime.
-- **Popular Anime**: Get the most popular anime based on format (TV, Movie, etc.).
-- **Top Rated Anime**: Fetch top-rated anime with customizable filters.
-- **Seasonal Anime**: Retrieve anime for a specific season and year.
-- **Trending Anime**: Get trending anime with pagination support.
-- **Upcoming Anime**: Fetch a list of upcoming anime.
-- **Related Anime**: Retrieve related anime for a specific title.
-- **Anime Characters**: Fetch characters from an anime with sorting options.
-- **Anime Episodes**: Retrieve anime episodes with provider-specific details.
+##  Overview  
 
-## Installation
+**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers.  
 
-To use this package, ensure you have Node.js and npm installed. Then, install the package via npm:
+> **Disclaimer:**  
+> This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
+
+---  
+
+## ✨ Features  
+
+✔ **Search Anime** – Look up anime by title with pagination.  
+✔ **Fetch Anime Details** – Retrieve metadata such as synopsis, genres, and release dates.  
+✔ **Anime Characters** – Fetch anime character lists with sorting options.  
+✔ **Anime Episodes** – Retrieve episode lists with provider-specific details.  
+
+---  
+
+## 📦 Installation  
+
+Ensure **Node.js** is installed, then install via npm or Yarn:  
 
 ```bash
-npm i hakai-extensions
+npm install hakai-extensions
 ```
 
-## Usage example
+```bash
+yarn add hakai-extensions
+```
 
-### Importing the Package
+---  
+
+##  Usage  
+
+Import and fetch anime data from different sources:  
 
 ```typescript
-import { Anilist } from 'hakai-extensions';
+import { Meta, Anime } from 'hakai-extensions';
+
+// Fetch anime details from Anilist
+const anilist = new Meta.Anilist();
+const animeData = await anilist.getAnime('Naruto');
+
+// Fetch episodes from a provider
+const hiAnime = new Anime.HiAnime();
+const episodes = await hiAnime.getEpisodes('One Piece');
+
+console.log(animeData, episodes);
 ```
 
-### Initializing the Anilist Class
+---  
+
+## 🏛 Modules and Classes  
+
+###  `Meta` Class  
+
+The `Meta` class provides **metadata retrieval** from various sources.  
+
+#### **Structure**  
+
+- **`Meta.Anilist`** – Fetches anime/manga metadata from **Anilist API**.  
+- **`Meta.Jikan`** – Retrieves metadata from **Jikan (MyAnimeList API)**.  
+
+#### **Example**  
 
 ```typescript
-const anilist = new Anilist();
+import { Meta } from 'hakai-extensions';
+
+const anilist = new Meta.Anilist();
+const animeInfo = await anilist.getAnime('akame ga kill');
+
+const jikan = new Meta.Jikan();
+const animeList = await jikan.searchAnime('One Piece');
 ```
 
-### Example Methods
+---
 
-#### Search for Anime
+### 🎞️ `Anime` Class  
+
+The `Anime` class provides access to anime providers.  
+
+#### **Structure**  
+
+- **`Anime.HiAnime`** – Fetches anime from **HiAnime**.  
+- **`Anime.AnimeKai`** – Retrieves anime from **AnimeKai**.  
+
+#### **Example**  
 
 ```typescript
-const searchResults = await anilist.search("Naruto", 1, 10);
-console.log(searchResults);
+import { Anime } from 'hakai-extensions';
+
+const hiAnime = new Anime.HiAnime();
+const episodes = await hiAnime.getEpisodes('Dragon Ball Z');
+console.log(episodes)
 ```
 
-#### Fetch Anime Details
+---  
 
-```typescript
-const animeInfo = await anilist.fetchInfo(1); // Replace 1 with the desired Anilist ID
-console.log(animeInfo);
+## 🔄 API Response Example  
+
+searching anime details returns:  
+
+```json
+{
+  "success": true,
+  "status": 200,
+  "hasNextPage": false,
+  "currentPage": 1,
+  "total": 2,
+  "lastPage": 1,
+  "perPage": 20,
+  "data": [
+    {
+      "malId": 22199,
+      "anilistId": 20613,
+      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20613-4VGGPacciJBL.jpg",
+      "color": "#e45d43",
+      "bannerImage": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20613-CoEQF4qKiWDX.jpg",
+      "title": {
+        "english": "Akame ga Kill!",
+        "romaji": "Akame ga Kill!",
+        "native": "アカメが斬る！"
+      },
+      "trailer": {
+        "id": "QFAIwYg4Fo4",
+        "site": "YouTube",
+        "thumbnail": "https://img.youtube.com/vi/QFAIwYg4Fo4/maxresdefault.jpg"
+      },
+      "format": "TV",
+      "status": "FINISHED",
+      "duration": 24,
+      "score": 72,
+      "genres": ["Action", "Fantasy", "Drama"],
+      "episodes": 24,
+      "synopsis": "In a land where corruption rules...",
+      "season": "SUMMER",
+      "startDate": "July 7, 2014",
+      "endDate": "December 15, 2014",
+      "studio": "White Fox",
+      "producers": ["Square Enix", "TOHO animation"]
+    }
+  ]
+}
 ```
 
-#### Fetch Top Airing Anime
+---
 
-```typescript
-const topAiring = await anilist.fetchAiring(1, 10);
-console.log(topAiring);
-```
+## ⚖ License  
+
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.

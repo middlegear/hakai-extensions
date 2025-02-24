@@ -10,7 +10,7 @@ import {
   type ServerInfoResponse,
   type SourceResponse,
 } from './hiAnime.js';
-import { Dubbing, Servers } from './types.js';
+import { SubOrDub, Servers } from './types.js';
 
 class HiAnime {
   /**
@@ -23,9 +23,9 @@ class HiAnime {
     return searchAnime(query, page);
   }
   /**
-   * Fetches detailed information about a specific anime, including episode data.
+   * Fetches detailed information about a specific anime
    * @param {string} animeId - The unique identifier for the anime.
-   * @returns {Promise<ZoroAnimeInfo>} - An object containing anime details and episode information.
+   * @returns {Promise<ZoroAnimeInfo>} - An object containing anime details
    */
   async fetchInfo(animeId: string): Promise<ZoroAnimeInfo> {
     return fetchAnimeInfo(animeId);
@@ -50,13 +50,13 @@ class HiAnime {
    * Fetches streaming sources for a given anime episode.
    * @param {string} episodeId - The unique identifier for the episode. Required.
    * @param {servers} [server=servers.HD1] - The server to use (optional, defaults to SU57).
-   * @param {category} [category=Dubbing.SUB] - The language category (optional, defaults to subbed).
+   * @param {category} [category = SubOrDub.SUB,] - The language category (optional, defaults to subbed).
    * @returns {Promise<SourceResponse>} - An object containing streaming sources.
    */
   async fetchSources(
     episodeId: string,
     server: Servers = Servers.HD1,
-    category: Dubbing = Dubbing.Sub,
+    category: SubOrDub = SubOrDub.SUB,
   ): Promise<SourceResponse> {
     return fetchEpisodeSources(episodeId, server, category);
   }
