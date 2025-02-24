@@ -1,4 +1,4 @@
-import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
+import { Format, Seasons, Status } from '../../../types/types.js';
 import {
   getAnimeCharacters,
   getCurrentSeason,

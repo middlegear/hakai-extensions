@@ -13,7 +13,7 @@ import {
   topQuery,
 } from './queries.js';
 import { USER_AGENT_HEADER } from '../../index.js';
-import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
+import { Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
 const baseURL = `https://graphql.anilist.co`;

@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import { Jikan } from '../src/provider/meta/jikan/index.js';
 
-import { AnimeProvider, Seasons } from '../src/types/types.js';
+import { Seasons } from '../src/types/types.js';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

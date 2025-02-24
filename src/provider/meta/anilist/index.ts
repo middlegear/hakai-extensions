@@ -1,4 +1,4 @@
-import { AnimeProvider, Charactersort, Format, Seasons } from '../../../types/types.js';
+import { Charactersort, Format, Seasons } from '../../../types/types.js';
 import {
   searchAnime,
   fetchAnimeById,
