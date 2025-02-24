@@ -149,12 +149,11 @@ class Anilist {
    * Fetches animeInfo with Provider episodes using AnilistId
     
    * @param {number} id - The AnilistId (Required).
-   * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
    * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1
    * @returns {Promise<AnilistEpisodes>} -An object of animeInfo with episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1): Promise<AnilistEpisodes> {
-    return getEpisodeswithInfo(id, provider, page);
+  async fetchHiAnimeEpisodes(id: number): Promise<AnilistEpisodes> {
+    return getEpisodeswithInfo(id);
   }
 }
 

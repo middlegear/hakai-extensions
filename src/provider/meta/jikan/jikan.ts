@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
-import { AnimeZ, HiAnime } from '../../index.js';
-import { animeZtitle, hianimeTitle } from './mapperjikan.js';
+import { Format, Seasons, Status } from '../../../types/types.js';
+import { HiAnime } from '../../index.js';
+import { hianimeTitle } from './mapperjikan.js';
 import { getMalMapping } from '../anizip/index.js';
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 
@@ -1057,12 +1057,6 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number): Promise
   }
 }
 
-type AnimeZRes = {
-  animeId: string;
-  name: string;
-  altName: string;
-  score: number;
-};
 type hianimeRes = {
   animeId: string;
   name: string;
@@ -1071,12 +1065,12 @@ type hianimeRes = {
 };
 export interface SuccessJikanProviderId extends SuccessJIkanInfo {
   data: JIkanData;
-  animeZ: AnimeZRes;
+
   hiAnime: hianimeRes;
 }
 export interface ErrorJikanProviderId extends ErrorJikanInfo {
   data: null;
-  animeZ: null;
+
   hiAnime: null;
 }
 export type JikanProviderId = SuccessJikanProviderId | ErrorJikanProviderId;
@@ -1086,7 +1080,7 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
       success: false,
       status: 400,
       data: null,
-      animeZ: null,
+
       hiAnime: null,
       error: 'Invalid or missing required parameter: id!',
     };
@@ -1099,24 +1093,8 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
     }
 
     const titles = Jikan.data.title;
-    const englishTitle = titles.english?.split(':')?.at(0)?.trim() || '';
-    const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
-    const searchAnimeZ = async (title: string) => {
-      try {
-        const result = await new AnimeZ().search(title);
-        return (
-          result.data?.map((item: any) => ({
-            animeId: item.id,
-            name: item.title,
-            romaji: item.altName,
-          })) || []
-        );
-      } catch (error) {
-        console.error('Error fetching from AnimeZ:', error);
-        return [];
-      }
-    };
+    const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
     const searchHiAnime = async (title: string) => {
       try {
@@ -1134,12 +1112,11 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
       }
     };
 
-    const [animeZResults, hiAnimeResults] = await Promise.allSettled([searchAnimeZ(englishTitle), searchHiAnime(userPref)]);
+    const hiAnimeResults = await searchHiAnime(userPref);
 
     const data = {
       animeInfo: Jikan,
-      hiAnime: hiAnimeResults.status === 'fulfilled' ? hianimeTitle(titles, hiAnimeResults.value) : null,
-      animeZ: animeZResults.status === 'fulfilled' ? animeZtitle(titles, animeZResults.value) : null,
+      hiAnime: hianimeTitle(titles, hiAnimeResults),
     };
 
     return {
@@ -1147,14 +1124,13 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
       status: 200,
       data: Jikan.data,
       hiAnime: data.hiAnime as hianimeRes,
-      animeZ: data.animeZ as AnimeZRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-      animeZ: null,
+
       hiAnime: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
@@ -1169,7 +1145,6 @@ type animeRes = {
   episodeId: string;
   number: number;
   title?: string;
-  // category?: string;
 };
 
 type CrossMatchedEpisodes = {
@@ -1191,12 +1166,8 @@ export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
 }
 export type JikanMatchedEpisodes = SuccessEpisodesres | ErrorEpisodesres;
-export async function getEpisodeswithInfo(
-  jikanId: number,
-  provider: AnimeProvider,
-  page: number,
-): Promise<JikanMatchedEpisodes> {
-  if (!jikanId && !provider) {
+export async function getEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpisodes> {
+  if (!jikanId) {
     return {
       success: false,
       status: 400,
@@ -1207,7 +1178,6 @@ export async function getEpisodeswithInfo(
   try {
     const Jikan = await getProviderId(jikanId);
     const zoro = Jikan.hiAnime;
-    const animezId = Jikan.animeZ;
 
     const fetchEpisodesHianime = async (animeId: string) => {
       const hiAnime = new HiAnime();
@@ -1225,113 +1195,35 @@ export async function getEpisodeswithInfo(
         return null;
       }
     };
-    const fetchEpisodesAnimeZ = async (id: string, page: number) => {
-      const animeZ = new AnimeZ();
-      try {
-        const result = await animeZ.fetchEpisodes(id, page);
-        const pagination = {
-          hasNextPage: result.hasNextPage || null,
-          currentPage: result.currentPage || null,
-          totalPages: result.totalPages || null,
+
+    if (zoro) {
+      const [hianime, aniMapping2] = await Promise.all([
+        fetchEpisodesHianime(zoro.animeId as string),
+        getMalMapping(jikanId),
+      ]);
+
+      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+
+      const matchingResults2 = hianime?.map((anime: any) => {
+        const episodes = episodeMap2.get(anime.number);
+
+        return {
+          episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
+          rating: episodes?.rating ?? null,
+          aired: episodes?.aired ?? null,
+          episodeId: anime.episodeId ?? null,
+          title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+          overview: episodes?.overview ?? 'No overview available',
+          thumbnail: episodes?.image ?? null,
         };
-        const data = {
-          pagination: pagination,
-          result:
-            result.data?.map((item: any) => ({
-              episodeId: item.episodeId,
-              number: item.number,
-              category: item.category,
-            })) || [],
-        };
-        return data;
-      } catch (error) {
-        console.error('Error fetching from AnimeZ:', error);
-        return null;
-      }
-    };
-    if (animezId && zoro) {
-      switch (provider) {
-        case AnimeProvider.AnimeZ:
-          if (jikanId === 21 || jikanId === 269) {
-            const response = await fetchEpisodesAnimeZ(animezId.animeId as string, page as number);
-            return {
-              success: true,
+      });
 
-              status: 200,
-              data: Jikan.data,
-              pagination: response?.pagination as pagination,
-              episodes: response?.result as animeRes[],
-            };
-          } else {
-            const [animeZ, aniMapping] = await Promise.all([
-              fetchEpisodesAnimeZ(animezId.animeId as string, page as number),
-              getMalMapping(jikanId),
-            ]);
-
-            const episodeMap = new Map(aniMapping.episodes?.map(item => [item.episodeAnimeNumber, item]));
-
-            const matchingResults = animeZ?.result.map((anime: any) => {
-              const episodes = episodeMap.get(anime.number);
-
-              return {
-                episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-                rating: episodes?.rating ?? null,
-                aired: episodes?.aired ?? null,
-                episodeId: anime.episodeId ?? null,
-                title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
-                overview: episodes?.overview ?? 'No overview available',
-                thumbnail: episodes?.image ?? null,
-              };
-            });
-
-            if (animeZ)
-              return {
-                success: true,
-                status: 200,
-                data: Jikan.data,
-                pagination: animeZ.pagination as pagination,
-                episodes: matchingResults as CrossMatchedEpisodes[],
-              };
-          }
-        case AnimeProvider.HiAnime:
-          if (jikanId === 21 || jikanId === 269) {
-            const response = await fetchEpisodesHianime(zoro.animeId as string);
-            return {
-              success: true,
-              status: 200,
-              data: Jikan.data,
-              episodes: response as animeRes[],
-            };
-          } else {
-            const [hianime, aniMapping2] = await Promise.all([
-              fetchEpisodesHianime(zoro.animeId as string),
-              getMalMapping(jikanId),
-            ]);
-
-            const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
-
-            const matchingResults2 = hianime?.map((anime: any) => {
-              const episodes = episodeMap2.get(anime.number);
-
-              return {
-                episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-                rating: episodes?.rating ?? null,
-                aired: episodes?.aired ?? null,
-                episodeId: anime.episodeId ?? null,
-                title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
-                overview: episodes?.overview ?? 'No overview available',
-                thumbnail: episodes?.image ?? null,
-              };
-            });
-
-            return {
-              success: true,
-              status: 200,
-              data: Jikan.data,
-              episodes: matchingResults2 as CrossMatchedEpisodes[],
-            };
-          }
-      }
+      return {
+        success: true,
+        status: 200,
+        data: Jikan.data,
+        episodes: matchingResults2 as CrossMatchedEpisodes[],
+      };
     }
   } catch (error) {
     if (axios.isAxiosError(error))

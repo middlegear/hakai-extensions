@@ -56,12 +56,10 @@ class Jikan {
   /**
    * Fetches anime provider episodes for an anime.
    * @param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} - The anime provider Hianime / AnimeZ
-   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1,
    * @returns { Promise<JikanMatchedEpisodes>} - The animeInfo with Episodes
    */
-  async fetchAnimeEpisodes(id: number, provider: AnimeProvider, page: number = 1): Promise<JikanMatchedEpisodes> {
-    return getEpisodeswithInfo(id, provider, page);
+  async fetchHiAnimeEpisodes(id: number): Promise<JikanMatchedEpisodes> {
+    return getEpisodeswithInfo(id);
   }
   /**
    * Fetches characters for a given anime.

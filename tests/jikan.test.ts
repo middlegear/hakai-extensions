@@ -88,7 +88,7 @@ test('fetch anime current season', async () => {
 });
 
 test('fetch AnimeProvider episodes', async () => {
-  const data = await jikan.fetchAnimeEpisodes(52299, AnimeProvider.HiAnime);
+  const data = await jikan.fetchHiAnimeEpisodes(52299);
   expect(data?.success).toBe(true);
   expect(data?.data).not.toEqual(null);
 

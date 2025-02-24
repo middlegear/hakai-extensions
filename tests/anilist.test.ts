@@ -1,7 +1,7 @@
 import { Anilist } from '../src/provider/meta/anilist/index.js';
 import { test, expect } from 'vitest';
 
-import { AnimeProvider, Seasons } from '../src/types/types.js';
+import { Seasons } from '../src/types/types.js';
 
 const anilist = new Anilist();
 
@@ -72,7 +72,7 @@ test('fetch upcoming anime', async () => {
 });
 
 test('fetch episodes', async () => {
-  const data = await anilist.fetchAnimeEpisodes(159322, AnimeProvider.HiAnime);
+  const data = await anilist.fetchHiAnimeEpisodes(159322);
   expect(data?.success).not.toEqual(false);
   expect(data?.data).not.toEqual(null);
 });
