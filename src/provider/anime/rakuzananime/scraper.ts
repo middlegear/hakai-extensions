@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import type { Anime, AnimeInfo, Dubbing, EpisodeInfo, ServerInfo } from './types.js';
+import type { Anime, AnimeInfo, EpisodeInfo, ServerInfo, SubOrDub } from './types.js';
 
 export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.SelectorType) {
   const anime: Anime[] = [];
@@ -30,16 +30,6 @@ export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.Se
   });
 
   const paginationElement = $('.pre-pagination .pagination .page-item');
-
-  // hasNextPage = paginationElement.last().hasClass("active");
-  // totalPages = !hasNextPage
-  //   ? paginationElement
-  //       .last()
-  //       .find(".page-link")
-  //       .attr("href")
-  //       ?.split("page=")
-  //       .at(-1)
-  //   : Number(paginationElement.last().find(".page-link").text());
 
   const hasNextPage: boolean =
     ($('.pagination > li').length > 0 &&
@@ -79,11 +69,7 @@ export function extractAnimeInfo($: cheerio.CheerioAPI) {
 
   res.id = section?.find('.film-buttons .btn')?.attr('href')?.split('/')?.at(-1) || null;
   res.title = $(selector)?.find('.anisc-detail .film-name.dynamic-name')?.text()?.trim() || null;
-  // res.AnilistId =
-  //   Number(JSON.parse($("body")?.find("#syncData")?.text()).anilist_id) ||
-  //   null;
-  // res.MalId =
-  //   Number(JSON.parse($("body")?.find("#syncData")?.text()).mal_id) || null;
+
   const { mal_id, anilist_id } = JSON.parse($('#syncData').text().trim());
   res.AnilistId = Number(anilist_id) || null;
   res.MalId = Number(mal_id) || null;
@@ -123,7 +109,7 @@ export function extractServerData($: cheerio.CheerioAPI) {
   };
   const subSelector: cheerio.SelectorType = '.ps_-block.ps_-block-sub.servers-sub .ps__-list .server-item';
   const dubSelector: cheerio.SelectorType = '.ps_-block.ps_-block-sub.servers-dub .ps__-list .server-item';
-  // const rawSelector: cheerio.SelectorType = '.ps_-block.ps_-block-sub.servers-raw .ps__-list .server-item';
+
   const episodeNo = $('.content .server-notice')?.find('b')?.text().split(' ').pop();
   servers.episodeNumber = Number(episodeNo) || null;
   $(subSelector).each((_, element) => {
@@ -138,16 +124,11 @@ export function extractServerData($: cheerio.CheerioAPI) {
       serverName: $(element)?.find('.btn')?.text().trim().toLowerCase() || null,
     });
   });
-  // $(rawSelector).each((_, element) => {
-  //   servers.dub.push({
-  //     severId: Number($(element)?.attr('data-server-id') || null),
-  //     serverName: $(element)?.find('.btn')?.text().trim().toLowerCase() || null,
-  //   });
-  // });
+
   return { servers };
 }
 
-export function extractAnimeServerId($: cheerio.CheerioAPI, servernumber: Number, category: Dubbing) {
+export function extractAnimeServerId($: cheerio.CheerioAPI, servernumber: Number, category: SubOrDub) {
   return (
     $(`.ps_-block.ps_-block-sub.servers-${category} .ps__-list .server-item`)
       ?.map((_, element) => ($(element).attr('data-server-id') == `${servernumber}` ? $(element) : null))

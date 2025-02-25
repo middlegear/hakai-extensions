@@ -9,18 +9,19 @@ import {
   searchAnime,
   getEpisodeInfo,
   getEpisodes,
-  getProviderId,
-  getEpisodeswithInfo,
+  fetchAnimeProviderIdWithInfo,
+  // getEpisodeswithInfo,
   getTopUpcoming,
   type JIkanSearch,
   type JikanInfo,
-  type JikanProviderId,
   type JikanMatchedEpisodes,
   type JikanCharacters,
   type JikanTopAnime,
   type JikanSeason,
   type JikanEpisodes,
   type JikanEpisodeInfo,
+  type JikanProviderId2,
+  getAnimeProviderEpisodes,
 } from './jikan.js';
 
 class Jikan {
@@ -48,18 +49,23 @@ class Jikan {
   /**
    * Fetches anime provider mappings for an anime.
    * @param {number} id - The MAL ID (Required).
-   * @returns { Promise<JikanProviderId>} - The mapped providerId with anime details.
+   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Rakuzan anime
+   * @returns { Promise<JikanProviderId2>} - The mapped providerId with anime details.
    */
-  async fetchProviderAnimeId(id: number): Promise<JikanProviderId> {
-    return getProviderId(id);
+  async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.RakuzanAnime): Promise<JikanProviderId2> {
+    return fetchAnimeProviderIdWithInfo(id, provider);
   }
   /**
    * Fetches anime provider episodes for an anime.
    * @param {number} id - The MAL ID (Required).
+   * @param {AnimeProvider} provider -AnimeProvider(optinal). Default is Rakuzan anime
    * @returns { Promise<JikanMatchedEpisodes>} - The animeInfo with Episodes
    */
-  async fetchHiAnimeEpisodes(id: number): Promise<JikanMatchedEpisodes> {
-    return getEpisodeswithInfo(id);
+  async fetchAnimeProviderEpisodes(
+    id: number,
+    provider: AnimeProvider = AnimeProvider.RakuzanAnime,
+  ): Promise<JikanMatchedEpisodes> {
+    return getAnimeProviderEpisodes(id, provider);
   }
   /**
    * Fetches characters for a given anime.

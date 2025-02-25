@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { bestHianimeTitle } from './mapper.js';
-import { HiAnime } from '../../index.js';
+import { bestTitleMatch } from '../../../utils/mapper.js';
 
 import {
   characterQuery,
@@ -12,7 +11,7 @@ import {
   seasonQuery,
   topQuery,
 } from './queries.js';
-import { USER_AGENT_HEADER } from '../../index.js';
+import { KagamiAnime, RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
 import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
@@ -1292,7 +1291,7 @@ export async function fetchAnimeCharacters(
   }
 }
 
-type hianimeRes = {
+type titleRes = {
   animeId: string;
   name: string;
   romaji: string;
@@ -1301,21 +1300,21 @@ type hianimeRes = {
 export interface SuccessAnilistProviderId extends SuccessAnilistInfoRes {
   data: AnilistData;
 
-  hiAnime: hianimeRes;
+  zoro: titleRes;
 }
 export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
   data: null;
 
-  hiAnime: null;
+  zoro: null;
 }
 export type AnilistProviderId = SuccessAnilistProviderId | ErrorAnilistProviderId;
-export async function fetchProviderId(id: number): Promise<AnilistProviderId> {
+async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
-      hiAnime: null,
+      zoro: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1330,9 +1329,9 @@ export async function fetchProviderId(id: number): Promise<AnilistProviderId> {
 
     const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
-    const searchHiAnime = async (title: string) => {
+    const searchZoro = async (title: string) => {
       try {
-        const result = await new HiAnime().search(title);
+        const result = await new RakuzanAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1346,30 +1345,129 @@ export async function fetchProviderId(id: number): Promise<AnilistProviderId> {
       }
     };
 
-    const hiAnimeResults = await searchHiAnime(userPref);
+    const zoroResults = await searchZoro(userPref);
 
     const data = {
-      hiAnime: bestHianimeTitle(titles, hiAnimeResults) || null,
+      zoro: bestTitleMatch(titles, zoroResults) || null,
     };
 
     return {
       success: true,
       status: 200,
       data: anilistData.data,
-      hiAnime: data.hiAnime as hianimeRes,
+      zoro: data.zoro as titleRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-
-      hiAnime: null,
+      zoro: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
 
+export interface SuccessAnilistProviderId2 extends SuccessAnilistInfoRes {
+  data: AnilistData;
+  anime?: titleRes;
+  KagamiAnime?: titleRes;
+}
+export interface ErrorAnilistProviderId2 extends ErrorAnilistInfoRes {
+  data: null;
+  anime?: null;
+  KagamiAnime?: null;
+}
+export type AnilistProviderId2 = SuccessAnilistProviderId2 | ErrorAnilistProviderId2;
+async function getKaiProviderId(id: number): Promise<AnilistProviderId2> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      KagamiAnime: null,
+      error: 'Invalid or missing required parameter: id!',
+    };
+  }
+
+  try {
+    const anilistData = await fetchAnimeById(id);
+    if (!anilistData?.data?.title) {
+      throw new Error('Title not found.');
+    }
+
+    const titles = anilistData.data.title;
+
+    const userPref = titles.english;
+
+    const searchKai = async (title: string) => {
+      try {
+        const result = await new KagamiAnime().search(title);
+        return (
+          result.data?.map((item: any) => ({
+            animeId: item.id,
+            name: item.title,
+            romaji: item.romaji,
+          })) || []
+        );
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return [];
+      }
+    };
+
+    const kaiResults = await searchKai(userPref);
+
+    const data = {
+      kai: bestTitleMatch(titles, kaiResults) || null,
+    };
+
+    return {
+      success: true,
+      status: 200,
+      data: anilistData.data,
+      KagamiAnime: data.kai as titleRes,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      KagamiAnime: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
+export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimeProvider): Promise<AnilistProviderId2> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      anime: null,
+      error: 'Invalid or missing required parameter: Anilistid!',
+    };
+  }
+  try {
+    switch (provider) {
+      case AnimeProvider.KagamiAnime:
+        const response = await getKaiProviderId(id);
+        return response;
+      default:
+        AnimeProvider.RakuzanAnime;
+        const data = await getZoroProviderId(id);
+        return data;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      anime: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
 type animeRes = {
   episodeId: string;
   number: number;
@@ -1395,7 +1493,7 @@ export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
 }
 export type AnilistEpisodes = SuccessEpisodesres | ErrorEpisodesres;
-export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpisodes> {
+async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisodes> {
   if (!anilistId) {
     return {
       success: false,
@@ -1405,13 +1503,13 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     };
   }
   try {
-    const anilistData = await fetchProviderId(anilistId);
-    const zoro = anilistData.hiAnime;
+    const anilistData = await getZoroProviderId(anilistId);
+    const zoro = anilistData.zoro;
 
-    const fetchEpisodesHianime = async (animeId: string) => {
-      const hiAnime = new HiAnime();
+    const fetchZoroEpisodes = async (animeId: string) => {
+      const ZoroAnime = new RakuzanAnime();
       try {
-        const result = await hiAnime.fetchEpisodes(animeId);
+        const result = await ZoroAnime.fetchEpisodes(animeId);
         return result.data.map((item: any) => ({
           episodeId: item.episodeId,
           number: item.number,
@@ -1424,8 +1522,88 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     };
 
     if (zoro) {
+      const [zoroanime, aniMapping2] = await Promise.all([
+        fetchZoroEpisodes(zoro.animeId as string),
+        getAnilistMapping(anilistId),
+      ]);
+
+      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+
+      const matchingResults2 = zoroanime?.map((anime: any) => {
+        const episodes = episodeMap2.get(anime.number);
+
+        return {
+          episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
+          rating: episodes?.rating ?? null,
+          aired: episodes?.aired ?? null,
+          episodeId: anime.episodeId ?? null,
+          title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+          overview: episodes?.overview ?? 'No overview available',
+          thumbnail: episodes?.image ?? null,
+        };
+      });
+
+      return {
+        success: true,
+        status: 200,
+        data: anilistData.data,
+        episodes: matchingResults2 as CrossMatchedEpisodes[],
+      };
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      data: null,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Err',
+    };
+  }
+  return {
+    success: false,
+    data: null,
+    status: 500,
+    error: 'yea its messed up',
+  };
+}
+
+async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisodes> {
+  if (!anilistId) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! ',
+    };
+  }
+  try {
+    const anilistData = await getKaiProviderId(anilistId);
+    const kai = anilistData.KagamiAnime;
+
+    const fetchZoroEpisodes = async (animeId: string) => {
+      const kagamiAnime = new KagamiAnime();
+      try {
+        const result = await kagamiAnime.fetchAnimeInfo(animeId);
+        return result.episodes.map((item: any) => ({
+          episodeId: item.episodeId,
+          number: item.number,
+          title: item.title,
+        }));
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return null;
+      }
+    };
+
+    if (kai) {
       const [hianime, aniMapping2] = await Promise.all([
-        fetchEpisodesHianime(zoro.animeId as string),
+        fetchZoroEpisodes(kai.animeId as string),
         getAnilistMapping(anilistId),
       ]);
 
@@ -1473,4 +1651,34 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     status: 500,
     error: 'yea its messed up',
   };
+}
+
+export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvider): Promise<AnilistEpisodes> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! || provider',
+    };
+  }
+  try {
+    switch (provider) {
+      case AnimeProvider.KagamiAnime:
+        const data = await getEpisodeswithInfoKai(id);
+        return data;
+
+      default:
+        AnimeProvider.RakuzanAnime;
+        const response = await getEpisodeswithInfoZoro(id);
+        return response;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
 }

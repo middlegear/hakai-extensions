@@ -2,13 +2,13 @@ import { AnimeProvider, Charactersort, Format, Seasons } from '../../../types/ty
 import {
   searchAnime,
   fetchAnimeById,
-  fetchProviderId,
   fetchTopAiring,
+  fetchAnimeProviderIdWithInfo,
   fetchPopular,
   fetchTopRated,
   fetchSeason,
   fetchAnimeCharacters,
-  getEpisodeswithInfo,
+  getAnimeProviderEpisodes,
   getTrends,
   getRelated,
   fetchUpcoming,
@@ -23,7 +23,7 @@ import {
   type AnilistRelatedData,
   type AnilistCharacters,
   type AnilistEpisodes,
-  type AnilistProviderId,
+  type AnilistProviderId2,
 } from './anilist.js';
 
 class Anilist {
@@ -48,12 +48,13 @@ class Anilist {
   }
 
   /**
-   * Fetches anime information by provider ID.
+   * Fetches anime information returning a provider animeId.
    * @param {number} id - The Anilist anime ID (Required).
-   * @returns { Promise<AnilistProviderId>} - An object containing provider IDs and anime info.
+   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Rakuzan anime
+   * @returns { Promise<AnilistProviderId2>} - An object containing provider animeId and anime info.
    */
-  async fetchMapping(id: number): Promise<AnilistProviderId> {
-    return fetchProviderId(id);
+  async fetchAnimeProviderId(id: number, provider: AnimeProvider = AnimeProvider.RakuzanAnime): Promise<AnilistProviderId2> {
+    return fetchAnimeProviderIdWithInfo(id, provider);
   }
 
   /**
@@ -149,11 +150,14 @@ class Anilist {
    * Fetches animeInfo with Provider episodes using AnilistId
     
    * @param {number} id - The AnilistId (Required).
-   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1
-   * @returns {Promise<AnilistEpisodes>} -An object of animeInfo with episodes
+   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Rakuzan anime
+   * @returns {Promise<AnilistEpisodes>} - An object of animeInfo with episodes
    */
-  async fetchHiAnimeEpisodes(id: number): Promise<AnilistEpisodes> {
-    return getEpisodeswithInfo(id);
+  async fetchAnimeProviderEpisodes(
+    id: number,
+    provider: AnimeProvider = AnimeProvider.RakuzanAnime,
+  ): Promise<AnilistEpisodes> {
+    return getAnimeProviderEpisodes(id, provider);
   }
 }
 

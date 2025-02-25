@@ -52,9 +52,9 @@ export enum Servers {
   HD2 = 'hd-2',
 }
 
-export enum Dubbing {
-  Dub = 'dub',
-  Sub = 'sub',
+export enum SubOrDub {
+  SUB = 'sub',
+  DUB = 'dub',
 }
 
 export interface ErrorResponse {

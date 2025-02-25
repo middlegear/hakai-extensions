@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "test": "vitest run --config vitest.config.ts ",
+    "test": "vitest --silent run --config vitest.config.ts ",
     "lint": "tsc",
     "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write ."
@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
-    "@vitest/ui": "^3.0.5",
     "prettier": "^3.5.1",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3",

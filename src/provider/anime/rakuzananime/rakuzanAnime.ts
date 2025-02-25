@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Servers, Dubbing, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
+import { Servers, SubOrDub, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -7,7 +7,7 @@ import {
   extractServerData,
   extractAnimeServerId,
 } from './scraper.js';
-import { zoroClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
+import { providerClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
 import axios from 'axios';
 import { ASource } from '../../../types/types.js';
 
@@ -39,7 +39,7 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
   query = query.trim();
 
   try {
-    const response = await zoroClient.get(`${zoroSearch}?keyword=${query}&page=${page as number}`);
+    const response = await providerClient.get(`${zoroSearch}?keyword=${query}&page=${page as number}`);
 
     if (!response.data) {
       return {
@@ -116,7 +116,7 @@ export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
     };
 
   try {
-    const response = await zoroClient.get(`${zoroBaseUrl}/${animeId}`, {
+    const response = await providerClient.get(`${zoroBaseUrl}/${animeId}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Referer: `${zoroBaseUrl}/watch/${animeId}`,
@@ -179,7 +179,7 @@ export async function getEpisodes(animeId: string): Promise<EpisodeInfoRes> {
       error: 'Missing required params :animeId',
     };
   try {
-    const response = await zoroClient.get(`${zoroBaseUrl}/ajax/v2/episode/list/${animeId.split('-').pop()}`, {
+    const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/list/${animeId.split('-').pop()}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Referer: `${zoroBaseUrl}/watch/${animeId}`,
@@ -246,7 +246,7 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
   try {
     const newId = episodeId.split('-').pop();
 
-    const response = await zoroClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
+    const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
@@ -292,7 +292,7 @@ export interface ErrorSourceRes extends ErrorResponse {
   data: null;
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
-export async function fetchEpisodeSources(episodeid: string, server: Servers, category: Dubbing): Promise<SourceResponse> {
+export async function fetchEpisodeSources(episodeid: string, server: Servers, category: SubOrDub): Promise<SourceResponse> {
   if (!episodeid) {
     return {
       success: false,
@@ -304,7 +304,7 @@ export async function fetchEpisodeSources(episodeid: string, server: Servers, ca
   try {
     const newId = episodeid.split('-').pop();
 
-    const response = await zoroClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
+    const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
@@ -332,21 +332,11 @@ export async function fetchEpisodeSources(episodeid: string, server: Servers, ca
           if (!mediadataId) throw new Error('HD2 not found');
           break;
         }
-        // case Servers.StreamSB: {
-        //   mediadataId = extractAnimeServerId(datares$, 5, language);
-        //   if (!mediadataId) throw new Error("streamsb not found");
-        //   break;
-        // }
-        // case Servers.StreamTape: {
-        //   mediadataId = extractAnimeServerId(datares$, 3, language);
-        //   if (!mediadataId) throw new Error("streamtape not found");
-        //   break;
-        // }
       }
       if (!mediadataId) return { success: false, error: 'Scraping error', data: null, status: 204 };
       const {
         data: { link },
-      } = await zoroClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
+      } = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
