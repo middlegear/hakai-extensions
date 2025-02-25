@@ -12,7 +12,7 @@ import {
   topQuery,
 } from './queries.js';
 import { KagamiAnime, RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
-import { Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
+import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
 const baseURL = `https://graphql.anilist.co`;
@@ -1308,7 +1308,7 @@ export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
   zoro: null;
 }
 export type AnilistProviderId = SuccessAnilistProviderId | ErrorAnilistProviderId;
-export async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
+async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
   if (!id) {
     return {
       success: false,
@@ -1370,16 +1370,16 @@ export async function getZoroProviderId(id: number): Promise<AnilistProviderId> 
 
 export interface SuccessAnilistProviderId2 extends SuccessAnilistInfoRes {
   data: AnilistData;
-
-  KagamiAnime: titleRes;
+  anime?: titleRes;
+  KagamiAnime?: titleRes;
 }
 export interface ErrorAnilistProviderId2 extends ErrorAnilistInfoRes {
   data: null;
-
-  KagamiAnime: null;
+  anime?: null;
+  KagamiAnime?: null;
 }
 export type AnilistProviderId2 = SuccessAnilistProviderId2 | ErrorAnilistProviderId2;
-export async function getKaiProviderId(id: number): Promise<AnilistProviderId2> {
+async function getKaiProviderId(id: number): Promise<AnilistProviderId2> {
   if (!id) {
     return {
       success: false,
@@ -1438,7 +1438,36 @@ export async function getKaiProviderId(id: number): Promise<AnilistProviderId2> 
     };
   }
 }
-
+export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimeProvider): Promise<AnilistProviderId2> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      anime: null,
+      error: 'Invalid or missing required parameter: Anilistid!',
+    };
+  }
+  try {
+    switch (provider) {
+      case AnimeProvider.KagamiAnime:
+        const response = await getKaiProviderId(id);
+        return response;
+      default:
+        AnimeProvider.RakuzanAnime;
+        const data = await getZoroProviderId(id);
+        return data;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      anime: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
 type animeRes = {
   episodeId: string;
   number: number;
@@ -1464,7 +1493,7 @@ export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
 }
 export type AnilistEpisodes = SuccessEpisodesres | ErrorEpisodesres;
-export async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisodes> {
+async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisodes> {
   if (!anilistId) {
     return {
       success: false,
@@ -1543,7 +1572,8 @@ export async function getEpisodeswithInfoZoro(anilistId: number): Promise<Anilis
     error: 'yea its messed up',
   };
 }
-export async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisodes> {
+
+async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisodes> {
   if (!anilistId) {
     return {
       success: false,
@@ -1621,4 +1651,34 @@ export async function getEpisodeswithInfoKai(anilistId: number): Promise<Anilist
     status: 500,
     error: 'yea its messed up',
   };
+}
+
+export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvider): Promise<AnilistEpisodes> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! || provider',
+    };
+  }
+  try {
+    switch (provider) {
+      case AnimeProvider.KagamiAnime:
+        const data = await getEpisodeswithInfoKai(id);
+        return data;
+
+      default:
+        AnimeProvider.RakuzanAnime;
+        const response = await getEpisodeswithInfoZoro(id);
+        return response;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
 }

@@ -1,7 +1,7 @@
 import { Anilist } from '../src/provider/meta/anilist/index.js';
 import { test, expect } from 'vitest';
 
-import { Seasons } from '../src/types/types.js';
+import { AnimeProvider, Seasons } from '../src/types/types.js';
 
 const anilist = new Anilist();
 
@@ -35,8 +35,8 @@ test('fetch trending anime', async () => {
   expect(data.success).toEqual(true);
 });
 
-test('fetch animeId mapping', async () => {
-  const data = await anilist.fetchRakuzanMapping(169755);
+test('fetch provider anime with info', async () => {
+  const data = await anilist.fetchAnimeProviderId(169755, AnimeProvider.RakuzanAnime);
   expect(data.success).toEqual(true);
   expect(data.data).not.toEqual(null);
 });
@@ -71,8 +71,8 @@ test('fetch upcoming anime', async () => {
   expect(data.data).not.toEqual([]);
 });
 
-test('fetch episodes', async () => {
-  const data = await anilist.fetchRakuzanEpisodes(159322);
-  expect(data?.success).not.toEqual(false);
-  expect(data?.data).not.toEqual(null);
+test('fetch provider episodes with info', async () => {
+  const data = await anilist.fetchAnimeProviderEpisodes(159322, AnimeProvider.RakuzanAnime);
+  expect(data.success).not.toEqual(false);
+  expect(data.data).not.toEqual(null);
 });

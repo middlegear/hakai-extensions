@@ -121,9 +121,9 @@ searching anime returns:
 ```
 ```typescript
 const jikan = new Meta.Jikan();
-const data = await jikan.fetchRakuzanEpisodes(56784);
+const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.RakuzanAnime);
 ```
-fetching episodes  returns: 
+fetching provider episodes  returns: 
 ```json
 
 {
