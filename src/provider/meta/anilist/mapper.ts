@@ -16,7 +16,7 @@ function normalizeTitle(title: string) {
   return title ? title.toLowerCase().trim() : 'No title provided';
 }
 
-export function bestHianimeTitle(title: AnilistTitle, results: SearchResults[]) {
+export function bestZoroTitle(title: AnilistTitle, results: SearchResults[]) {
   const normalizedRomaji = normalizeTitle(title.romaji);
   const normalizedEngishTitle = normalizeTitle(title.english);
 

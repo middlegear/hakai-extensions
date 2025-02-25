@@ -9,7 +9,7 @@ import {
   searchAnime,
   getEpisodeInfo,
   getEpisodes,
-  getProviderId,
+  getZoroProviderId,
   getEpisodeswithInfo,
   getTopUpcoming,
   type JIkanSearch,
@@ -50,15 +50,15 @@ class Jikan {
    * @param {number} id - The MAL ID (Required).
    * @returns { Promise<JikanProviderId>} - The mapped providerId with anime details.
    */
-  async fetchProviderAnimeId(id: number): Promise<JikanProviderId> {
-    return getProviderId(id);
+  async fetchRakuzanAnimeId(id: number): Promise<JikanProviderId> {
+    return getZoroProviderId(id);
   }
   /**
    * Fetches anime provider episodes for an anime.
    * @param {number} id - The MAL ID (Required).
    * @returns { Promise<JikanMatchedEpisodes>} - The animeInfo with Episodes
    */
-  async fetchHiAnimeEpisodes(id: number): Promise<JikanMatchedEpisodes> {
+  async fetchRakuzanEpisodes(id: number): Promise<JikanMatchedEpisodes> {
     return getEpisodeswithInfo(id);
   }
   /**

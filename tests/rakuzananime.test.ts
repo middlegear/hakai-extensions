@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest';
 import { Anime } from '../src/provider/anime/anime.js';
-import { Servers, SubOrDub } from '../src/provider/anime/hianime/types.js';
-const zoro = new Anime.HiAnime();
+import { Servers, SubOrDub } from '../src/provider/anime/rakuzananime/types.js';
+const zoro = new Anime.RakuzanAnime();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 test('searches for anime based on query', async () => {
   const data = await zoro.search('bleach', 1);

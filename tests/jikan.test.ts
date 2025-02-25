@@ -1,10 +1,7 @@
 import { test, expect } from 'vitest';
 import { Jikan } from '../src/provider/meta/jikan/index.js';
-
 import { Seasons } from '../src/types/types.js';
-
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 const jikan = new Jikan();
 test('search anime using string', async () => {
   const data = await jikan.search('one piece');
@@ -74,7 +71,7 @@ test('fetch detailed mal info about an episode', async () => {
 });
 
 test('fetch provider animeId', async () => {
-  const data = await jikan.fetchProviderAnimeId(52299);
+  const data = await jikan.fetchRakuzanAnimeId(52299);
   expect(data.success).toBe(true);
   expect(data.data).not.toEqual(null);
   await wait(800);
@@ -88,7 +85,7 @@ test('fetch anime current season', async () => {
 });
 
 test('fetch AnimeProvider episodes', async () => {
-  const data = await jikan.fetchHiAnimeEpisodes(52299);
+  const data = await jikan.fetchRakuzanEpisodes(52299);
   expect(data?.success).toBe(true);
   expect(data?.data).not.toEqual(null);
 

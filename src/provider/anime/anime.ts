@@ -1,7 +1,7 @@
-import { HiAnime } from './hianime/index.js';
-import { AnimeKai } from './animekai/index.js';
+import { KagamiAnime } from './kagamianime';
+import { RakuzanAnime } from './rakuzananime';
 class Anime {
-  static HiAnime = HiAnime;
-  static AnimeKai = AnimeKai;
+  static RakuzanAnime = RakuzanAnime;
+  static KagamiAnime = KagamiAnime;
 }
 export { Anime };

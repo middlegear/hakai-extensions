@@ -1,24 +1,21 @@
-import { AnimeKai } from './provider/anime/animekai/index.js';
-import { Servers, SubOrDub } from './provider/anime/hianime/types.js';
-import { HiAnime } from './provider/index.js';
-import { Anilist } from './provider/meta/anilist/index.js';
-// import { Jikan } from './provider/meta/jikan/index.js';
+// import { Anilist } from './provider/meta/anilist/index.js';
+import { RakuzanAnime } from './provider/index.js';
+import { Jikan } from './provider/meta/jikan/index.js';
 // import { HiAnime } from './provider/index.js';
 // import { Meta } from './provider/meta/meta.js';
 // import { Anime } from './provider/anime/anime.js';
 // export { Anilist, Jikan, HiAnime, Anime, Meta };
 
-// import { getAnimeInfo, getEpisodeServers } from './provider/anime/animekai/animekai';
-// import { SubOrDub } from './provider/anime/animekai/types';
-// const data = await getEpisodeServers(
+// import { getEpisodeServers, getEpisodeSources } from './provider/anime/kagamianime/kagamiAnime.js';
+// import { Servers, SubOrDub } from './provider/anime/kagamianime/types.js';
+// const data = await getEpisodeSources(
 //   'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=1$token=nlDUzxikR-FjjoaHrd1v',
 //   SubOrDub.SUB,
 // );
 // console.log(data);
 
-// const anilist = new Anilist();
-// const data = await anilist.search('akame ga kill');
-// console.log(data);
-const zoro = new HiAnime();
-const data = await zoro.fetchSources('boruto-naruto-next-generations-8143-episode-47182', Servers.HD1, SubOrDub.SUB);
-console.log(data);
+// const anilist = new Anili
+/// so the megaupclass uses serverurl to do its thing basically its an embeded iframe url
+const jikan = new RakuzanAnime();
+const data = await jikan.fetchSources('bleach-thousand-year-blood-war-the-conflict-19322-episode-128578');
+console.log(JSON.stringify(data));

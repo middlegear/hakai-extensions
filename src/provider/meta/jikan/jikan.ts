@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { Format, Seasons, Status } from '../../../types/types.js';
-import { HiAnime } from '../../index.js';
-import { hianimeTitle } from './mapperjikan.js';
+import { RakuzanAnime } from '../../index.js';
+import { ZoroAnimeTitle } from './mapperjikan.js';
 import { getMalMapping } from '../anizip/index.js';
+
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 
 export interface ErrorResponse {
@@ -1057,7 +1058,7 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number): Promise
   }
 }
 
-type hianimeRes = {
+type zoroRes = {
   animeId: string;
   name: string;
   romaji: string;
@@ -1066,22 +1067,21 @@ type hianimeRes = {
 export interface SuccessJikanProviderId extends SuccessJIkanInfo {
   data: JIkanData;
 
-  hiAnime: hianimeRes;
+  zoro: zoroRes;
 }
 export interface ErrorJikanProviderId extends ErrorJikanInfo {
   data: null;
 
-  hiAnime: null;
+  zoro: null;
 }
 export type JikanProviderId = SuccessJikanProviderId | ErrorJikanProviderId;
-export async function getProviderId(id: number): Promise<JikanProviderId> {
+export async function getZoroProviderId(id: number): Promise<JikanProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
-
-      hiAnime: null,
+      zoro: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1096,9 +1096,9 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
 
     const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
-    const searchHiAnime = async (title: string) => {
+    const searchZoro = async (title: string) => {
       try {
-        const result = await new HiAnime().search(title);
+        const result = await new RakuzanAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1112,26 +1112,25 @@ export async function getProviderId(id: number): Promise<JikanProviderId> {
       }
     };
 
-    const hiAnimeResults = await searchHiAnime(userPref);
+    const ZoroResults = await searchZoro(userPref);
 
     const data = {
       animeInfo: Jikan,
-      hiAnime: hianimeTitle(titles, hiAnimeResults),
+      zoro: ZoroAnimeTitle(titles, ZoroResults),
     };
 
     return {
       success: true,
       status: 200,
       data: Jikan.data,
-      hiAnime: data.hiAnime as hianimeRes,
+      zoro: data.zoro as zoroRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-
-      hiAnime: null,
+      zoro: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
@@ -1176,13 +1175,13 @@ export async function getEpisodeswithInfo(jikanId: number): Promise<JikanMatched
     };
   }
   try {
-    const Jikan = await getProviderId(jikanId);
-    const zoro = Jikan.hiAnime;
+    const Jikan = await getZoroProviderId(jikanId);
+    const zoro = Jikan.zoro;
 
-    const fetchEpisodesHianime = async (animeId: string) => {
-      const hiAnime = new HiAnime();
+    const fetchZoroEpisodes = async (animeId: string) => {
+      const zoro = new RakuzanAnime();
       try {
-        const result = await hiAnime.fetchEpisodes(animeId);
+        const result = await zoro.fetchEpisodes(animeId);
         return (
           result.data?.map((item: any) => ({
             episodeId: item.episodeId,
@@ -1197,10 +1196,7 @@ export async function getEpisodeswithInfo(jikanId: number): Promise<JikanMatched
     };
 
     if (zoro) {
-      const [hianime, aniMapping2] = await Promise.all([
-        fetchEpisodesHianime(zoro.animeId as string),
-        getMalMapping(jikanId),
-      ]);
+      const [hianime, aniMapping2] = await Promise.all([fetchZoroEpisodes(zoro.animeId as string), getMalMapping(jikanId)]);
 
       const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
 

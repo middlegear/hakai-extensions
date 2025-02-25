@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { bestHianimeTitle } from './mapper.js';
-import { HiAnime } from '../../index.js';
+import { bestZoroTitle } from './mapper.js';
 
 import {
   characterQuery,
@@ -12,7 +11,7 @@ import {
   seasonQuery,
   topQuery,
 } from './queries.js';
-import { USER_AGENT_HEADER } from '../../index.js';
+import { RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
 import { Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
@@ -1292,7 +1291,7 @@ export async function fetchAnimeCharacters(
   }
 }
 
-type hianimeRes = {
+type zoroRes = {
   animeId: string;
   name: string;
   romaji: string;
@@ -1301,21 +1300,21 @@ type hianimeRes = {
 export interface SuccessAnilistProviderId extends SuccessAnilistInfoRes {
   data: AnilistData;
 
-  hiAnime: hianimeRes;
+  zoro: zoroRes;
 }
 export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
   data: null;
 
-  hiAnime: null;
+  zoro: null;
 }
 export type AnilistProviderId = SuccessAnilistProviderId | ErrorAnilistProviderId;
-export async function getHianimeProviderId(id: number): Promise<AnilistProviderId> {
+export async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
-      hiAnime: null,
+      zoro: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1330,9 +1329,9 @@ export async function getHianimeProviderId(id: number): Promise<AnilistProviderI
 
     const userPref = titles.romaji?.split(' ').slice(0, 3).join(' ') || '';
 
-    const searchHiAnime = async (title: string) => {
+    const searchZoro = async (title: string) => {
       try {
-        const result = await new HiAnime().search(title);
+        const result = await new RakuzanAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1346,25 +1345,24 @@ export async function getHianimeProviderId(id: number): Promise<AnilistProviderI
       }
     };
 
-    const hiAnimeResults = await searchHiAnime(userPref);
+    const hiAnimeResults = await searchZoro(userPref);
 
     const data = {
-      hiAnime: bestHianimeTitle(titles, hiAnimeResults) || null,
+      zoro: bestZoroTitle(titles, hiAnimeResults) || null,
     };
 
     return {
       success: true,
       status: 200,
       data: anilistData.data,
-      hiAnime: data.hiAnime as hianimeRes,
+      zoro: data.zoro as zoroRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-
-      hiAnime: null,
+      zoro: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
@@ -1405,13 +1403,13 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     };
   }
   try {
-    const anilistData = await getHianimeProviderId(anilistId);
-    const zoro = anilistData.hiAnime;
+    const anilistData = await getZoroProviderId(anilistId);
+    const zoro = anilistData.zoro;
 
-    const fetchEpisodesHianime = async (animeId: string) => {
-      const hiAnime = new HiAnime();
+    const fetchZoroEpisodes = async (animeId: string) => {
+      const ZoroAnime = new RakuzanAnime();
       try {
-        const result = await hiAnime.fetchEpisodes(animeId);
+        const result = await ZoroAnime.fetchEpisodes(animeId);
         return result.data.map((item: any) => ({
           episodeId: item.episodeId,
           number: item.number,
@@ -1425,7 +1423,7 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
 
     if (zoro) {
       const [hianime, aniMapping2] = await Promise.all([
-        fetchEpisodesHianime(zoro.animeId as string),
+        fetchZoroEpisodes(zoro.animeId as string),
         getAnilistMapping(anilistId),
       ]);
 

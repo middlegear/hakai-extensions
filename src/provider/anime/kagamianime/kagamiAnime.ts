@@ -1,3 +1,5 @@
+/// Gratitude goes to consumet
+
 import * as cheerio from 'cheerio';
 import { providerClient } from '../../../config/clients';
 import { animekaiBaseUrl } from '../../../utils/constants';
@@ -5,6 +7,7 @@ import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
 import { ErrorResponse, Info, searchRes, Servers, SubOrDub, SuccessResponse } from './types';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
+import { ASource } from '../../../types/types';
 export interface SuccessSearchResponse extends SuccessResponse {
   data: searchRes[];
   hasNextPage: boolean;
@@ -156,7 +159,7 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 }
 type serverInfo = {
   name: string;
-  url: any;
+  url: string;
 };
 export interface SuccessServerInfo extends SuccessResponse {
   data: serverInfo[];
@@ -183,7 +186,7 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
     const $: cheerio.CheerioAPI = cheerio.load(data.result);
     const servers: {
       name: string;
-      url: any;
+      url: string;
     }[] = [];
     const serverItems = $(`.server-items.lang-group[data-id="${category}"] .server`);
     await Promise.all(
@@ -201,7 +204,7 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
     return {
       success: true,
       status: 200,
-      data: servers,
+      data: servers as serverInfo[],
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -219,8 +222,21 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
     };
   }
 }
-
-export async function getEpisodeSources(episodeId: string, server: Servers, category: SubOrDub) {
+export interface SuccessSourceRes extends SuccessResponse {
+  headers: {
+    Referer: string;
+  };
+  data: ASource;
+}
+export interface ErrorSourceRes extends ErrorResponse {
+  data: null;
+}
+export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
+export async function getEpisodeSources(
+  episodeId: string,
+  category: SubOrDub,
+  server: Servers = Servers.MegaUp,
+): Promise<SourceResponse> {
   if (!episodeId) {
     return {
       success: false,
@@ -229,6 +245,56 @@ export async function getEpisodeSources(episodeId: string, server: Servers, cate
       error: 'Missing required params episodeId',
     };
   }
+  if (episodeId.startsWith('http')) {
+    const serverUrl = new URL(episodeId);
+    switch (server) {
+      case Servers.MegaUp:
+        return {
+          headers: { Referer: serverUrl.href },
+          success: true,
+          status: 200,
+          data: await new MegaUp().extract(serverUrl),
+        };
+      default:
+        return {
+          headers: { Referer: serverUrl.href },
+          success: true,
+          status: 200,
+          data: await new MegaUp().extract(serverUrl),
+        };
+    }
+  }
+
   try {
-  } catch (error) {}
+    const servers = await getEpisodeServers(episodeId, category);
+
+    const urlIndex = servers.data.findIndex(s => s.name.toLowerCase().includes(server));
+
+    if (urlIndex === -1) {
+      return {
+        success: false,
+        status: 400,
+        data: null,
+        error: `Server ${server} not found check the class `,
+      };
+    }
+    //@ts-ignore   will have to be improved possible undefined error
+    const serverUrl: URL = new URL(servers.data[urlIndex].url);
+
+    return await getEpisodeSources(serverUrl.href, category, Servers.MegaUp);
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        status: error.response?.status || 500,
+        data: null,
+        error: `Request failed: ${error.message}` || 'Unknown axios error',
+        success: false,
+      };
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+    };
+  }
 }

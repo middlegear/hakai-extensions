@@ -36,7 +36,7 @@ test('fetch trending anime', async () => {
 });
 
 test('fetch animeId mapping', async () => {
-  const data = await anilist.fetchHianimeMapping(169755);
+  const data = await anilist.fetchRakuzanMapping(169755);
   expect(data.success).toEqual(true);
   expect(data.data).not.toEqual(null);
 });
@@ -72,7 +72,7 @@ test('fetch upcoming anime', async () => {
 });
 
 test('fetch episodes', async () => {
-  const data = await anilist.fetchHiAnimeEpisodes(159322);
+  const data = await anilist.fetchRakuzanEpisodes(159322);
   expect(data?.success).not.toEqual(false);
   expect(data?.data).not.toEqual(null);
 });

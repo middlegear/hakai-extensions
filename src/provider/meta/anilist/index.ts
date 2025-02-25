@@ -2,8 +2,8 @@ import { Charactersort, Format, Seasons } from '../../../types/types.js';
 import {
   searchAnime,
   fetchAnimeById,
-  getHianimeProviderId,
   fetchTopAiring,
+  getZoroProviderId,
   fetchPopular,
   fetchTopRated,
   fetchSeason,
@@ -52,8 +52,8 @@ class Anilist {
    * @param {number} id - The Anilist anime ID (Required).
    * @returns { Promise<AnilistProviderId>} - An object containing provider animeId and anime info.
    */
-  async fetchHianimeMapping(id: number): Promise<AnilistProviderId> {
-    return getHianimeProviderId(id);
+  async fetchRakuzanMapping(id: number): Promise<AnilistProviderId> {
+    return getZoroProviderId(id);
   }
 
   /**
@@ -152,7 +152,7 @@ class Anilist {
    * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1
    * @returns {Promise<AnilistEpisodes>} -An object of animeInfo with episodes
    */
-  async fetchHiAnimeEpisodes(id: number): Promise<AnilistEpisodes> {
+  async fetchRakuzanEpisodes(id: number): Promise<AnilistEpisodes> {
     return getEpisodeswithInfo(id);
   }
 }

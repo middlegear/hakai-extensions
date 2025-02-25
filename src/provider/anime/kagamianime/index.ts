@@ -2,13 +2,15 @@ import {
   type AnimeInfoKai,
   getAnimeInfo,
   getEpisodeServers,
+  getEpisodeSources,
   searchanime,
   type SearchResponse,
   type ServerInfoResponse,
-} from './animekai';
+  type SourceResponse,
+} from './kagamiAnime';
 import { SubOrDub } from './types';
 
-class AnimeKai {
+class KagamiAnime {
   /**
    * Searches for anime based on the provided query.
    * @param {string} query - The search query string. Required.
@@ -35,5 +37,14 @@ class AnimeKai {
   async fetchServers(episodeId: string, category: SubOrDub = SubOrDub.SUB): Promise<ServerInfoResponse> {
     return getEpisodeServers(episodeId, category);
   }
+  /**
+   * Fetches available episode source infomation about the episode
+   * @param {string} episodeId - The unique identifier for the episode
+   * @param  {SubOrDub} category sub or dub (default `sub`) (optional)
+   * @returns {Promise<SourceResponse>}- An Object containing source information
+   */
+  async fetchSources(episodeId: string, category: SubOrDub = SubOrDub.SUB): Promise<SourceResponse> {
+    return getEpisodeSources(episodeId, category);
+  }
 }
-export { AnimeKai };
+export { KagamiAnime };

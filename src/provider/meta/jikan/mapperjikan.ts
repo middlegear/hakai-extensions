@@ -14,7 +14,7 @@ export type JikanTitle = {
 
 const normalizetitle = (title: string) => title?.toLowerCase().trim();
 
-export function hianimeTitle(title: JikanTitle, results: result[]) {
+export function ZoroAnimeTitle(title: JikanTitle, results: result[]) {
   const normalizedResults = results.map(item => ({
     ...item,
     normalizedName: normalizetitle(item.name as string),

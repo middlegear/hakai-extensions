@@ -9,10 +9,10 @@ import {
   type EpisodeInfoRes,
   type ServerInfoResponse,
   type SourceResponse,
-} from './hiAnime.js';
+} from './rakuzanAnime.js';
 import { SubOrDub, Servers } from './types.js';
 
-class HiAnime {
+class RakuzanAnime {
   /**
    * Searches for anime based on the provided query.
    * @param {string} query - The search query string. Required.
@@ -61,4 +61,4 @@ class HiAnime {
     return fetchEpisodeSources(episodeId, server, category);
   }
 }
-export { HiAnime };
+export { RakuzanAnime };
