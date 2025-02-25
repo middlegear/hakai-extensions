@@ -332,16 +332,6 @@ export async function fetchEpisodeSources(episodeid: string, server: Servers, ca
           if (!mediadataId) throw new Error('HD2 not found');
           break;
         }
-        // case Servers.StreamSB: {
-        //   mediadataId = extractAnimeServerId(datares$, 5, language);
-        //   if (!mediadataId) throw new Error("streamsb not found");
-        //   break;
-        // }
-        // case Servers.StreamTape: {
-        //   mediadataId = extractAnimeServerId(datares$, 3, language);
-        //   if (!mediadataId) throw new Error("streamtape not found");
-        //   break;
-        // }
       }
       if (!mediadataId) return { success: false, error: 'Scraping error', data: null, status: 204 };
       const {

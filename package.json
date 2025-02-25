@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "test": "vitest run --config vitest.config.ts ",
+    "test": "vitest --silent run --config vitest.config.ts ",
     "lint": "tsc",
     "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write ."

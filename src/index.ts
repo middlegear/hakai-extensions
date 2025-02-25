@@ -1,3 +1,6 @@
+import { AnimeKai } from './provider/anime/animekai/index.js';
+import { Servers, SubOrDub } from './provider/anime/hianime/types.js';
+import { HiAnime } from './provider/index.js';
 import { Anilist } from './provider/meta/anilist/index.js';
 // import { Jikan } from './provider/meta/jikan/index.js';
 // import { HiAnime } from './provider/index.js';
@@ -13,6 +16,9 @@ import { Anilist } from './provider/meta/anilist/index.js';
 // );
 // console.log(data);
 
-const anilist = new Anilist();
-const data = await anilist.search('akame ga kill');
+// const anilist = new Anilist();
+// const data = await anilist.search('akame ga kill');
+// console.log(data);
+const zoro = new HiAnime();
+const data = await zoro.fetchSources('boruto-naruto-next-generations-8143-episode-47182', Servers.HD1, SubOrDub.SUB);
 console.log(data);

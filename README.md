@@ -12,7 +12,7 @@
 
 ---  
 
-## ✨ Features  
+## Features  
 
 ✔ **Search Anime** – Look up anime by title with pagination.  
 ✔ **Fetch Anime Details** – Retrieve metadata such as synopsis, genres, and release dates.  
@@ -80,7 +80,7 @@ const animeList = await jikan.searchAnime('One Piece');
 
 ---
 
-### 🎞️ `Anime` Class  
+### `Anime` Class  
 
 The `Anime` class provides access to anime providers.  
 

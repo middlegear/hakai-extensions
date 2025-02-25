@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
 // copied from consumet.ts thanks
 
@@ -8,7 +10,7 @@ import { webcrypto } from 'crypto';
 import { USER_AGENT_HEADER } from '../../provider/index.js';
 
 const user_agent = USER_AGENT_HEADER;
-//@ts-ignore
+
 const crypto = webcrypto as unknown as Crypto;
 let wasm: any;
 let arr = new Array(128).fill(void 0);
@@ -114,7 +116,6 @@ arr.push(void 0, null, true, false);
 let size = 0;
 let memoryBuff: Uint8Array | null;
 
-//fix this
 function getMemBuff(): Uint8Array {
   return (memoryBuff = null !== memoryBuff && 0 !== memoryBuff.byteLength ? memoryBuff : new Uint8Array(wasm.memory.buffer));
 }
@@ -167,7 +168,6 @@ function isNull(test: any) {
 
 function getDataView() {
   return (dataView =
-    //@ts-ignore
     dataView === null || isDetached(dataView.buffer) || dataView.buffer !== wasm.memory.buffer
       ? new DataView(wasm.memory.buffer)
       : dataView);

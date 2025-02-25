@@ -36,7 +36,7 @@ test('fetch trending anime', async () => {
 });
 
 test('fetch animeId mapping', async () => {
-  const data = await anilist.fetchMapping(169755);
+  const data = await anilist.fetchHianimeMapping(169755);
   expect(data.success).toEqual(true);
   expect(data.data).not.toEqual(null);
 });

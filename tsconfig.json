@@ -16,6 +16,5 @@
     "skipLibCheck": true ,
     "lib": ["ESNext"],
     
-    
   }
 }

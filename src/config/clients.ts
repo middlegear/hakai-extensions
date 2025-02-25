@@ -3,7 +3,7 @@ import { ACCEPT_ENCODING, ACCEPT_HEADER, USER_AGENT_HEADER } from './headers.js'
 import axios from 'axios';
 
 const client: AxiosRequestConfig = {
-  timeout: 5000,
+  timeout: 7000,
   headers: {
     Accept: ACCEPT_HEADER,
     'Content-Encoding': ACCEPT_ENCODING,
