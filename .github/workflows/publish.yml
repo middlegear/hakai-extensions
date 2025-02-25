@@ -22,7 +22,9 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          rm -f pnpm-lock.yaml
+          pnpm install
 
       - name: Run tests
         run: pnpm test
