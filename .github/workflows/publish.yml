@@ -18,13 +18,13 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
         run: |
           rm -f pnpm-lock.yaml
-          pnpm install
+          pnpm install --no-frozen-lockfile
 
       - name: Run tests
         run: pnpm test
