@@ -6,7 +6,7 @@ export function extractsearchresults($: cheerio.CheerioAPI) {
     id: string | null;
     title: string | null;
     image: string | null;
-    japaneseTitle: string | null;
+    romaji: string | null;
     type: string | null;
     sub: number;
     dub: number;
@@ -18,7 +18,7 @@ export function extractsearchresults($: cheerio.CheerioAPI) {
       id: $(element).find('div.inner > a').attr('href')?.replace('/watch/', '') || null,
       title: $(element).find('div.inner > a').text().trim() || null,
       image: $(element).find('img')?.attr('data-src') || $(element).find('img')?.attr('src') || null,
-      japaneseTitle: $(element).find('a.title')?.attr('data-jp')?.trim() || null,
+      romaji: $(element).find('a.title')?.attr('data-jp')?.trim() || null,
       type: $(element).find('.info').children().last()?.text().trim() || null,
       sub: Number($(element).find('.info span.sub')?.text()) || 0,
       dub: Number($(element).find('.info span.dub')?.text()) || 0,

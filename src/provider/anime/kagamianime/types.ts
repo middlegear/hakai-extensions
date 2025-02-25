@@ -11,7 +11,7 @@ export type searchRes = {
   id: string | null;
   title: string | null;
   image: string | null;
-  japaneseTitle: string | null;
+  romaji: string | null;
   type: string | null;
   sub: number;
   dub: number;

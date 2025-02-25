@@ -71,7 +71,7 @@ test('fetch detailed mal info about an episode', async () => {
 });
 
 test('fetch provider animeId', async () => {
-  const data = await jikan.fetchRakuzanAnimeId(52299);
+  const data = await jikan.fetchProviderAnimeId(52299);
   expect(data.success).toBe(true);
   expect(data.data).not.toEqual(null);
   await wait(800);

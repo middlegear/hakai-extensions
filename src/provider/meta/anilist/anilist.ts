@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { bestZoroTitle } from './mapper.js';
+import { bestTitleMatch } from '../../../utils/mapper.js';
 
 import {
   characterQuery,
@@ -11,7 +11,7 @@ import {
   seasonQuery,
   topQuery,
 } from './queries.js';
-import { RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
+import { KagamiAnime, RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
 import { Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 
@@ -1291,7 +1291,7 @@ export async function fetchAnimeCharacters(
   }
 }
 
-type zoroRes = {
+type titleRes = {
   animeId: string;
   name: string;
   romaji: string;
@@ -1300,7 +1300,7 @@ type zoroRes = {
 export interface SuccessAnilistProviderId extends SuccessAnilistInfoRes {
   data: AnilistData;
 
-  zoro: zoroRes;
+  zoro: titleRes;
 }
 export interface ErrorAnilistProviderId extends ErrorAnilistInfoRes {
   data: null;
@@ -1345,17 +1345,17 @@ export async function getZoroProviderId(id: number): Promise<AnilistProviderId> 
       }
     };
 
-    const hiAnimeResults = await searchZoro(userPref);
+    const zoroResults = await searchZoro(userPref);
 
     const data = {
-      zoro: bestZoroTitle(titles, hiAnimeResults) || null,
+      zoro: bestTitleMatch(titles, zoroResults) || null,
     };
 
     return {
       success: true,
       status: 200,
       data: anilistData.data,
-      zoro: data.zoro as zoroRes,
+      zoro: data.zoro as titleRes,
     };
   } catch (error) {
     return {
@@ -1363,6 +1363,77 @@ export async function getZoroProviderId(id: number): Promise<AnilistProviderId> 
       status: 500,
       data: null,
       zoro: null,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+    };
+  }
+}
+
+export interface SuccessAnilistProviderId2 extends SuccessAnilistInfoRes {
+  data: AnilistData;
+
+  KagamiAnime: titleRes;
+}
+export interface ErrorAnilistProviderId2 extends ErrorAnilistInfoRes {
+  data: null;
+
+  KagamiAnime: null;
+}
+export type AnilistProviderId2 = SuccessAnilistProviderId2 | ErrorAnilistProviderId2;
+export async function getKaiProviderId(id: number): Promise<AnilistProviderId2> {
+  if (!id) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      KagamiAnime: null,
+      error: 'Invalid or missing required parameter: id!',
+    };
+  }
+
+  try {
+    const anilistData = await fetchAnimeById(id);
+    if (!anilistData?.data?.title) {
+      throw new Error('Title not found.');
+    }
+
+    const titles = anilistData.data.title;
+
+    const userPref = titles.english;
+
+    const searchKai = async (title: string) => {
+      try {
+        const result = await new KagamiAnime().search(title);
+        return (
+          result.data?.map((item: any) => ({
+            animeId: item.id,
+            name: item.title,
+            romaji: item.romaji,
+          })) || []
+        );
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return [];
+      }
+    };
+
+    const kaiResults = await searchKai(userPref);
+
+    const data = {
+      kai: bestTitleMatch(titles, kaiResults) || null,
+    };
+
+    return {
+      success: true,
+      status: 200,
+      data: anilistData.data,
+      KagamiAnime: data.kai as titleRes,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      status: 500,
+      data: null,
+      KagamiAnime: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
@@ -1393,7 +1464,7 @@ export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
 }
 export type AnilistEpisodes = SuccessEpisodesres | ErrorEpisodesres;
-export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpisodes> {
+export async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisodes> {
   if (!anilistId) {
     return {
       success: false,
@@ -1422,8 +1493,87 @@ export async function getEpisodeswithInfo(anilistId: number): Promise<AnilistEpi
     };
 
     if (zoro) {
-      const [hianime, aniMapping2] = await Promise.all([
+      const [zoroanime, aniMapping2] = await Promise.all([
         fetchZoroEpisodes(zoro.animeId as string),
+        getAnilistMapping(anilistId),
+      ]);
+
+      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+
+      const matchingResults2 = zoroanime?.map((anime: any) => {
+        const episodes = episodeMap2.get(anime.number);
+
+        return {
+          episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
+          rating: episodes?.rating ?? null,
+          aired: episodes?.aired ?? null,
+          episodeId: anime.episodeId ?? null,
+          title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+          overview: episodes?.overview ?? 'No overview available',
+          thumbnail: episodes?.image ?? null,
+        };
+      });
+
+      return {
+        success: true,
+        status: 200,
+        data: anilistData.data,
+        episodes: matchingResults2 as CrossMatchedEpisodes[],
+      };
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error))
+      return {
+        success: false,
+        data: null,
+        error: `Request failed ${error.message}`,
+        status: error.response?.status || 500,
+      };
+    return {
+      success: false,
+      data: null,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Err',
+    };
+  }
+  return {
+    success: false,
+    data: null,
+    status: 500,
+    error: 'yea its messed up',
+  };
+}
+export async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisodes> {
+  if (!anilistId) {
+    return {
+      success: false,
+      status: 400,
+      data: null,
+      error: 'Missing required parameter : id! ',
+    };
+  }
+  try {
+    const anilistData = await getKaiProviderId(anilistId);
+    const kai = anilistData.KagamiAnime;
+
+    const fetchZoroEpisodes = async (animeId: string) => {
+      const kagamiAnime = new KagamiAnime();
+      try {
+        const result = await kagamiAnime.fetchAnimeInfo(animeId);
+        return result.episodes.map((item: any) => ({
+          episodeId: item.episodeId,
+          number: item.number,
+          title: item.title,
+        }));
+      } catch (error) {
+        console.error('Error fetching from HiAnime:', error);
+        return null;
+      }
+    };
+
+    if (kai) {
+      const [hianime, aniMapping2] = await Promise.all([
+        fetchZoroEpisodes(kai.animeId as string),
         getAnilistMapping(anilistId),
       ]);
 

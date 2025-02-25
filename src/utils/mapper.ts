@@ -1,4 +1,4 @@
-import { findBestMatch } from '../../../utils/string-similarity.js';
+import { findBestMatch } from './string-similarity.js';
 
 export type AnilistTitle = {
   english: string;
@@ -9,14 +9,13 @@ export type SearchResults = {
   animeId: string;
   name?: string;
   romaji?: string;
-  alt?: string;
 };
 
 function normalizeTitle(title: string) {
   return title ? title.toLowerCase().trim() : 'No title provided';
 }
 
-export function bestZoroTitle(title: AnilistTitle, results: SearchResults[]) {
+export function bestTitleMatch(title: AnilistTitle, results: SearchResults[]) {
   const normalizedRomaji = normalizeTitle(title.romaji);
   const normalizedEngishTitle = normalizeTitle(title.english);
 

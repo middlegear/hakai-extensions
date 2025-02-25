@@ -8,7 +8,7 @@ import {
   fetchTopRated,
   fetchSeason,
   fetchAnimeCharacters,
-  getEpisodeswithInfo,
+  getEpisodeswithInfoZoro,
   getTrends,
   getRelated,
   fetchUpcoming,
@@ -149,11 +149,10 @@ class Anilist {
    * Fetches animeInfo with Provider episodes using AnilistId
     
    * @param {number} id - The AnilistId (Required).
-   * @param {number} [page=1] - The page number is a must for Animez provider defaults to 1
    * @returns {Promise<AnilistEpisodes>} -An object of animeInfo with episodes
    */
   async fetchRakuzanEpisodes(id: number): Promise<AnilistEpisodes> {
-    return getEpisodeswithInfo(id);
+    return getEpisodeswithInfoZoro(id);
   }
 }
 

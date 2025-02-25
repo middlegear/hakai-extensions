@@ -1,4 +1,4 @@
-import { Format, Seasons, Status } from '../../../types/types.js';
+import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
 import {
   getAnimeCharacters,
   getCurrentSeason,
@@ -9,18 +9,18 @@ import {
   searchAnime,
   getEpisodeInfo,
   getEpisodes,
-  getZoroProviderId,
+  fetchAnimeProviderIdWithInfo,
   getEpisodeswithInfo,
   getTopUpcoming,
   type JIkanSearch,
   type JikanInfo,
-  type JikanProviderId,
   type JikanMatchedEpisodes,
   type JikanCharacters,
   type JikanTopAnime,
   type JikanSeason,
   type JikanEpisodes,
   type JikanEpisodeInfo,
+  type JikanProviderId2,
 } from './jikan.js';
 
 class Jikan {
@@ -48,10 +48,11 @@ class Jikan {
   /**
    * Fetches anime provider mappings for an anime.
    * @param {number} id - The MAL ID (Required).
-   * @returns { Promise<JikanProviderId>} - The mapped providerId with anime details.
+   * @param {AnimeProvider} -Anime Provider(optinal). Default is Rakuzan anime
+   * @returns { Promise<JikanProviderId2>} - The mapped providerId with anime details.
    */
-  async fetchRakuzanAnimeId(id: number): Promise<JikanProviderId> {
-    return getZoroProviderId(id);
+  async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.RakuzanAnime): Promise<JikanProviderId2> {
+    return fetchAnimeProviderIdWithInfo(id, provider);
   }
   /**
    * Fetches anime provider episodes for an anime.

@@ -25,7 +25,6 @@ export type ASource = {
 
 export enum MediaType {
   Anime = 'ANIME',
-  // Manga = 'MANGA',
 }
 export enum Sort {
   SCORE_DESC = 'SCORE_DESC',
@@ -56,4 +55,8 @@ export enum Format {
 }
 export enum Charactersort {
   RELEVANCE = 'RELEVANCE',
+}
+export enum AnimeProvider {
+  KagamiAnime = 'kagamianime',
+  RakuzanAnime = 'rakuzananime',
 }
