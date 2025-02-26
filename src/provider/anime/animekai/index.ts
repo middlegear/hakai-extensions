@@ -1,16 +1,16 @@
 import {
+  type SearchResponse,
+  searchanime,
   type AnimeInfoKai,
   getAnimeInfo,
-  getEpisodeServers,
-  getEpisodeSources,
-  searchanime,
-  type SearchResponse,
   type ServerInfoResponse,
+  getEpisodeServers,
   type SourceResponse,
-} from './kagamiAnime';
+  getEpisodeSources,
+} from './animekai';
 import { SubOrDub } from './types';
 
-class KagamiAnime {
+class AnimeKai {
   /**
    * Searches for anime based on the provided query.
    * @param {string} query - The search query string. Required.
@@ -47,4 +47,4 @@ class KagamiAnime {
     return getEpisodeSources(episodeId, category);
   }
 }
-export { KagamiAnime };
+export { AnimeKai };

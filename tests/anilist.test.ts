@@ -36,7 +36,7 @@ test('fetch trending anime', async () => {
 });
 
 test('fetch provider anime with info', async () => {
-  const data = await anilist.fetchAnimeProviderId(169755, AnimeProvider.RakuzanAnime);
+  const data = await anilist.fetchAnimeProviderId(169755, AnimeProvider.HiAnime);
   expect(data.success).toEqual(true);
   expect(data.data).not.toEqual(null);
 });
@@ -72,7 +72,7 @@ test('fetch upcoming anime', async () => {
 });
 
 test('fetch provider episodes with info', async () => {
-  const data = await anilist.fetchAnimeProviderEpisodes(159322, AnimeProvider.RakuzanAnime);
+  const data = await anilist.fetchAnimeProviderEpisodes(159322, AnimeProvider.HiAnime);
   expect(data.success).not.toEqual(false);
   expect(data.data).not.toEqual(null);
 });

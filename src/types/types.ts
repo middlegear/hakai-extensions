@@ -57,6 +57,6 @@ export enum Charactersort {
   RELEVANCE = 'RELEVANCE',
 }
 export enum AnimeProvider {
-  KagamiAnime = 'kagamianime',
-  RakuzanAnime = 'rakuzananime',
+  HiAnime = 'hianime',
+  Animekai = 'animekai',
 }

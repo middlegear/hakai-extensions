@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
-import { KagamiAnime, RakuzanAnime } from '../../index.js';
 import { bestTitleMatch } from '../../../utils/mapper.js';
 import { getMalMapping } from '../anizip/index.js';
+import { HiAnime } from '../../anime/hianime/index.js';
+import { AnimeKai } from '../../anime/animekai/index.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 
@@ -1098,7 +1099,7 @@ async function getZoroProviderId(id: number): Promise<JikanProviderId> {
 
     const searchZoro = async (title: string) => {
       try {
-        const result = await new RakuzanAnime().search(title);
+        const result = await new HiAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1169,7 +1170,7 @@ async function getKaiProviderId(id: number): Promise<JikanProviderId2> {
 
     const searchKai = async (title: string) => {
       try {
-        const result = await new KagamiAnime().search(title);
+        const result = await new AnimeKai().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1219,11 +1220,11 @@ export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimePr
   }
   try {
     switch (provider) {
-      case AnimeProvider.KagamiAnime:
+      case AnimeProvider.Animekai:
         const response = await getKaiProviderId(id);
         return response;
       default:
-        AnimeProvider.RakuzanAnime;
+        AnimeProvider.HiAnime;
         const data = await getZoroProviderId(id);
         return data;
     }
@@ -1277,7 +1278,7 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
     const zoro = Jikan.zoro;
 
     const fetchZoroEpisodes = async (animeId: string) => {
-      const zoro = new RakuzanAnime();
+      const zoro = new HiAnime();
       try {
         const result = await zoro.fetchEpisodes(animeId);
         return (
@@ -1358,7 +1359,7 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
     const kai = Jikan.KagamiAnime;
 
     const fetchKaiEpisodes = async (animeId: string) => {
-      const kai = new KagamiAnime();
+      const kai = new AnimeKai();
       try {
         const result = await kai.fetchAnimeInfo(animeId);
         return (
@@ -1437,12 +1438,12 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
   }
   try {
     switch (provider) {
-      case AnimeProvider.KagamiAnime:
+      case AnimeProvider.Animekai:
         const data = await getEpisodeswithInfoKai(id);
         return data;
 
       default:
-        AnimeProvider.RakuzanAnime;
+        AnimeProvider.HiAnime;
         const response = await getZoroEpisodeswithInfo(id);
         return response;
     }

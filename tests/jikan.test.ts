@@ -71,7 +71,7 @@ test('fetch detailed mal info about an episode', async () => {
 });
 
 test('fetch provider animeId', async () => {
-  const data = await jikan.fetchProviderAnimeId(52299, AnimeProvider.RakuzanAnime);
+  const data = await jikan.fetchProviderAnimeId(52299, AnimeProvider.HiAnime);
   expect(data.success).toBe(true);
   expect(data.data).not.toEqual(null);
   await wait(800);
@@ -85,7 +85,7 @@ test('fetch anime current season', async () => {
 });
 
 test('fetch AnimeProvider episodes', async () => {
-  const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.RakuzanAnime);
+  const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.HiAnime);
   expect(data?.success).toBe(true);
   expect(data?.data).not.toEqual(null);
 

@@ -11,9 +11,10 @@ import {
   seasonQuery,
   topQuery,
 } from './queries.js';
-import { KagamiAnime, RakuzanAnime, USER_AGENT_HEADER } from '../../index.js';
+
 import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
+import { AnimeKai, HiAnime, USER_AGENT_HEADER } from '../../index.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -1331,7 +1332,7 @@ async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
 
     const searchZoro = async (title: string) => {
       try {
-        const result = await new RakuzanAnime().search(title);
+        const result = await new HiAnime().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1402,7 +1403,7 @@ async function getKaiProviderId(id: number): Promise<AnilistProviderId2> {
 
     const searchKai = async (title: string) => {
       try {
-        const result = await new KagamiAnime().search(title);
+        const result = await new AnimeKai().search(title);
         return (
           result.data?.map((item: any) => ({
             animeId: item.id,
@@ -1450,11 +1451,11 @@ export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimePr
   }
   try {
     switch (provider) {
-      case AnimeProvider.KagamiAnime:
+      case AnimeProvider.Animekai:
         const response = await getKaiProviderId(id);
         return response;
       default:
-        AnimeProvider.RakuzanAnime;
+        AnimeProvider.HiAnime;
         const data = await getZoroProviderId(id);
         return data;
     }
@@ -1507,7 +1508,7 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
     const zoro = anilistData.zoro;
 
     const fetchZoroEpisodes = async (animeId: string) => {
-      const ZoroAnime = new RakuzanAnime();
+      const ZoroAnime = new HiAnime();
       try {
         const result = await ZoroAnime.fetchEpisodes(animeId);
         return result.data.map((item: any) => ({
@@ -1587,7 +1588,7 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
     const kai = anilistData.KagamiAnime;
 
     const fetchZoroEpisodes = async (animeId: string) => {
-      const kagamiAnime = new KagamiAnime();
+      const kagamiAnime = new AnimeKai();
       try {
         const result = await kagamiAnime.fetchAnimeInfo(animeId);
         return result.episodes.map((item: any) => ({
@@ -1664,12 +1665,12 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
   }
   try {
     switch (provider) {
-      case AnimeProvider.KagamiAnime:
+      case AnimeProvider.Animekai:
         const data = await getEpisodeswithInfoKai(id);
         return data;
 
       default:
-        AnimeProvider.RakuzanAnime;
+        AnimeProvider.HiAnime;
         const response = await getEpisodeswithInfoZoro(id);
         return response;
     }

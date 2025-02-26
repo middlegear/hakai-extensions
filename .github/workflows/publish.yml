@@ -32,8 +32,8 @@ jobs:
       - name: Run test jikan
         run: pnpm test-jikan
 
-      - name: Run test rakuzan
-        run: pnpm test-rakuzan
+      - name: Run test Hianime
+        run: pnpm test-hianime
       
       - name: Lint
         run: pnpm lint

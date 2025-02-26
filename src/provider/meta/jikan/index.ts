@@ -10,7 +10,6 @@ import {
   getEpisodeInfo,
   getEpisodes,
   fetchAnimeProviderIdWithInfo,
-  // getEpisodeswithInfo,
   getTopUpcoming,
   type JIkanSearch,
   type JikanInfo,
@@ -52,7 +51,7 @@ class Jikan {
    * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Rakuzan anime
    * @returns { Promise<JikanProviderId2>} - The mapped providerId with anime details.
    */
-  async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.RakuzanAnime): Promise<JikanProviderId2> {
+  async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<JikanProviderId2> {
     return fetchAnimeProviderIdWithInfo(id, provider);
   }
   /**
@@ -63,7 +62,7 @@ class Jikan {
    */
   async fetchAnimeProviderEpisodes(
     id: number,
-    provider: AnimeProvider = AnimeProvider.RakuzanAnime,
+    provider: AnimeProvider = AnimeProvider.HiAnime,
   ): Promise<JikanMatchedEpisodes> {
     return getAnimeProviderEpisodes(id, provider);
   }

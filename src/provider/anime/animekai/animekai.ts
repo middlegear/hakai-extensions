@@ -5,9 +5,10 @@ import { providerClient } from '../../../config/clients';
 import { animekaiBaseUrl } from '../../../utils/constants';
 import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
-import { ErrorResponse, Info, searchRes, Servers, SubOrDub, SuccessResponse } from './types';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource } from '../../../types/types';
+import { ErrorResponse, Info, searchRes, Servers, SubOrDub, SuccessResponse } from './types';
+
 export interface SuccessSearchResponse extends SuccessResponse {
   data: searchRes[];
   hasNextPage: boolean;

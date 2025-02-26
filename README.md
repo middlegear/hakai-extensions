@@ -11,6 +11,9 @@
 > This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
 
 ---  
+## Note
+Apologies. 
+This version(1.0.1) makes changes for compatibilty with version 0.0.1, 0.0.2 and the deprecated providers have been removed. Instead there is a new provider.
 
 ## Features  
 
@@ -37,22 +40,11 @@ yarn add hakai-extensions
 
 ##  Usage  
 
-Import and fetch anime data from different sources:  
+Import required classes :  
 
 ```typescript
 import { Meta, Anime } from 'hakai-extensions';
-
-// Fetch anime details from Anilist
-const anilist = new Meta.Anilist();
-const animeData = await anilist.getAnime('Naruto');
-
-// Fetch episodes from a provider
-const hiAnime = new Anime.HiAnime();
-const episodes = await hiAnime.getEpisodes('One Piece');
-
-console.log(animeData, episodes);
 ```
-
 ---  
 
 ## 🏛 Modules and Classes  
@@ -295,8 +287,8 @@ The `Anime` class provides access to anime providers for sources
 
 #### **Structure**  
 
-- **`Anime.RakuzanAnime`**  
-- **`Anime.KagamiAnime`**  
+- **`Anime.HiAnime`**  
+- **`Anime.AnimeKai`**  
 
 #### **Example**  
 
