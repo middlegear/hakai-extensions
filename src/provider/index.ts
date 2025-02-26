@@ -7,6 +7,8 @@ import { Anime } from './anime/anime.js';
 import { AnimeKai } from './anime/animekai/index.js';
 import { HiAnime } from './anime/hianime/index.js';
 import { Meta } from './meta/meta.js';
+import { Anilist } from './meta/anilist/index.js';
+import { Jikan } from './meta/jikan/index.js';
 export {
   USER_AGENT_HEADER,
   ACCEPT_ENCODING,
@@ -21,4 +23,6 @@ export {
   Anime,
   HiAnime,
   Meta,
+  Anilist,
+  Jikan,
 };
