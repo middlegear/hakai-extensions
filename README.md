@@ -13,9 +13,9 @@
 ---  
 ## Note
 Apologies. 
-This version(1.0.1) makes changes for compatibilty with version 0.0.1, 0.0.2 and the deprecated providers have been removed. Instead there is a new provider.
+This version(1.0.1) makes changes for compatibilty with version 0.0.1, 0.0.2. 
 
-## Features  
+## Some Features  
 
 ✔ **Search Anime** – Look up anime by title with pagination.  
 ✔ **Fetch Anime Details** – Retrieve metadata such as synopsis, genres, and release dates.  
@@ -61,8 +61,6 @@ The `Meta` class provides **metadata retrieval** from various sources.
 #### **Examples**  
 
 ```typescript
-import { Meta } from 'hakai-extensions';
-
 const anilist = new Meta.Anilist();
 const data = await anilist.search('akame ga kill');
 ``` 
@@ -113,7 +111,7 @@ searching anime returns:
 ```
 ```typescript
 const jikan = new Meta.Jikan();
-const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.RakuzanAnime);
+const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.HiAnime);
 ```
 fetching provider episodes  returns: 
 ```json
@@ -293,9 +291,7 @@ The `Anime` class provides access to anime providers for sources
 #### **Example**  
 
 ```typescript
-import { Anime } from 'hakai-extensions';
-
-const zoro = new Anime.RakuzanAnime();
+const zoro = new Anime.HiAnime();
 const data = await zoro.fetchSources('bleach-thousand-year-blood-war-the-conflict-19322-episode-128578');
 console.log(data)
 ```
