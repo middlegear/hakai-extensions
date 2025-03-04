@@ -14,7 +14,7 @@ export type Anime = {
 };
 
 export type AnimeInfo = {
-  id: string | null;
+  animeId: string | null;
   title: string | null;
   AnilistId: number | null;
   MalId: number | null;

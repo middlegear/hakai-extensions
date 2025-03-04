@@ -50,7 +50,7 @@ export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.Se
 
 export function extractAnimeInfo($: cheerio.CheerioAPI) {
   const res: AnimeInfo = {
-    id: null,
+    animeId: null,
     title: null,
     AnilistId: null,
     MalId: null,
@@ -67,7 +67,7 @@ export function extractAnimeInfo($: cheerio.CheerioAPI) {
   const selector: cheerio.SelectorType = '.ani_detail-stage .anis-content ';
   const section = $(selector);
 
-  res.id = section?.find('.film-buttons .btn')?.attr('href')?.split('/')?.at(-1) || null;
+  res.animeId = section?.find('.film-buttons .btn')?.attr('href')?.split('/')?.at(-1) || null;
   res.title = $(selector)?.find('.anisc-detail .film-name.dynamic-name')?.text()?.trim() || null;
 
   const { mal_id, anilist_id } = JSON.parse($('#syncData').text().trim());

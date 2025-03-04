@@ -1,9 +1,12 @@
+import axios from 'axios';
 import { providerClient } from '../../provider';
 import { ASource } from '../../types/types';
+import { headers } from '../../provider/anime/animekai/animekai';
+
+//extractor for https://animekai.to
 
 export class MegaUp {
-  protected serverName: string = 'MegaUp';
-  protected sources = [];
+  protected sources: ASource[] = [];
 
   #reverseIt = (n: string) => {
     return n.split('').reverse().join('');
@@ -23,7 +26,7 @@ export class MegaUp {
     const v = Array.from({ length: 256 }, (_, i) => i);
     let c = 0,
       f = '';
-    //@ts-ignore
+
     for (let w = 0; w < 256; w++) {
       //@ts-ignore
       c = (c + v[w] + n.charCodeAt(w % n.length)) % 256;
@@ -52,41 +55,109 @@ export class MegaUp {
 
   GenerateToken = (n: string) => {
     n = encodeURIComponent(n);
-
-    n = this.#base64UrlEncode(this.#transform('gEUzYavPrGpj', this.#reverseIt(n)));
-
-    n = this.#substitute(n, 'U8nv0tEFGTb', 'bnGvE80UtTF');
-    n = this.#substitute(n, '9ysoRqBZHV', 'oqsZyVHBR9');
-    n = this.#reverseIt(this.#base64UrlEncode(this.#transform('CSk63F7PwBHJKa', n)));
-    n = this.#substitute(n, 'cKj9BMN15LsdH', 'NL5cdKs1jB9MH');
-    return this.#base64UrlEncode(this.#reverseIt(this.#base64UrlEncode(this.#transform('T2zEp1WHL9CsSk7', n))));
+    return (n = this.#base64UrlEncode(
+      this.#substitute(
+        this.#base64UrlEncode(
+          this.#transform(
+            'sXmH96C4vhRrgi8',
+            this.#reverseIt(
+              this.#reverseIt(
+                this.#base64UrlEncode(
+                  this.#transform(
+                    'kOCJnByYmfI',
+                    this.#substitute(
+                      this.#substitute(
+                        this.#reverseIt(this.#base64UrlEncode(this.#transform('0DU8ksIVlFcia2', n))),
+                        '1wctXeHqb2',
+                        '1tecHq2Xbw',
+                      ),
+                      '48KbrZx1ml',
+                      'Km8Zb4lxr1',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        'hTn79AMjduR5',
+        'djn5uT7AMR9h',
+      ),
+    ));
   };
   DecodeIframeData = (n: string) => {
-    n = this.#base64UrlDecode(this.#reverseIt(this.#base64UrlDecode(n)));
-    n = this.#transform('T2zEp1WHL9CsSk7', n);
-    n = this.#reverseIt(this.#substitute(n, 'NL5cdKs1jB9MH', 'cKj9BMN15LsdH'));
-    n = this.#transform('CSk63F7PwBHJKa', this.#base64UrlDecode(n));
-    n = this.#substitute(n, 'oqsZyVHBR9', '9ysoRqBZHV');
-    n = this.#base64UrlDecode(this.#substitute(n, 'bnGvE80UtTF', 'U8nv0tEFGTb'));
-    n = this.#reverseIt(this.#transform('gEUzYavPrGpj', n));
+    n = `${n}`;
+    n = this.#transform(
+      '0DU8ksIVlFcia2',
+      this.#base64UrlDecode(
+        this.#reverseIt(
+          this.#substitute(
+            this.#substitute(
+              this.#transform(
+                'kOCJnByYmfI',
+                this.#base64UrlDecode(
+                  this.#reverseIt(
+                    this.#reverseIt(
+                      this.#transform(
+                        'sXmH96C4vhRrgi8',
+                        this.#base64UrlDecode(this.#substitute(this.#base64UrlDecode(n), 'djn5uT7AMR9h', 'hTn79AMjduR5')),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              'Km8Zb4lxr1',
+              '48KbrZx1ml',
+            ),
+            '1tecHq2Xbw',
+            '1wctXeHqb2',
+          ),
+        ),
+      ),
+    );
     return decodeURIComponent(n);
   };
-
   Decode = (n: string) => {
-    n = this.#base64UrlDecode(this.#base64UrlDecode(n));
-    n = this.#reverseIt(this.#transform('E438hS1W9oRmB', n));
-    n = this.#reverseIt(this.#substitute(n, 'D5qdzkGANMQZEi', 'Q5diEGMADkZzNq'));
-    n = this.#base64UrlDecode(
-      this.#substitute(this.#transform('NZcfoMD7JpIrgQE', this.#base64UrlDecode(n)), 'kTr0pjKzBqZV', 'kZpjzTV0KqBr'),
+    n = this.#reverseIt(
+      this.#substitute(
+        this.#transform(
+          '5ygxI8hjLiuDQ0',
+          this.#base64UrlDecode(
+            this.#transform(
+              'z9cWnXuoDtx',
+              this.#base64UrlDecode(
+                this.#substitute(
+                  this.#reverseIt(
+                    this.#substitute(
+                      this.#transform(
+                        'EZnfG1IL6DF',
+                        this.#base64UrlDecode(this.#reverseIt(this.#base64UrlDecode((n = `${n}`)))),
+                      ),
+                      'M2DCEbQmWOe',
+                      'bEDCeOQ2mWM',
+                    ),
+                  ),
+                  'Lw7nfcTNz3FbWy',
+                  'TFf37zywcNWnLb',
+                ),
+              ),
+            ),
+          ),
+        ),
+        'HK0TOgYzU1C',
+        'T1CHYU0OKgz',
+      ),
     );
-    n = this.#reverseIt(this.#substitute(this.#transform('Gay7bxj5B81TJFM', n), 'zcUxoJTi3fgyS', 'oSgyJUfizcTx3'));
+
     return decodeURIComponent(n);
   };
 
   extract = async (videoUrl: URL) => {
     try {
       const url = videoUrl.href.replace(/\/(e|e2)\//, '/media/');
-      const res = await providerClient.get(url);
+      const res = await axios.get(url, {
+        headers: headers,
+      });
 
       const decrypted = JSON.parse(this.Decode(res.data.result).replace(/\\/g, ''));
       const data: ASource = {

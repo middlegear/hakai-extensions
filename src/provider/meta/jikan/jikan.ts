@@ -1067,13 +1067,11 @@ type titleRes = {
 };
 export interface SuccessJikanProviderId extends SuccessJIkanInfo {
   data: JIkanData;
-
-  zoro: titleRes;
+  animeProvider: titleRes;
 }
 export interface ErrorJikanProviderId extends ErrorJikanInfo {
   data: null;
-
-  zoro: null;
+  animeProvider: null;
 }
 export type JikanProviderId = SuccessJikanProviderId | ErrorJikanProviderId;
 async function getZoroProviderId(id: number): Promise<JikanProviderId> {
@@ -1082,7 +1080,7 @@ async function getZoroProviderId(id: number): Promise<JikanProviderId> {
       success: false,
       status: 400,
       data: null,
-      zoro: null,
+      animeProvider: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1124,36 +1122,26 @@ async function getZoroProviderId(id: number): Promise<JikanProviderId> {
       success: true,
       status: 200,
       data: Jikan.data,
-      zoro: data.zoro as titleRes,
+      animeProvider: data.zoro as titleRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-      zoro: null,
+      animeProvider: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
-export interface SuccessJikanProviderId2 extends SuccessJIkanInfo {
-  data: JIkanData;
-  KagamiAnime?: titleRes;
-  anime?: titleRes;
-}
-export interface ErrorJikanProviderId2 extends ErrorJikanInfo {
-  data: null;
-  KagamiAnime?: null;
-  anime?: null;
-}
-export type JikanProviderId2 = SuccessJikanProviderId2 | ErrorJikanProviderId2;
-async function getKaiProviderId(id: number): Promise<JikanProviderId2> {
+
+async function getKaiProviderId(id: number): Promise<JikanProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
-      KagamiAnime: null,
+      animeProvider: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1195,26 +1183,26 @@ async function getKaiProviderId(id: number): Promise<JikanProviderId2> {
       success: true,
       status: 200,
       data: Jikan.data,
-      KagamiAnime: data.kai as titleRes,
+      animeProvider: data.kai as titleRes,
     };
   } catch (error) {
     return {
       success: false,
       status: 500,
       data: null,
-      KagamiAnime: null,
+      animeProvider: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
 
-export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimeProvider): Promise<JikanProviderId2> {
+export async function getAnimeProviderIdWithInfo(id: number, provider: AnimeProvider): Promise<JikanProviderId> {
   if (!id) {
     return {
       success: false,
       status: 400,
       data: null,
-      anime: null,
+      animeProvider: null,
       error: 'Invalid or missing required parameter: id!',
     };
   }
@@ -1233,17 +1221,17 @@ export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimePr
       success: false,
       status: 500,
       data: null,
-      anime: null,
+      animeProvider: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
 
-type animeRes = {
-  episodeId: string;
-  number: number;
-  title: string;
-};
+// type animeRes = {
+//   episodeId: string;
+//   number: number;
+//   title: string;
+// };
 
 type CrossMatchedEpisodes = {
   episodeNumber: number;
@@ -1258,10 +1246,11 @@ type CrossMatchedEpisodes = {
 export interface SuccessEpisodesres extends SuccessResponse {
   data: JIkanData;
 
-  episodes: animeRes[] | CrossMatchedEpisodes[];
+  providerEpisodes: CrossMatchedEpisodes[];
 }
 export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
+  providerEpisodes: [];
 }
 export type JikanMatchedEpisodes = SuccessEpisodesres | ErrorEpisodesres;
 async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpisodes> {
@@ -1269,13 +1258,14 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
     return {
       success: false,
       status: 400,
+      providerEpisodes: [],
       data: null,
       error: 'Missing required parameter : id! || provider',
     };
   }
   try {
     const Jikan = await getZoroProviderId(jikanId);
-    const zoro = Jikan.zoro;
+    const zoro = Jikan.animeProvider;
 
     const fetchZoroEpisodes = async (animeId: string) => {
       const zoro = new HiAnime();
@@ -1320,7 +1310,7 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
         success: true,
         status: 200,
         data: Jikan.data,
-        episodes: matchingResults2 as CrossMatchedEpisodes[],
+        providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
       };
     }
   } catch (error) {
@@ -1328,12 +1318,14 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
       return {
         success: false,
         data: null,
+        providerEpisodes: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
     return {
       success: false,
       data: null,
+      providerEpisodes: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
@@ -1341,8 +1333,9 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
   return {
     success: false,
     data: null,
+    providerEpisodes: [],
     status: 500,
-    error: 'yea its messed up',
+    error: 'Check the MALId if its valid cause you cant get an null & empty res',
   };
 }
 async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpisodes> {
@@ -1350,20 +1343,21 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
     return {
       success: false,
       status: 400,
+      providerEpisodes: [],
       data: null,
       error: 'Missing required parameter : MALid! ',
     };
   }
   try {
     const Jikan = await getKaiProviderId(jikanId);
-    const kai = Jikan.KagamiAnime;
+    const kai = Jikan.animeProvider;
 
     const fetchKaiEpisodes = async (animeId: string) => {
       const kai = new AnimeKai();
       try {
         const result = await kai.fetchAnimeInfo(animeId);
         return (
-          result.episodes.map((item: any) => ({
+          result.providerEpisodes.map((item: any) => ({
             episodeId: item.episodeId,
             number: item.number,
             title: item.title,
@@ -1376,15 +1370,15 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
     };
 
     if (kai) {
-      const [kagamianime, aniMapping2] = await Promise.all([
+      const [animekaiProvider, aniMapping2] = await Promise.all([
         fetchKaiEpisodes(kai.animeId as string),
         getMalMapping(jikanId),
       ]);
 
-      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+      const episodeMap = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
 
-      const matchingResults2 = kagamianime?.map((anime: any) => {
-        const episodes = episodeMap2.get(anime.number);
+      const matchingResults2 = animekaiProvider?.map((anime: any) => {
+        const episodes = episodeMap.get(anime.number);
 
         return {
           episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
@@ -1401,7 +1395,7 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
         success: true,
         status: 200,
         data: Jikan.data,
-        episodes: matchingResults2 as CrossMatchedEpisodes[],
+        providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
       };
     }
   } catch (error) {
@@ -1409,6 +1403,7 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
       return {
         success: false,
         data: null,
+        providerEpisodes: [],
         error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
       };
@@ -1416,6 +1411,7 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
       success: false,
       data: null,
       status: 500,
+      providerEpisodes: [],
       error: error instanceof Error ? error.message : 'Unknown err ',
     };
   }
@@ -1423,7 +1419,8 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
     success: false,
     data: null,
     status: 500,
-    error: 'yea its messed up',
+    providerEpisodes: [],
+    error: 'Check the MALId if its valid cause you cant get an null & empty res',
   };
 }
 
@@ -1432,7 +1429,9 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
     return {
       success: false,
       status: 400,
+
       data: null,
+      providerEpisodes: [],
       error: 'Missing required parameter : id! || provider',
     };
   }
@@ -1452,6 +1451,7 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
       success: false,
       status: 500,
       data: null,
+      providerEpisodes: [],
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }

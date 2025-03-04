@@ -23,7 +23,7 @@ import {
   type AnilistRelatedData,
   type AnilistCharacters,
   type AnilistEpisodes,
-  type AnilistProviderId2,
+  type AnilistProviderId,
 } from './anilist.js';
 
 class Anilist {
@@ -51,9 +51,9 @@ class Anilist {
    * Fetches anime information returning a provider animeId.
    * @param {number} id - The Anilist anime ID (Required).
    * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Hianime
-   * @returns { Promise<AnilistProviderId2>} - An object containing provider animeId and anime info.
+   * @returns { Promise<AnilistProviderId>} - An object containing provider animeId and anime info.
    */
-  async fetchAnimeProviderId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<AnilistProviderId2> {
+  async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<AnilistProviderId> {
     return fetchAnimeProviderIdWithInfo(id, provider);
   }
 

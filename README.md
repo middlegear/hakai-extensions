@@ -11,10 +11,6 @@
 > This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
 
 ---  
-## Note
-Apologies. 
-This version(1.0.2) makes changes for compatibilty with version 0.0.1, 0.0.2. 
-
 ## Some Features  
 
 ✔ **Search Anime** – Look up anime by title with pagination.  
@@ -146,7 +142,7 @@ fetching provider episodes  returns:
     " studio": "[ [Object] ]",
    " producers": "[ [Object], [Object], [Object], [Object], [Object], [Object] ]"
   },
-  "episodes": [
+  "providerEpisodes": [
     {
       "episodeNumber": 1,
       "rating": 7.58,

@@ -1,13 +1,33 @@
 /// Gratitude goes to consumet
 
 import * as cheerio from 'cheerio';
-import { providerClient } from '../../../config/clients';
+
 import { animekaiBaseUrl } from '../../../utils/constants';
 import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource } from '../../../types/types';
 import { ErrorResponse, Info, searchRes, Servers, SubOrDub, SuccessResponse } from './types';
+import { providerClient } from '../../../config/clients';
+
+export const headers = {
+  Accept:
+    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Accept-Language': 'en-GB,en;q=0.9',
+  'Cache-Control': 'max-age=0',
+  Cookie: '_ga=GA1.1.552928217.1741113813; _ga_9Q0DLZGNGV=GS1.1.1741113812.1.0.1741113812.0.0.0',
+  'Sec-Ch-Ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+  'Sec-Ch-Ua-Mobile': '?0',
+  'Sec-Ch-Ua-Platform': '"Windows"',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'none',
+  'Sec-Fetch-User': '?1',
+  'Upgrade-Insecure-Requests': '1',
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+};
 
 export interface SuccessSearchResponse extends SuccessResponse {
   data: searchRes[];
@@ -21,6 +41,7 @@ export interface SearchErrorResponse extends ErrorResponse {
   totalPages: number;
   currentPage: number;
 }
+
 export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
 export async function searchanime(query: string, page: number): Promise<SearchResponse> {
   if (!query)
@@ -34,9 +55,9 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       error: 'Missing required Params : query',
     };
   try {
-    const response = await providerClient.get(
-      `${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`,
-    );
+    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`, {
+      headers: headers,
+    });
     const data$ = cheerio.load(response.data);
     const { res, searchresults } = extractsearchresults(data$);
     if (!searchresults) {
@@ -88,11 +109,11 @@ type episodes = {
 };
 export interface AnimeInfoSuccess extends SuccessResponse {
   data: Info;
-  episodes: episodes[];
+  providerEpisodes: episodes[];
 }
 export interface AnimeInfoError extends ErrorResponse {
   data: null;
-  episodes: [];
+  providerEpisodes: [];
 }
 export type AnimeInfoKai = AnimeInfoSuccess | AnimeInfoError;
 export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
@@ -102,21 +123,24 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       error: 'Missing required Params : animeId',
       status: 400,
       data: null,
-      episodes: [],
+      providerEpisodes: [],
     };
   }
   try {
-    const response = await providerClient.get(`${animekaiBaseUrl}/watch/${animeId}`);
+    const response = await axios.get(`${animekaiBaseUrl}/watch/${animeId}`, {
+      headers: headers,
+    });
     const data$ = cheerio.load(response.data);
     const { animeInfo } = extractAnimeInfo(data$);
 
     const ani_id = data$('.rate-box#anime-rating').attr('data-id');
-    const episodesAjax = await providerClient.get(
+    const episodesAjax = await axios.get(
       `${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${new MegaUp().GenerateToken(ani_id!)}`,
       {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           Referer: `${animekaiBaseUrl}/watch/${animeId}`,
+          ...headers,
         },
       },
     );
@@ -128,24 +152,24 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     }[] = [];
 
     episodes$('div.eplist > ul > li > a').each((i, el) => {
-      const episodeId = `${animeId}$ep=${episodes$(el).attr('num')}$token=${episodes$(el).attr('token')}` || null;
+      const episodeIdwithToken = `${animeId}$ep=${episodes$(el).attr('num')}$token=${episodes$(el).attr('token')}` || null;
       const number = Number(episodes$(el).attr('num')!);
       const title = episodes$(el).children('span').text().trim() || null;
 
       episodes?.push({
-        episodeId: episodeId,
+        episodeId: episodeIdwithToken,
         number: number,
         title: title,
       });
     });
 
-    return { success: true, status: 200, data: animeInfo, episodes: episodes };
+    return { success: true, status: 200, data: animeInfo, providerEpisodes: episodes };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         status: error.response?.status || 500,
         data: null,
-        episodes: [],
+        providerEpisodes: [],
         error: `Request failed: ${error.message}` || 'Unknown axios error',
         success: false,
       };
@@ -153,14 +177,24 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       success: false,
       status: 500,
       data: null,
-      episodes: [],
+      providerEpisodes: [],
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }
 }
-type serverInfo = {
+type Intro = {
+  start: number;
+  end: number;
+};
+type Outro = {
+  start: number;
+  end: number;
+};
+export type serverInfo = {
   name: string;
   url: string;
+  // intro: Intro;
+  // outro: Outro;
 };
 export interface SuccessServerInfo extends SuccessResponse {
   data: serverInfo[];
@@ -168,6 +202,10 @@ export interface SuccessServerInfo extends SuccessResponse {
 export interface ErrorServerInfo extends ErrorResponse {
   data: [];
 }
+// broken from here
+/// i guess puppeteer can do wonders just pass the episodeID with out the token stuff eg like below and wait for ajax links to generate stuff html document called server notice
+//
+// https://animekai.to/watch/dragon-ball-daima-ypr6#ep=4
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function getEpisodeServers(episodeId: string, category: SubOrDub): Promise<ServerInfoResponse> {
   if (!episodeId) {
@@ -178,34 +216,49 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
       error: 'Missing required params episodeId',
     };
   }
-  if (!episodeId.startsWith(animekaiBaseUrl + '/ajax'))
-    episodeId = `${animekaiBaseUrl}/ajax/links/list?token=${episodeId.split('$token=')[1]}&_=${new MegaUp().GenerateToken(
-      episodeId.split('$token=')[1] ?? '',
-    )}`;
+  // undefined can really give 404
+  //my id   'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=5$token=O9jut_zlt0e70m9Qj5SD
+  const tokenstuff = episodeId.split('$token=')[1];
+  if (tokenstuff)
+    episodeId = `${animekaiBaseUrl}/ajax/links/list?token=${tokenstuff}&_=${new MegaUp().GenerateToken(tokenstuff)}`;
   try {
-    const { data } = await providerClient.get(episodeId);
-    const $: cheerio.CheerioAPI = cheerio.load(data.result);
-    const servers: {
-      name: string;
-      url: string;
-    }[] = [];
+    const { data } = await axios.get(episodeId, {
+      headers: {
+        Referer: animekaiBaseUrl,
+        ...headers,
+      },
+    });
+    const $ = cheerio.load(data.result);
+    const servers: serverInfo[] = [];
     const serverItems = $(`.server-items.lang-group[data-id="${category}"] .server`);
     await Promise.all(
       serverItems.map(async (i, server) => {
         const id = $(server).attr('data-lid');
         const { data } = await providerClient.get(
           `${animekaiBaseUrl}/ajax/links/view?id=${id}&_=${new MegaUp().GenerateToken(id!)}`,
+          {
+            headers: headers,
+          },
         );
+        const decodedData = JSON.parse(new MegaUp().DecodeIframeData(data.result));
         servers.push({
           name: `MegaUp ${$(server).text().trim()}`!,
-          url: JSON.parse(new MegaUp().DecodeIframeData(data.result)).url,
+          url: decodedData.url,
+          // intro: {
+          //   start: decodedData?.skip.intro[0],
+          //   end: decodedData?.skip.intro[1],
+          // },
+          // outro: {
+          //   start: decodedData?.skip.outro[0],
+          //   end: decodedData?.skip.outro[1],
+          // },
         });
       }),
     );
     return {
       success: true,
       status: 200,
-      data: servers as serverInfo[],
+      data: servers,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
@@ -268,9 +321,7 @@ export async function getEpisodeSources(
 
   try {
     const servers = await getEpisodeServers(episodeId, category);
-
     const urlIndex = servers.data.findIndex(s => s.name.toLowerCase().includes(server));
-
     if (urlIndex === -1) {
       return {
         success: false,
@@ -279,10 +330,9 @@ export async function getEpisodeSources(
         error: `Server ${server} not found check the class `,
       };
     }
-    //@ts-ignore   will have to be improved possible undefined error
+    //@ts-ignore
     const serverUrl: URL = new URL(servers.data[urlIndex].url);
-
-    return await getEpisodeSources(serverUrl.href, category, Servers.MegaUp);
+    return await getEpisodeSources(serverUrl.href, category, server);
   } catch (error) {
     if (axios.isAxiosError(error))
       return {

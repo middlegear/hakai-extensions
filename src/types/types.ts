@@ -18,8 +18,8 @@ export type ASource = {
     start: number | null;
     end: number | null;
   };
-  subtitles: Subtitles[];
-  sources: Source[];
+  subtitles?: Subtitles[];
+  sources?: Source[];
   download?: string;
 };
 
