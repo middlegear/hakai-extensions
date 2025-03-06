@@ -1,4 +1,4 @@
-import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
+import { AnimeProvider, Format, Seasons, JikanStatus } from '../../../types/types.js';
 import {
   getAnimeCharacters,
   getCurrentSeason,
@@ -25,40 +25,40 @@ import {
 
 class Jikan {
   /**
-   * Searches for anime by query.
-   * @param {string} query - The search query (Required).
-   * @param {number} [page=1] - The page number.
-   * @param {number} [limit=25] - Number of results per page.
- 
-   * @returns {Promise<JIkanSearch>} - The search results.
+   * Searches for anime based on the provided query.
+   * @param {string} query - The search query (required).
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @returns {Promise<JIkanSearch>} - An array of anime related to the search query.
    */
-  async search(query: string, page: number = 1, limit: number = 1): Promise<JIkanSearch> {
-    return searchAnime(query, page, limit);
+  async search(query: string, page: number = 1, perPage: number = 20): Promise<JIkanSearch> {
+    return searchAnime(query, page, perPage);
   }
 
   /**
-   * Fetches anime details by MAL ID.
-   * @param {number} id - The MAL ID (Required).
-   * @returns {Promise<JikanInfo>} - The anime information.
+   * Fetches detailed information about an anime.
+   * @param {number} id - The MAL ID (required).
+   * @returns {Promise<JikanInfo>} - An object containing detailed anime information.
    */
   async fetchInfo(id: number): Promise<JikanInfo> {
     return getInfoById(id);
   }
 
   /**
-   * Fetches anime provider mappings for an anime.
-   * @param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} provider - AnimeProvider enum (optinal). Default is Hianime
-   * @returns { Promise<JikanProviderId>} - The mapped providerId with anime details.
+   * Fetches anime information along with a provider-specific anime ID.
+   * @param {number} id - The MAL ID (required).
+   * @param {AnimeProvider} [provider=AnimeProvider.HiAnime] - The anime provider (optional, defaults to AnimeProvider.HiAnime or 'hianime').
+   * @returns {Promise<JikanProviderId>} - An object containing the provider anime ID and anime info.
    */
   async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<JikanProviderId> {
     return getAnimeProviderIdWithInfo(id, provider);
   }
+
   /**
-   * Fetches anime provider episodes for an anime.
-   * @param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} provider -AnimeProvider enum (optinal). Default is Hianime
-   * @returns { Promise<JikanMatchedEpisodes>} - The animeInfo with Episodes
+   * Fetches anime information along with provider-specific episodes.
+   * @param {number} id - The MAL ID (required).
+   * @param {AnimeProvider} [provider=AnimeProvider.HiAnime] - The anime provider (optional, defaults to AnimeProvider.HiAnime or 'hianime').
+   * @returns {Promise<JikanMatchedEpisodes>} - An object containing anime info with provider episodes.
    */
   async fetchAnimeProviderEpisodes(
     id: number,
@@ -66,126 +66,132 @@ class Jikan {
   ): Promise<JikanMatchedEpisodes> {
     return getAnimeProviderEpisodes(id, provider);
   }
+
   /**
    * Fetches characters for a given anime.
-   * @param {number} id - The MAL ID (Required).
-   * @returns {Promise<JikanCharacters>} - The anime characters.
+   * @param {number} id - The MAL ID (required).
+   * @returns {Promise<JikanCharacters>} - An array of anime characters.
    */
   async fetchAnimeCharacters(id: number): Promise<JikanCharacters> {
     return getAnimeCharacters(id);
   }
 
   /**
-   * Fetches top anime based on filters.
-   * @param {number} [page=1] - The page number. defaults to 1 Optional
-   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
-   * @returns { Promise<JikanTopAnime>} - The top anime list.
+   * Fetches the most anticipated upcoming anime.
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @returns {Promise<JikanTopAnime>} - An array of upcoming anime resources.
    */
-  async fetchTopUpcoming(page: number = 1, limit: number = 25, status: Status = Status.Upcoming): Promise<JikanTopAnime> {
-    return getTopUpcoming(page, limit, status);
+  async fetchTopUpcoming(
+    page: number = 1,
+    perPage: number = 20,
+    status: JikanStatus = JikanStatus.Upcoming,
+  ): Promise<JikanTopAnime> {
+    return getTopUpcoming(page, perPage, status);
   }
 
   /**
-   * Fetches top airing anime.
-   * @param {number} [page=1] - The page number. defaults to 1 Optional
-   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
-   * @returns { Promise<JikanTopAnime> } - The top airing list.
+   * Fetches the top airing anime.
+   * @param {number} [page] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage] - Number of results per page (optional, defaults to 20). Max 25
+   * @param {Format} [format] - The format type (optional, defaults to Format.TV).
+   * @returns {Promise<JikanTopAnime>} - The top airing anime list.
    */
   async fetchTopAiring(
     page: number = 1,
-    limit: number = 25,
-    filter: Status = Status.Airing,
-    type: Format = Format.TV,
+    perPage: number = 20,
+    format: Format = Format.TV,
+    filter: JikanStatus = JikanStatus.Airing,
   ): Promise<JikanTopAnime> {
-    return getTopAnime(page, limit, filter, type);
+    return getTopAnime(page, perPage, filter, format);
   }
 
   /**
-   * Fetches top movies type category.
-   * @param {number} [page=1] - The page number. defaults to 1 Optional
-   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional.
-   * @returns { Promise<JikanTopAnime> } - The top Movie category
+   * Fetches the top anime movies.
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @returns {Promise<JikanTopAnime>} - The top anime movies list.
    */
   async fetchTopMovies(
     page: number = 1,
-    limit: number = 25,
-    filter: Status = Status.Favourite,
-    type: Format = Format.MOVIE,
+    perPage: number = 20,
+    filter: JikanStatus = JikanStatus.Favourite,
+    format: Format = Format.MOVIE,
   ): Promise<JikanTopAnime> {
-    return getTopAnime(page, limit, filter, type);
-  }
-  /**
-   * Fetches most popular anime category.
-   * @param {number} [page=1] - The page number. defaults to 1 Optional
-   * @param {number} [limit=25] - Number of results per page.. defaults to 25 optional
-   * @returns {Promise<JikanTopAnime>} - The most popular anime resource
-   */
-  async fetchMostPopular(
-    page: number = 1,
-    limit: number = 25,
-    filter: Status = Status.Popularity,
-    type: Format = Format.TV,
-  ): Promise<JikanTopAnime> {
-    return getTopAnime(page, limit, filter, type);
-  }
-  /**
-   * Fetches seasonal anime for a given year and season.
-   * 
-   * @param {number} year - The target year (Required).
-   * @param {Season} season - The target season (winter, fall, etc.).
-   * @param {number} [page=1] - The page number.
-   * @param {number} [limit=25] - Number of results per page.
-   * @param {Format} [Format = Format.TV] - The format type defaults to tv
-  
-   * @returns {Promise<JikanSeason> } - The seasonal anime list.
-   */
-  async fetchSeason(
-    year: number,
-    season: Seasons,
-    page: number = 1,
-    limit: number = 25,
-    format: Format = Format.TV,
-  ): Promise<JikanSeason> {
-    return getSeason(year, season, format, page, limit);
+    return getTopAnime(page, perPage, filter, format);
   }
 
   /**
-   * Fetches currently airing seasonal anime.
-   *
-   * @param {number} [page=1] - The page number.
-   * @param {number} [limit=25] - Number of results per page.
-   * @param {Format} [Format = Format.TV] - The format type defaults to tv
-   * @returns {Promise<JikanSeason> } - The current seasonal anime.
+   * Fetches the most popular anime.
+   * @param {number} [page] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage] - Number of results per page (optional, defaults to 20). Max 25
+   * @param {Format} [format] - The format type (optional, defaults to Format.TV).
+   * @returns {Promise<JikanTopAnime>} - The most popular anime list.
    */
-  async fetchCurrentSeason(page: number = 1, limit: number = 25, format: Format = Format.TV): Promise<JikanSeason> {
-    return getCurrentSeason(page, limit, format);
+  async fetchMostPopular(
+    page: number = 1,
+    perPage: number = 20,
+    format: Format = Format.TV,
+    filter: JikanStatus = JikanStatus.Popularity,
+  ): Promise<JikanTopAnime> {
+    return getTopAnime(page, perPage, filter, format);
+  }
+
+  /**
+   * Fetches seasonal anime for a given year and season.
+   * @param {Seasons} season - The target season (e.g., WINTER, FALL) (required).
+   * @param {number} year - The target year (required).
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @param {Format} [format=Format.TV] - The format type (optional, defaults to Format.TV).
+   * @returns {Promise<JikanSeason>} - The seasonal anime list.
+   */
+  async fetchSeason(
+    season: Seasons,
+    year: number,
+    page: number = 1,
+    perPage: number = 20,
+    format: Format = Format.TV,
+  ): Promise<JikanSeason> {
+    return getSeason(year, season, format, page, perPage);
+  }
+
+  /**
+   * Fetches the current seasonal anime.
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @param {Format} [format=Format.TV] - The format type (optional, defaults to Format.TV).
+   * @returns {Promise<JikanSeason>} - The current seasonal anime list.
+   */
+  async fetchCurrentSeason(page: number = 1, perPage: number = 20, format: Format = Format.TV): Promise<JikanSeason> {
+    return getCurrentSeason(page, perPage, format);
   }
 
   /**
    * Fetches anime for the upcoming season.
-   * @param {Format} [Format = Format.TV] - The format type defaults to tv
-   * @param {number} [page=1] - The page number.
-   * @param {number} [limit=25] - Number of results per page.
-   * @returns {Promise<JikanSeason>} - The upcoming season's anime.
+   * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
+   * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
+   * @param {Format} [format=Format.TV] - The format type (optional, defaults to Format.TV).
+   * @returns {Promise<JikanSeason>} - The upcoming season's anime list.
    */
-  async fetchNextSeason(page: number = 1, limit: number = 25, format: Format = Format.TV): Promise<JikanSeason> {
-    return getNextSeason(page, limit, format);
+  async fetchNextSeason(page: number = 1, perPage: number = 20, format: Format = Format.TV): Promise<JikanSeason> {
+    return getNextSeason(page, perPage, format);
   }
 
   /**
-   * Fetches episode list for a given anime.
-   * @param {number} id - The MAL ID (Required).
-   * @param {number} [page=1] - The page number.
-   * @returns { Promise<JikanEpisodes>} - The anime episodes.
+   * Fetches the episode list for a given anime from MyAnimeList (MAL).
+   * @param {number} id - The MAL ID (required).
+   * @param {number} [page=1] - The page number (optional, defaults to 1).
+   * @returns {Promise<JikanEpisodes>} - The anime episodes list.
    */
   async fetchMalEpisodes(id: number, page: number = 1): Promise<JikanEpisodes> {
     return getEpisodes(id, page);
   }
 
   /**
-   * Fetches detailed information about a specific episode.
-   * @param {number} id - The MAL ID (Required).
-   * @param {number} episodeNumber - The episode number (Required).
+   * Fetches detailed information about a specific episode from MyAnimeList (MAL).
+   * @param {number} id - The MAL ID (required).
+   * @param {number} episodeNumber - The episode number (required).
    * @returns {Promise<JikanEpisodeInfo>} - The episode details.
    */
   async fetchMalEpisodeInfo(id: number, episodeNumber: number): Promise<JikanEpisodeInfo> {

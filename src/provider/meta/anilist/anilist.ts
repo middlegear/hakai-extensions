@@ -12,11 +12,12 @@ import {
   topQuery,
 } from './queries.js';
 
-import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
+import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, AnilistStatus } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
 import { USER_AGENT_HEADER } from '../../index.js';
 import { AnimeKai } from '../../anime/animekai/index.js';
 import { HiAnime } from '../../anime/hianime/index.js';
+import { normalizeUpperCaseFormat, normalizeUpperCaseSeason } from '../../../utils/normalize.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -84,7 +85,7 @@ export async function searchAnime(
   search: string,
   page: number,
   perPage: number,
-  type: MediaType = MediaType.Anime,
+  type: MediaType = MediaType.ANIME,
   isAdult: boolean = false,
 ): Promise<AnilistSearch> {
   if (!search) {
@@ -344,8 +345,8 @@ export type AnilistUpcoming = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchUpcoming(
   page: number,
   perPage: number,
-  type: MediaType = MediaType.Anime,
-  status: Status = Status.NOT_YET_RELEASED,
+  type: MediaType = MediaType.ANIME,
+  status: AnilistStatus = AnilistStatus.NOT_YET_RELEASED,
   isAdult: boolean = false,
   sort: Sort = Sort.POPULARITY_DESC,
 ): Promise<AnilistUpcoming> {
@@ -455,9 +456,9 @@ export type AnilistTopAiring = SuccessAnilistResponse | ErrorAnilistResponse;
 export async function fetchTopAiring(
   page: number,
   perPage: number,
-  type: MediaType = MediaType.Anime,
+  type: MediaType = MediaType.ANIME,
   format: Format = Format.TV,
-  status: Status = Status.RELEASING,
+  status: AnilistStatus = AnilistStatus.RELEASING,
   isAdult: boolean = false,
   sort: Sort = Sort.SCORE_DESC,
 ): Promise<AnilistTopAiring> {
@@ -580,12 +581,13 @@ export async function fetchPopular(
   page: number,
   perPage: number,
   format: Format,
-  type: MediaType = MediaType.Anime,
+  type: MediaType = MediaType.ANIME,
   isAdult: boolean = false,
   sort: Sort = Sort.POPULARITY_DESC,
 ): Promise<AnilistMostPopular> {
+  const newformat = normalizeUpperCaseFormat(format);
   try {
-    const variables = { page, perPage, type, format, isAdult, sort };
+    const variables = { page, perPage, type, newformat, isAdult, sort };
     const response = await axios.post(
       baseURL,
       {
@@ -705,11 +707,12 @@ export async function fetchTopRated(
   perPage: number,
   format: Format,
   isAdult: boolean = false,
-  type: MediaType = MediaType.Anime,
+  type: MediaType = MediaType.ANIME,
   sort: Sort = Sort.SCORE_DESC,
 ): Promise<AnilistTopRated> {
+  const newformat = normalizeUpperCaseFormat(format);
   try {
-    const variables = { page, perPage, type, format, isAdult, sort };
+    const variables = { page, perPage, type, newformat, isAdult, sort };
     const response = await axios.post(
       baseURL,
       {
@@ -831,7 +834,7 @@ export async function fetchSeason(
   perPage: number,
   format: Format,
   isAdult: boolean = false,
-  type: MediaType = MediaType.Anime,
+  type: MediaType = MediaType.ANIME,
   sort: Sort = Sort.POPULARITY_DESC,
 ): Promise<AnilistSeason> {
   if (!season || !seasonYear) {
@@ -847,14 +850,17 @@ export async function fetchSeason(
       error: 'Missing a required param : season | seasonYear',
     };
   }
+  const newformat = normalizeUpperCaseFormat(format);
   try {
+    const newseason = normalizeUpperCaseSeason(season);
+
     const variables = {
       page,
       perPage,
       type,
-      format,
+      newformat,
       isAdult,
-      season,
+      newseason,
       seasonYear,
       sort,
     };
@@ -1110,7 +1116,7 @@ export interface ErrorRelatedRes extends ErrorResponse {
   data: [];
 }
 export type AnilistRelatedData = SuccessRelatedRes | ErrorRelatedRes;
-export async function getRelated(mediaId: number, type: MediaType = MediaType.Anime): Promise<AnilistRelatedData> {
+export async function getRelated(mediaId: number, type: MediaType = MediaType.ANIME): Promise<AnilistRelatedData> {
   if (!mediaId)
     return {
       success: false,

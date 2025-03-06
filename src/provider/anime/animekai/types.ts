@@ -32,6 +32,7 @@ export type Info = {
   totalEpisodes: null | number;
 };
 
-export enum Servers {
-  MegaUp = 'megaup',
-}
+export const AnimeKaiServers = {
+  MegaUp: 'megaup',
+};
+export type AnimeKaiServers = (typeof AnimeKaiServers)[keyof typeof AnimeKaiServers];

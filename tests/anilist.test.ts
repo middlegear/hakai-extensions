@@ -42,18 +42,18 @@ test('fetch characters', async () => {
 });
 
 test('fetch popular anime', async () => {
-  const data = await anilist.fetchMostPopular(1, 25);
+  const data = await anilist.fetchMostPopular(1, 25, 'ONA');
   expect(data.data).not.toEqual([]);
 });
 
 test('fetch top rated anime', async () => {
-  const data = await anilist.fetchTopRatedAnime(1, 3);
+  const data = await anilist.fetchTopRatedAnime(1, 3, 'MUSIC');
 
   expect(data.data).not.toEqual([]);
 });
 
 test('fetch seasonal anime', async () => {
-  const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 10);
+  const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 10, 'ONA');
 
   expect(data.data).not.toEqual([]);
 });

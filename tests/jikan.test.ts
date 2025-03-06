@@ -16,27 +16,27 @@ test('fetch top upcoming anime', async () => {
   await wait(800);
 });
 test('fetch top airing anime', async () => {
-  const data = await jikan.fetchTopAiring();
+  const data = await jikan.fetchTopAiring(1, 25);
   expect(data.data).not.toEqual([]);
 
   await wait(800);
 });
 test('fetch most popular anime', async () => {
-  const data = await jikan.fetchMostPopular();
+  const data = await jikan.fetchMostPopular(1, 20, 'MOVIE', 'airing');
   expect(data.data).not.toEqual([]);
 
   await wait(800);
 });
 
 test('fetch top movies category', async () => {
-  const data = await jikan.fetchTopMovies();
+  const data = await jikan.fetchTopMovies(1, 20, 'bypopularity', 'OVA');
   expect(data.data).not.toEqual([]);
 
   await wait(800);
 });
 
 test('fetch anime by season', async () => {
-  const data = await jikan.fetchSeason(2023, Seasons.FALL);
+  const data = await jikan.fetchSeason(Seasons.FALL, 2022);
   expect(data.data).not.toEqual([]);
   await wait(800);
 });
@@ -75,7 +75,7 @@ test('fetch provider animeId', async () => {
 });
 
 test('fetch anime current season', async () => {
-  const data = await jikan.fetchCurrentSeason();
+  const data = await jikan.fetchCurrentSeason(1, 20);
 
   expect(data.data).not.toEqual([]);
   await wait(800);

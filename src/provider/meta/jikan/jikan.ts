@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { AnimeProvider, Format, Seasons, Status } from '../../../types/types.js';
+import { AnimeProvider, Format, Seasons, JikanStatus } from '../../../types/types.js';
 import { bestTitleMatch } from '../../../utils/mapper.js';
 import { getMalMapping } from '../anizip/index.js';
 import { HiAnime } from '../../anime/hianime/index.js';
 import { AnimeKai } from '../../anime/animekai/index.js';
+import { normalizeLowerCaseSeason, normalizeLowerCaseFormat } from '../../../utils/normalize.js';
 
 const jikanBaseUrl = 'https://api.jikan.moe/v4';
 
@@ -602,10 +603,11 @@ export async function getSeason(
     };
   }
   try {
-    const newSeason = season.toLowerCase();
-    const newFormat = filter.toLowerCase();
+    const newseason = normalizeLowerCaseSeason(season);
+
+    const format = normalizeLowerCaseFormat(filter);
     const { data } = await axios.get(
-      `${jikanBaseUrl}/seasons/${year}/${newSeason}?filter=${newFormat}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/seasons/${year}/${newseason}?filter=${format}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {
@@ -709,7 +711,7 @@ export async function getSeason(
   }
 }
 export type JikanTopAnime = SuccessJIkanRes | ErrorJIkanRes;
-export async function getTopUpcoming(page: number, perPage: number, filter: Status): Promise<JikanTopAnime> {
+export async function getTopUpcoming(page: number, perPage: number, filter: JikanStatus): Promise<JikanTopAnime> {
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`);
     if (!data)
@@ -813,12 +815,11 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Stat
     };
   }
 }
-export async function getTopAnime(page: number, limit: number, filter: Status, type: Format): Promise<JikanTopAnime> {
-  const newType = type.toLowerCase();
-
+export async function getTopAnime(page: number, limit: number, filter: JikanStatus, type: Format): Promise<JikanTopAnime> {
+  const format = normalizeLowerCaseFormat(type);
   try {
     const { data } = await axios.get(
-      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${newType}&?sfw&page=${page}&limit=${limit}`,
+      `${jikanBaseUrl}/top/anime?filter=${filter}&type=${format}&?sfw&page=${page}&limit=${limit}`,
     );
     if (!data)
       return {

@@ -47,11 +47,11 @@ export type ServerInfo = {
   episodeNumber: number | null;
 };
 
-export enum HiAnimeServers {
-  HD1 = 'hd-1',
-  HD2 = 'hd-2',
-}
-
+export const HiAnimeServers = {
+  HD1: 'hd-1',
+  HD2: 'hd-2',
+};
+export type HiAnimeServers = (typeof HiAnimeServers)[keyof typeof HiAnimeServers];
 export interface ErrorResponse {
   success: boolean;
   status: number;

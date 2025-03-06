@@ -7,7 +7,7 @@ import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource, SubOrDub } from '../../../types/types';
-import { ErrorResponse, Info, searchRes, Servers, SuccessResponse } from './types';
+import { ErrorResponse, Info, searchRes, AnimeKaiServers, SuccessResponse } from './types';
 import { providerClient } from '../../../config/clients';
 
 export const headers = {
@@ -289,7 +289,7 @@ export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
 export async function getEpisodeSources(
   episodeId: string,
   category: SubOrDub,
-  server: Servers = Servers.MegaUp,
+  server: AnimeKaiServers = AnimeKaiServers.MegaUp,
 ): Promise<SourceResponse> {
   if (!episodeId) {
     return {
@@ -302,7 +302,7 @@ export async function getEpisodeSources(
   if (episodeId.startsWith('http')) {
     const serverUrl = new URL(episodeId);
     switch (server) {
-      case Servers.MegaUp:
+      case AnimeKaiServers.MegaUp:
         return {
           headers: { Referer: serverUrl.href },
           success: true,
