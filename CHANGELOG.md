@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.4] - 2025-03-6
 ### Fixed 
-- Export enums
+- Nuke enums
 
 ## [1.0.3] - 2025-03-4
 ### Fixed 

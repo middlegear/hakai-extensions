@@ -34,5 +34,5 @@ export type Info = {
 
 export const AnimeKaiServers = {
   MegaUp: 'megaup',
-};
+} as const;
 export type AnimeKaiServers = (typeof AnimeKaiServers)[keyof typeof AnimeKaiServers];

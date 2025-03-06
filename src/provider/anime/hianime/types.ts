@@ -50,7 +50,7 @@ export type ServerInfo = {
 export const HiAnimeServers = {
   HD1: 'hd-1',
   HD2: 'hd-2',
-};
+} as const;
 export type HiAnimeServers = (typeof HiAnimeServers)[keyof typeof HiAnimeServers];
 export interface ErrorResponse {
   success: boolean;
