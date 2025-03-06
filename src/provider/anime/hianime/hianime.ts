@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Servers, SubOrDub, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
+import { HiAnimeServers, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -9,7 +9,7 @@ import {
 } from './scraper.js';
 import { providerClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
 import axios from 'axios';
-import { ASource } from '../../../types/types.js';
+import { ASource, SubOrDub } from '../../../types/types.js';
 
 export interface SuccessSearchResponse extends SuccessResponse {
   data: Anime[];
@@ -292,7 +292,11 @@ export interface ErrorSourceRes extends ErrorResponse {
   data: null;
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
-export async function fetchEpisodeSources(episodeid: string, server: Servers, category: SubOrDub): Promise<SourceResponse> {
+export async function fetchEpisodeSources(
+  episodeid: string,
+  server: HiAnimeServers,
+  category: SubOrDub,
+): Promise<SourceResponse> {
   if (!episodeid) {
     return {
       success: false,
@@ -322,12 +326,12 @@ export async function fetchEpisodeSources(episodeid: string, server: Servers, ca
 
     try {
       switch (server) {
-        case Servers.HD1: {
+        case HiAnimeServers.HD1: {
           mediadataId = extractAnimeServerId(datares$, 4, category);
           if (!mediadataId) throw new Error('HD1 not found');
           break;
         }
-        case Servers.HD2: {
+        case HiAnimeServers.HD2: {
           mediadataId = extractAnimeServerId(datares$, 1, category);
           if (!mediadataId) throw new Error('HD2 not found');
           break;

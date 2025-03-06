@@ -22,7 +22,10 @@ export type ASource = {
   sources?: Source[];
   download?: string;
 };
-
+export enum SubOrDub {
+  SUB = 'sub',
+  DUB = 'dub',
+}
 export enum MediaType {
   Anime = 'ANIME',
 }

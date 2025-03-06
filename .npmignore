@@ -5,8 +5,9 @@ src
 tests
 
 README.md
-animez.md
+
 
 tsconfig.json
 tsup.config.ts
 vitest.config.ts
+todo.md

@@ -6,8 +6,8 @@ import { animekaiBaseUrl } from '../../../utils/constants';
 import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
-import { ASource } from '../../../types/types';
-import { ErrorResponse, Info, searchRes, Servers, SubOrDub, SuccessResponse } from './types';
+import { ASource, SubOrDub } from '../../../types/types';
+import { ErrorResponse, Info, searchRes, Servers, SuccessResponse } from './types';
 import { providerClient } from '../../../config/clients';
 
 export const headers = {

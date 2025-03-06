@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
-import { AnimeKai } from '../src/provider';
-import { SubOrDub } from '../src/provider/anime/animekai/types';
+import { AnimeKai, SubOrDub } from '../src/provider';
+
 const animekai = new AnimeKai();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 test('search anime ', async () => {

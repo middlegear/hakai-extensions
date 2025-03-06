@@ -48,7 +48,7 @@ class Jikan {
   /**
    * Fetches anime provider mappings for an anime.
    * @param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Rakuzan anime
+   * @param {AnimeProvider} provider - AnimeProvider enum (optinal). Default is Hianime
    * @returns { Promise<JikanProviderId>} - The mapped providerId with anime details.
    */
   async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<JikanProviderId> {
@@ -57,7 +57,7 @@ class Jikan {
   /**
    * Fetches anime provider episodes for an anime.
    * @param {number} id - The MAL ID (Required).
-   * @param {AnimeProvider} provider -AnimeProvider(optinal). Default is Rakuzan anime
+   * @param {AnimeProvider} provider -AnimeProvider enum (optinal). Default is Hianime
    * @returns { Promise<JikanMatchedEpisodes>} - The animeInfo with Episodes
    */
   async fetchAnimeProviderEpisodes(

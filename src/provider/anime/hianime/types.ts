@@ -47,14 +47,9 @@ export type ServerInfo = {
   episodeNumber: number | null;
 };
 
-export enum Servers {
+export enum HiAnimeServers {
   HD1 = 'hd-1',
   HD2 = 'hd-2',
-}
-
-export enum SubOrDub {
-  SUB = 'sub',
-  DUB = 'dub',
 }
 
 export interface ErrorResponse {

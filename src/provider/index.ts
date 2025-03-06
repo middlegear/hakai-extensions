@@ -3,12 +3,12 @@ import { USER_AGENT_HEADER, ACCEPT_ENCODING, ACCEPT_HEADER } from '../config/hea
 import MegaCloud from '../source-extractors/megacloud/index.js';
 import { MegaUp } from '../source-extractors/megaup/megaup.js';
 import { animekaiBaseUrl, zoroBaseUrl, zoroSearch } from '../utils/constants.js';
-import { Anime } from './anime/anime.js';
 import { AnimeKai } from './anime/animekai/index.js';
 import { HiAnime } from './anime/hianime/index.js';
 import { Meta } from './meta/meta.js';
 import { Anilist } from './meta/anilist/index.js';
 import { Jikan } from './meta/jikan/index.js';
+import { SubOrDub } from '../types/types.js';
 export {
   USER_AGENT_HEADER,
   ACCEPT_ENCODING,
@@ -20,7 +20,7 @@ export {
   MegaCloud,
   MegaUp,
   AnimeKai,
-  Anime,
+  SubOrDub,
   HiAnime,
   Meta,
   Anilist,

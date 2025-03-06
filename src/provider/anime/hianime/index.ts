@@ -1,3 +1,4 @@
+import { SubOrDub } from '../../index.js';
 import {
   fetchAnimeInfo,
   fetchEpisodeSources,
@@ -10,7 +11,7 @@ import {
   type ServerInfoResponse,
   type SourceResponse,
 } from './hianime.js';
-import { SubOrDub, Servers } from './types.js';
+import { HiAnimeServers } from './types.js';
 
 class HiAnime {
   /**
@@ -49,13 +50,13 @@ class HiAnime {
   /**
    * Fetches streaming sources for a given anime episode.
    * @param {string} episodeId - The unique identifier for the episode. Required.
-   * @param {servers} [server=servers.HD1] - The server to use (optional, defaults to SU57).
-   * @param {category} [category = SubOrDub.SUB,] - The language category (optional, defaults to subbed).
+   * @param {servers} [server=HiAnimeServers.HD1] - The server(HiAnimeServers enum) to use (optional, defaults to HD1).
+   * @param {category} [category = SubOrDub.SUB,] - The category(SubOrDub enum) (optional, defaults to subbed).
    * @returns {Promise<SourceResponse>} - An object containing streaming sources.
    */
   async fetchSources(
     episodeId: string,
-    server: Servers = Servers.HD1,
+    server: HiAnimeServers = HiAnimeServers.HD1,
     category: SubOrDub = SubOrDub.SUB,
   ): Promise<SourceResponse> {
     return fetchEpisodeSources(episodeId, server, category);

@@ -35,7 +35,3 @@ export type Info = {
 export enum Servers {
   MegaUp = 'megaup',
 }
-export enum SubOrDub {
-  SUB = 'sub',
-  DUB = 'dub',
-}

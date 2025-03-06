@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
-import type { Anime, AnimeInfo, EpisodeInfo, ServerInfo, SubOrDub } from './types.js';
+import type { Anime, AnimeInfo, EpisodeInfo, ServerInfo } from './types.js';
+import { SubOrDub } from '../../index.js';
 
 export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.SelectorType) {
   const anime: Anime[] = [];

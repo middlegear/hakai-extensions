@@ -1,3 +1,4 @@
+import { SubOrDub } from '../../../types/types';
 import {
   type SearchResponse,
   searchanime,
@@ -8,7 +9,6 @@ import {
   type SourceResponse,
   getEpisodeSources,
 } from './animekai';
-import { SubOrDub } from './types';
 
 class AnimeKai {
   /**
@@ -31,7 +31,7 @@ class AnimeKai {
   /**
    * Fetches available server infomation about the episode
    * @param {string} episodeId - The unique identifier for the episode
-   * @param  {SubOrDub} category sub or dub (default `sub`) (optional)
+   * @param  {SubOrDub} category The category(SubOrDub enum) default to SubOrDub.SUB (optional)
    * @returns { Promise<ServerInfoResponse>}- An Array containing server information
    */
   async fetchServers(episodeId: string, category: SubOrDub = SubOrDub.SUB): Promise<ServerInfoResponse> {
@@ -40,7 +40,7 @@ class AnimeKai {
   /**
    * Fetches available episode source infomation about the episode
    * @param {string} episodeId - The unique identifier for the episode
-   * @param  {SubOrDub} category sub or dub (default `sub`) (optional)
+   * @param  {SubOrDub} category - The category(SubOrDub enum) default to SubOrDub.SUB (optional)
    * @returns {Promise<SourceResponse>}- An Object containing source information
    */
   async fetchSources(episodeId: string, category: SubOrDub = SubOrDub.SUB): Promise<SourceResponse> {

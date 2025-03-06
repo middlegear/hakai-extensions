@@ -49,8 +49,8 @@ class Anilist {
 
   /**
    * Fetches anime information returning a provider animeId.
-   * @param {number} id - The Anilist anime ID (Required).
-   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Hianime
+   * @param {number} id - The Anilist anime ID (Required)
+   * @param {AnimeProvider} provider - AnimeProvider enum (optional). Default is AnimeProvider.HiAnime
    * @returns { Promise<AnilistProviderId>} - An object containing provider animeId and anime info.
    */
   async fetchProviderAnimeId(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<AnilistProviderId> {
@@ -150,7 +150,7 @@ class Anilist {
    * Fetches animeInfo with Provider episodes using AnilistId
     
    * @param {number} id - The AnilistId (Required).
-   * @param {AnimeProvider} provider - AnimeProvider(optinal). Default is Hianime
+   * @param {AnimeProvider} provider - AnimeProvider enum (optional). Default is AnimeProvider.HiAnime
    * @returns {Promise<AnilistEpisodes>} - An object of animeInfo with episodes
    */
   async fetchAnimeProviderEpisodes(id: number, provider: AnimeProvider = AnimeProvider.HiAnime): Promise<AnilistEpisodes> {

@@ -1,6 +1,7 @@
 import { test, expect } from 'vitest';
 import { Anime } from '../src/provider/anime/anime.js';
-import { Servers, SubOrDub } from '../src/provider/anime/hianime/types.js';
+import { SubOrDub } from '../src/provider/index.js';
+import { HiAnimeServers } from '../src/provider/anime/hianime/types.js';
 
 const zoro = new Anime.HiAnime();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -33,7 +34,11 @@ test('fetches streaming servers', async () => {
 });
 
 test('Fetches streaming sources on HD1', async () => {
-  const data = await zoro.fetchSources('boruto-naruto-next-generations-8143-episode-47182', Servers.HD1, SubOrDub.SUB);
+  const data = await zoro.fetchSources(
+    'boruto-naruto-next-generations-8143-episode-47182',
+    HiAnimeServers.HD1,
+    SubOrDub.SUB,
+  );
 
   expect(data.data).not.toEqual(null);
 

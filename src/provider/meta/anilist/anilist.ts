@@ -14,7 +14,9 @@ import {
 
 import { AnimeProvider, Charactersort, Format, MediaType, Seasons, Sort, Status } from '../../../types/types.js';
 import { getAnilistMapping } from '../anizip/index.js';
-import { AnimeKai, HiAnime, USER_AGENT_HEADER } from '../../index.js';
+import { USER_AGENT_HEADER } from '../../index.js';
+import { AnimeKai } from '../../anime/animekai/index.js';
+import { HiAnime } from '../../anime/hianime/index.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';

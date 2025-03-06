@@ -6,6 +6,8 @@
     "module": "ESNext" ,
     "moduleResolution": "node", 
     "noEmit": true,
+    "emitDeclarationOnly": false,
+    "isolatedModules": false,
     "esModuleInterop": true ,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
