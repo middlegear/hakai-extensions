@@ -17,7 +17,6 @@ import { getAnilistMapping } from '../anizip/index.js';
 import { USER_AGENT_HEADER } from '../../index.js';
 import { AnimeKai } from '../../anime/animekai/index.js';
 import { HiAnime } from '../../anime/hianime/index.js';
-import { normalizeUpperCaseFormat, normalizeUpperCaseSeason } from '../../../utils/normalize.js';
 
 const baseURL = `https://graphql.anilist.co`;
 const Referer = 'https://anilist.co';
@@ -585,9 +584,8 @@ export async function fetchPopular(
   isAdult: boolean = false,
   sort: Sort = Sort.POPULARITY_DESC,
 ): Promise<AnilistMostPopular> {
-  const newformat = normalizeUpperCaseFormat(format);
   try {
-    const variables = { page, perPage, type, newformat, isAdult, sort };
+    const variables = { page, perPage, type, format, isAdult, sort };
     const response = await axios.post(
       baseURL,
       {
@@ -710,9 +708,8 @@ export async function fetchTopRated(
   type: MediaType = MediaType.ANIME,
   sort: Sort = Sort.SCORE_DESC,
 ): Promise<AnilistTopRated> {
-  const newformat = normalizeUpperCaseFormat(format);
   try {
-    const variables = { page, perPage, type, newformat, isAdult, sort };
+    const variables = { page, perPage, type, format, isAdult, sort };
     const response = await axios.post(
       baseURL,
       {
@@ -850,17 +847,15 @@ export async function fetchSeason(
       error: 'Missing a required param : season | seasonYear',
     };
   }
-  const newformat = normalizeUpperCaseFormat(format);
-  try {
-    const newseason = normalizeUpperCaseSeason(season);
 
+  try {
     const variables = {
       page,
       perPage,
       type,
-      newformat,
+      format,
       isAdult,
-      newseason,
+      season,
       seasonYear,
       sort,
     };

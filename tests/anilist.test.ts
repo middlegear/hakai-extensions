@@ -53,7 +53,7 @@ test('fetch top rated anime', async () => {
 });
 
 test('fetch seasonal anime', async () => {
-  const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 1, 10, 'ONA');
+  const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 'ONA', 1, 10);
 
   expect(data.data).not.toEqual([]);
 });

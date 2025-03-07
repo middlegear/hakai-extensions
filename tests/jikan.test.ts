@@ -36,7 +36,7 @@ test('fetch top movies category', async () => {
 });
 
 test('fetch anime by season', async () => {
-  const data = await jikan.fetchSeason(Seasons.FALL, 2022);
+  const data = await jikan.fetchSeason(Seasons.FALL, 2022, 'MOVIE');
   expect(data.data).not.toEqual([]);
   await wait(800);
 });

@@ -604,7 +604,6 @@ export async function getSeason(
   }
   try {
     const newseason = normalizeLowerCaseSeason(season);
-
     const format = normalizeLowerCaseFormat(filter);
     const { data } = await axios.get(
       `${jikanBaseUrl}/seasons/${year}/${newseason}?filter=${format}&?sfw&page=${page}&limit=${limit}`,
@@ -711,7 +710,11 @@ export async function getSeason(
   }
 }
 export type JikanTopAnime = SuccessJIkanRes | ErrorJIkanRes;
-export async function getTopUpcoming(page: number, perPage: number, filter: JikanStatus): Promise<JikanTopAnime> {
+export async function getTopUpcoming(
+  page: number,
+  perPage: number,
+  filter: JikanStatus = JikanStatus.Upcoming,
+): Promise<JikanTopAnime> {
   try {
     const { data } = await axios.get(`${jikanBaseUrl}/top/anime?filter=${filter}&?sfw&page=${page}&limit=${perPage}`);
     if (!data)
@@ -816,8 +819,8 @@ export async function getTopUpcoming(page: number, perPage: number, filter: Jika
   }
 }
 export async function getTopAnime(page: number, limit: number, filter: JikanStatus, type: Format): Promise<JikanTopAnime> {
-  const format = normalizeLowerCaseFormat(type);
   try {
+    const format = normalizeLowerCaseFormat(type);
     const { data } = await axios.get(
       `${jikanBaseUrl}/top/anime?filter=${filter}&type=${format}&?sfw&page=${page}&limit=${limit}`,
     );

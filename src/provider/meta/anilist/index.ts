@@ -93,17 +93,18 @@ class Anilist {
    * Fetches seasonal anime for a given year and season.
    * @param {Seasons} season - The target season (e.g., WINTER, SPRING, SUMMER, FALL) (required).
    * @param {number} seasonYear - The target year (required).
+   * @param {Format} [format=Format.TV] - The anime format (optional, defaults to Format.TV).
    * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20).
-   * @param {Format} [format=Format.TV] - The anime format (optional, defaults to Format.TV).
+   
    * @returns {Promise<AnilistSeason>} - An array of seasonal anime.
    */
   async fetchSeasonalAnime(
     season: Seasons,
     seasonYear: number,
+    format: Format = Format.TV,
     page: number = 1,
     perPage: number = 20,
-    format: Format = Format.TV,
   ): Promise<AnilistSeason> {
     return fetchSeason(season, seasonYear, page, perPage, format);
   }

@@ -82,12 +82,8 @@ class Jikan {
    * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
    * @returns {Promise<JikanTopAnime>} - An array of upcoming anime resources.
    */
-  async fetchTopUpcoming(
-    page: number = 1,
-    perPage: number = 20,
-    status: JikanStatus = JikanStatus.Upcoming,
-  ): Promise<JikanTopAnime> {
-    return getTopUpcoming(page, perPage, status);
+  async fetchTopUpcoming(page: number = 1, perPage: number = 20): Promise<JikanTopAnime> {
+    return getTopUpcoming(page, perPage);
   }
 
   /**
@@ -141,17 +137,18 @@ class Jikan {
    * Fetches seasonal anime for a given year and season.
    * @param {Seasons} season - The target season (e.g., WINTER, FALL) (required).
    * @param {number} year - The target year (required).
+   * @param {Format} [format=Format.TV] - The format type (optional, defaults to Format.TV).
    * @param {number} [page=1] - Page number for pagination (optional, defaults to 1).
    * @param {number} [perPage=20] - Number of results per page (optional, defaults to 20). Max 25
-   * @param {Format} [format=Format.TV] - The format type (optional, defaults to Format.TV).
+   
    * @returns {Promise<JikanSeason>} - The seasonal anime list.
    */
   async fetchSeason(
     season: Seasons,
     year: number,
+    format: Format = Format.TV,
     page: number = 1,
     perPage: number = 20,
-    format: Format = Format.TV,
   ): Promise<JikanSeason> {
     return getSeason(year, season, format, page, perPage);
   }
