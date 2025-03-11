@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { providerClient } from '../../provider';
 import { ASource } from '../../types/types';
 import { headers } from '../../provider/anime/animekai/animekai';
-
+//my gratitude goes to consumet
 //extractor for https://animekai.to
 
 export class MegaUp {
@@ -118,35 +117,34 @@ export class MegaUp {
     return decodeURIComponent(n);
   };
   Decode = (n: string) => {
-    n = this.#reverseIt(
-      this.#substitute(
-        this.#transform(
-          '5ygxI8hjLiuDQ0',
-          this.#base64UrlDecode(
-            this.#transform(
-              'z9cWnXuoDtx',
-              this.#base64UrlDecode(
-                this.#substitute(
-                  this.#reverseIt(
-                    this.#substitute(
-                      this.#transform(
-                        'EZnfG1IL6DF',
-                        this.#base64UrlDecode(this.#reverseIt(this.#base64UrlDecode((n = `${n}`)))),
+    n = this.#substitute(
+      this.#transform(
+        'fnxEj3tD4Bl0X',
+        this.#base64UrlDecode(
+          this.#reverseIt(
+            this.#reverseIt(
+              this.#transform(
+                'IjilzMV57GrnF',
+                this.#base64UrlDecode(
+                  this.#substitute(
+                    this.#reverseIt(
+                      this.#substitute(
+                        this.#transform('PlzI69YVCtGwoa8', this.#base64UrlDecode(this.#base64UrlDecode(`${n}`))),
+                        'c2IfHZwSX1mj',
+                        'mwfXcS2ZjI1H',
                       ),
-                      'M2DCEbQmWOe',
-                      'bEDCeOQ2mWM',
                     ),
+                    '82NkgQDYbIF',
+                    '82IQNkFgYbD',
                   ),
-                  'Lw7nfcTNz3FbWy',
-                  'TFf37zywcNWnLb',
                 ),
               ),
             ),
           ),
         ),
-        'HK0TOgYzU1C',
-        'T1CHYU0OKgz',
       ),
+      'crwkth05iJR8',
+      'JRkt8rw0i5ch',
     );
 
     return decodeURIComponent(n);

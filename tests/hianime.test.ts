@@ -36,8 +36,8 @@ test('fetches streaming servers', async () => {
 test('Fetches streaming sources on HD1', async () => {
   const data = await zoro.fetchSources(
     'boruto-naruto-next-generations-8143-episode-47182',
-    HiAnimeServers.HD1,
-    SubOrDub.SUB,
+    HiAnimeServers.HD2,
+    SubOrDub.DUB,
   );
 
   expect(data.data).not.toEqual(null);
