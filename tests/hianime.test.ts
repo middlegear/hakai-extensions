@@ -34,11 +34,7 @@ test('fetches streaming servers', async () => {
 });
 
 test('Fetches streaming sources on HD1', async () => {
-  const data = await zoro.fetchSources(
-    'boruto-naruto-next-generations-8143-episode-47182',
-    HiAnimeServers.HD2,
-    SubOrDub.DUB,
-  );
+  const data = await zoro.fetchSources('solo-leveling-18718-episode-119497', HiAnimeServers.HD2, SubOrDub.DUB);
 
   expect(data.data).not.toEqual(null);
 

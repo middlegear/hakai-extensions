@@ -12,4 +12,5 @@ especially one piece and bleach ,naruto
 ///upcoming in jikan shouldnt have status paramater
 ///fix the dub servers coming back as empty in hianime and also sources  this happens on the altzoro url
 
-  /// issues with anilist seasons query and formats 
+
+reponse status and boolean  variable should depend on axios status for all functions 

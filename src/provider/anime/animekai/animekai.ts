@@ -71,9 +71,11 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
         data: [],
       };
     }
+    let success: boolean;
+    response.status === 200 ? (success = true) : (success = false);
     return {
-      success: true,
-      status: 200,
+      success: success,
+      status: response.status,
       hasNextPage: res.hasNextPage,
       currentPage: res.currentPage || 0,
       totalPages: res.totalPages || 0,

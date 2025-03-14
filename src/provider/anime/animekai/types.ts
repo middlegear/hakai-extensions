@@ -4,7 +4,7 @@ export interface ErrorResponse {
   error: string;
 }
 export interface SuccessResponse {
-  success: true;
+  success: boolean;
   status: number;
 }
 export type searchRes = {
