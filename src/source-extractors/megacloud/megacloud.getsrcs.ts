@@ -1,14 +1,16 @@
-// @ts-nocheck
-
 // solution inspired from https://github.com/drblgn/rabbit_wasm/blob/main/rabbit.ts
-// copied from consumet.ts thanks
-
+// @ts-nocheck
 import { decoded_png } from './megacloud.decodedpng.js';
 import util from 'util';
 import CryptoJS from 'crypto-js';
 import { webcrypto } from 'crypto';
-import { USER_AGENT_HEADER } from '../../provider/index.js';
 
+import type { extractedSrc, unencryptedSrc } from './megacloud.js';
+import { zoroBaseUrl } from '../../utils/constants.js';
+import { USER_AGENT_HEADER } from '../../config/headers.js';
+
+const embed_url = 'https://megacloud.tv/embed-2/e-1/';
+const referrer = zoroBaseUrl;
 const user_agent = USER_AGENT_HEADER;
 
 const crypto = webcrypto as unknown as Crypto;
@@ -16,7 +18,6 @@ let wasm: any;
 let arr = new Array(128).fill(void 0);
 let dateNow = Date.now();
 let content: string = '';
-let referer = '';
 
 function isDetached(buffer: ArrayBuffer): boolean {
   if (buffer.byteLength === 0) {
@@ -50,7 +51,7 @@ interface fakeWindow {
 }
 
 const canvas = {
-  baseUrl: '',
+  baseUrl: 'https://megacloud.tv/embed-2/e-1/1hnXq7VzX0Ex?k=1',
   width: 0,
   height: 0,
   style: {
@@ -77,10 +78,10 @@ const fake_window: fakeWindow = {
     cookie: '',
   },
 
-  origin: '',
+  origin: 'https://megacloud.tv',
   location: {
-    href: '',
-    origin: '',
+    href: 'https://megacloud.tv/embed-2/e-1/1hnXq7VzX0Ex?k=1',
+    origin: 'https://megacloud.tv',
   },
   performance: {
     timeOrigin: dateNow,
@@ -98,7 +99,7 @@ const fake_window: fakeWindow = {
 
 const nodeList = {
   image: {
-    src: '',
+    src: 'https://megacloud.tv/images/image.png?v=0.1.0',
     height: 50,
     width: 65,
     complete: true,
@@ -116,6 +117,7 @@ arr.push(void 0, null, true, false);
 let size = 0;
 let memoryBuff: Uint8Array | null;
 
+//fix this
 function getMemBuff(): Uint8Array {
   return (memoryBuff = null !== memoryBuff && 0 !== memoryBuff.byteLength ? memoryBuff : new Uint8Array(wasm.memory.buffer));
 }
@@ -246,15 +248,13 @@ function Qj(QP: ArrayLike<number>, Qn: any) {
 function isResponse(obj: Object) {
   return Object.prototype.toString.call(obj) === '[object Response]';
 }
-//@ts-ignore
+
 async function QN(QP: Response, Qn: WebAssembly.Imports) {
   let QT: ArrayBuffer, Qt: any;
 
   return 'function' == typeof Response && isResponse(QP)
-    ? //@ts-ignore
-      ((QT = await QP.arrayBuffer()), (Qt = await WebAssembly.instantiate(QT, Qn)), Object.assign(Qt, { bytes: QT }))
-    : //@ts-ignore
-      (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
+    ? ((QT = await QP.arrayBuffer()), (Qt = await WebAssembly.instantiate(QT, Qn)), Object.assign(Qt, { bytes: QT }))
+    : (Qt = await WebAssembly.instantiate(QP, Qn)) instanceof WebAssembly.Instance
       ? {
           instance: Qt,
           module: QP,
@@ -623,20 +623,24 @@ function QZ(QP: any) {
   return void 0 !== wasm
     ? wasm
     : ((Qn = initWasm()),
-      //@ts-ignore
       QP instanceof WebAssembly.Module || (QP = new WebAssembly.Module(QP)),
-      //@ts-ignore
       assignWasm(new WebAssembly.Instance(QP, Qn)));
 }
 
+// todo!
 async function loadWasm(url: any) {
-  let mod: any, buffer: any;
-  return void 0 !== wasm
-    ? wasm
-    : ((mod = initWasm()),
-      ({ instance: url, module: mod, bytes: buffer } = ((url = fetch(url)), void 0, await QN(await url, mod))),
-      assignWasm(url),
-      buffer);
+  const mod = initWasm();
+  const response = fetch(url, {
+    headers: {
+      Referer: fake_window.location.href,
+      Host: 'megacloud.tv',
+    },
+  });
+
+  // Process the fetched binary with QN
+  const { instance, bytes } = await QN(await response, mod);
+  assignWasm(instance);
+  return bytes;
 }
 
 const grootLoader = {
@@ -647,9 +651,31 @@ const grootLoader = {
 
 let wasmLoader = Object.assign(loadWasm, { initSync: QZ }, grootLoader);
 
-const V = async (url: string) => {
+const Z = (z: string, Q0: string) => {
   try {
-    let Q0 = await wasmLoader(url);
+    var Q1 = CryptoJS.AES.decrypt(z, Q0);
+    return JSON.parse(Q1.toString(CryptoJS.enc.Utf8));
+  } catch (Q2: any) {}
+  return [];
+};
+
+const R = (z: Uint8Array, Q0: Array<number>) => {
+  try {
+    for (let Q1 = 0; Q1 < z.length; Q1++) {
+      z[Q1] = z[Q1] ^ Q0[Q1 % Q0.length];
+    }
+  } catch (Q2) {
+    return null;
+  }
+};
+
+function r(z: number) {
+  return [(4278190080 & z) >> 24, (16711680 & z) >> 16, (65280 & z) >> 8, 255 & z];
+}
+
+const V = async () => {
+  try {
+    let Q0 = await wasmLoader('https://megacloud.tv/images/loading.png?v=0.0.9');
 
     fake_window.bytes = Q0;
     wasmLoader.groot();
@@ -664,7 +690,7 @@ const getMeta = async (url: string) => {
   let resp = await fetch(url, {
     headers: {
       UserAgent: user_agent,
-      Referrer: referer,
+      Referrer: referrer,
     },
   });
   let txt = await resp.text();
@@ -677,7 +703,6 @@ const getMeta = async (url: string) => {
 const i = (a: Uint8Array, P: Array<number>) => {
   try {
     for (let Q0 = 0; Q0 < a.length; Q0++) {
-      // @ts-ignore
       a[Q0] = a[Q0] ^ P[Q0 % P.length];
     }
   } catch (Q1) {
@@ -690,7 +715,6 @@ const M = (a: any, P: any) => {
     var Q0 = CryptoJS.AES.decrypt(a, P);
     return JSON.parse(Q0.toString(CryptoJS.enc.Utf8));
   } catch (Q1) {
-    // @ts-ignore
     console.log(Q1.message);
   }
   return [];
@@ -700,68 +724,35 @@ function z(a: any) {
   return [(a & 4278190080) >> 24, (a & 16711680) >> 16, (a & 65280) >> 8, a & 255];
 }
 
-export async function getSources(embed_url: string, site: string) {
-  referer = site;
-  let xrax = embed_url.split('/').pop()?.split('?').shift();
-
-  let regx = /https:\/\/[a-zA-Z0-9.]*/;
-  let base_url = embed_url.match(regx)?.[0];
-  nodeList.image.src = base_url + '/images/image.png?v=0.0.9';
-  let test = embed_url.split('/');
-
+export async function getSources(xrax: string) {
+  await getMeta(embed_url + xrax + '?k=1');
   fake_window.xrax = xrax;
   fake_window.G = xrax;
-  canvas.baseUrl = base_url!;
-  fake_window.origin = base_url;
-  fake_window.location.origin = base_url;
-  fake_window.location.href = embed_url;
-
-  await getMeta(embed_url);
+  canvas.baseUrl = embed_url + xrax + '?k=1';
+  fake_window.location.href = embed_url + xrax + '?k=1';
 
   let browser_version = 1878522368;
+  let res = {} as extractedSrc;
 
   try {
-    await V(base_url + '/images/loading.png?v=0.0.9');
+    await V();
 
-    let getSourcesUrl = '';
-
-    if (base_url!.includes('mega')) {
-      getSourcesUrl =
-        base_url +
-        '/' +
-        test[3] +
-        '/ajax/' +
-        test[4] +
-        '/getSources?id=' +
-        fake_window.pid +
-        '&v=' +
-        fake_window.localStorage.kversion +
-        '&h=' +
-        fake_window.localStorage.kid +
-        '&b=' +
-        browser_version;
-    } else {
-      getSourcesUrl =
-        base_url +
-        '/ajax/' +
-        test[3] +
-        '/' +
-        test[4] +
-        '/getSources?id=' +
-        fake_window.pid +
-        '&v=' +
-        fake_window.localStorage.kversion +
-        '&h=' +
-        fake_window.localStorage.kid +
-        '&b=' +
-        browser_version;
-    }
+    let getSourcesUrl =
+      'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=' +
+      fake_window.pid +
+      '&v=' +
+      fake_window.localStorage.kversion +
+      '&h=' +
+      fake_window.localStorage.kid +
+      '&b=' +
+      browser_version;
 
     let resp_json = await (
       await fetch(getSourcesUrl, {
         headers: {
           'User-Agent': user_agent,
-          Referer: embed_url,
+          //"Referrer": fake_window.origin + "/v2/embed-4/" + xrax + "?z=",
+          Referer: embed_url + xrax + '?k=1',
           'X-Reuested-With': 'XMLHttpRequest',
         },
         method: 'GET',
@@ -769,22 +760,27 @@ export async function getSources(embed_url: string, site: string) {
       })
     ).json();
 
+    //let encrypted = resp_json.sources;
     let Q3 = fake_window.localStorage.kversion;
     let Q1 = z(Q3);
     let Q5 = fake_window.navigate();
     Q5 = new Uint8Array(Q5);
     let Q8: any;
-    //@ts-ignore
     Q8 = resp_json.t != 0 ? (i(Q5, Q1), Q5) : ((Q8 = resp_json.k), i(Q8, Q1), Q8);
 
+    res = resp_json as extractedSrc;
     // @ts-ignore
     const str = btoa(String.fromCharCode.apply(null, new Uint8Array(Q8)));
 
-    // @ts-ignore
-    resp_json.sources = M(resp_json.sources, str) as extractedSources[];
+    // decoding encrypted .m3u8 file url
+    res.sources = M(res.sources, str) as unencryptedSrc[];
 
-    return resp_json;
+    return res;
   } catch (err) {
     console.error(err);
   }
 }
+
+// https://megacloud.tv/embed-2/e-1/1hnXq7VzX0Ex
+// https://megacloud.tv/embed-2/e-1/JSwUe6aP7TxJ
+// getSources("JSwUe6aP7TxJ");

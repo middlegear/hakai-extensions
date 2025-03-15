@@ -58,6 +58,6 @@ export interface ErrorResponse {
   error: string;
 }
 export interface SuccessResponse {
-  success: true;
-  status: number;
+  success?: boolean;
+  status?: number;
 }

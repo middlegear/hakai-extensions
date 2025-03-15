@@ -43,12 +43,12 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
 
     if (!response.data) {
       return {
-        success: false,
+        success: response.status === 200,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
-        status: 204,
-        error: `Received empty response from server`,
+        status: response.status,
+        error: response.statusText || `Received empty response from server`,
         data: [],
       };
     }
@@ -57,20 +57,20 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
     const searchSelector: cheerio.SelectorType = '.block_area-content .film_list-wrap .flw-item';
 
     const { anime, hasNextPage, totalPages, currentPage } = extractSearchResults($data, searchSelector);
-    if (!anime) {
+    if (!Array.isArray(anime) || anime.length === 0) {
       return {
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
         status: 204,
         success: false,
-        error: 'Scraper Error',
+        error: 'Scraper Error: No results found',
         data: [],
       };
     }
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: hasNextPage,
       currentPage: Number(currentPage) || 0,
       totalPages: Number(totalPages) || 0,
@@ -94,7 +94,7 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
       totalPages: 0,
       status: 500,
       data: [],
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? error.message : 'Internal Server error',
     };
   }
 }
@@ -107,7 +107,7 @@ export interface AnimeInfoError extends ErrorResponse {
 }
 export type ZoroAnimeInfo = AnimeInfoSuccess | AnimeInfoError;
 export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
-  if (!animeId)
+  if (!animeId.trim())
     return {
       success: false,
       status: 400,
@@ -125,10 +125,10 @@ export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
 
     if (!response.data)
       return {
-        success: false,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        error: response.statusText || 'Server returned an empty response',
         data: null,
-        status: 204,
+        status: response.status,
       };
 
     const $animeData = cheerio.load(response.data);
@@ -141,11 +141,7 @@ export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
         data: null,
       };
     }
-    return {
-      success: true,
-      data: res,
-      status: 200,
-    };
+    return { status: response.status, success: response.status === 200, data: res };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
@@ -186,31 +182,27 @@ export async function getEpisodes(animeId: string): Promise<EpisodeInfoRes> {
       },
     });
 
-    if (!response)
+    if (!response.data)
       return {
-        success: false,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        error: response.statusText || 'Server returned an empty response',
         data: [],
-        status: 204,
+        status: response.status,
       };
 
     const $episodes = cheerio.load(response.data.html);
     const episodesSelector: cheerio.SelectorType = '.detail-infor-content .ss-list a';
     const { resEpisodeList } = extractEpisodesList($episodes, episodesSelector);
-    if (!resEpisodeList) {
+    if (!Array.isArray(resEpisodeList) || resEpisodeList.length === 0) {
       return {
-        success: false,
         status: 204,
-        error: 'Scraper error',
+        success: false,
+        error: 'Scraper Error: No results found',
         data: [],
       };
     }
 
-    return {
-      success: true,
-      data: resEpisodeList,
-      status: 200,
-    };
+    return { status: response.status, success: response.status === 200, data: resEpisodeList };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
@@ -231,7 +223,7 @@ export interface SuccessServerInfo extends SuccessResponse {
   data: ServerInfo;
 }
 export interface ErrorServerInfo extends ErrorResponse {
-  data: null;
+  data: [];
 }
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function fetchServers(episodeId: string): Promise<ServerInfoResponse> {
@@ -239,7 +231,7 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     return {
       success: false,
       status: 400,
-      data: null,
+      data: [],
       error: 'Missing required params :episodeId!',
     };
 
@@ -254,19 +246,26 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     });
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
-        data: null,
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
+        data: [],
       };
 
     const res$: cheerio.CheerioAPI = cheerio.load(response.data.html);
 
     const { servers } = extractServerData(res$);
-    if (!servers) return { success: false, error: 'Scraper Error ', data: null, status: 204 };
+    if (!Array.isArray(servers) || servers.length === 0) {
+      return {
+        status: 204,
+        success: false,
+        error: 'Scraper Error: No results found',
+        data: [],
+      };
+    }
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       data: servers,
     };
   } catch (error) {
@@ -274,51 +273,81 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
       return {
         success: false,
         status: error.response?.status || 500,
-        data: null,
+        data: [],
         error: `Request failed ${error.message}` || 'Unknown axios error',
       };
     return {
       success: false,
-      data: null,
       status: 500,
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? error.message : 'Internal Server Error',
+      data: [],
     };
   }
 }
 export interface SuccessSourceRes extends SuccessResponse {
   data: ASource;
+  headers: {
+    Referer: string;
+  };
 }
 export interface ErrorSourceRes extends ErrorResponse {
   data: null;
+  headers: {
+    Referer: null;
+  };
 }
-export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
+export type HianimeSourceResponse = SuccessSourceRes | ErrorSourceRes;
 export async function fetchEpisodeSources(
-  episodeid: string,
+  episodeId: string,
   server: HiAnimeServers,
   category: SubOrDub,
-): Promise<SourceResponse> {
-  if (!episodeid) {
+): Promise<HianimeSourceResponse> {
+  if (!episodeId) {
     return {
       success: false,
       status: 400,
+      headers: {
+        Referer: null,
+      },
       data: null,
       error: 'Missing required params episodeId',
     };
   }
-  try {
-    const newId = episodeid.split('-').pop();
 
+  if (episodeId.startsWith('http')) {
+    const serverUrl = new URL(episodeId);
+    switch (server) {
+      case HiAnimeServers.HD1:
+      case HiAnimeServers.HD2:
+        return {
+          headers: { Referer: `${serverUrl.origin}/` },
+          data: (await new MegaCloud().extract(serverUrl)) as ASource,
+        };
+
+      default:
+        return {
+          headers: { Referer: `${serverUrl.origin}/` },
+          data: (await new MegaCloud().extract(serverUrl)) as ASource,
+        };
+    }
+  }
+  try {
+    const newId = episodeId.split('-').pop();
     const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
       },
     });
+
     if (!response.data)
       return {
-        success: false,
-        error: 'Server returned an empty response ',
-        status: 204,
+        success: response.status === 200,
+        error: response.statusText || 'Server returned an empty response ',
+        status: response.status,
+        headers: {
+          Referer: null,
+        },
         data: null,
       };
     const datares$: cheerio.CheerioAPI = cheerio.load(response.data.html);
@@ -337,58 +366,105 @@ export async function fetchEpisodeSources(
           break;
         }
       }
-      if (!mediadataId) return { success: false, error: 'Scraping error', data: null, status: 204 };
-      const {
-        data: { link },
-      } = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
+      if (!mediadataId)
+        return {
+          success: false,
+          error: 'Scraping error',
+          status: 204,
+          headers: {
+            Referer: null,
+          },
+          data: null,
+        };
+      const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
         },
       });
-      if (!link)
+      if (!dataLink.data)
         return {
-          success: false,
-          error: 'Server returned an empty response',
-          status: 204,
+          success: dataLink.status === 200,
+          error: dataLink.statusText || 'Server returned an empty response',
+          status: dataLink.status,
+          headers: {
+            Referer: null,
+          },
           data: null,
         };
-      // console.log(link, mediadataId);
-      // const id = link.split('/').at(-1);
-      // console.log(id);
-      // const sources = puppeteer(id);
-      const sources = await new MegaCloud().extract(link);
-      return {
-        success: true,
-        status: 200,
-        data: sources,
-      };
     } catch (error) {
       if (axios.isAxiosError(error))
         return {
           success: false,
           status: error.response?.status || 500,
+          headers: {
+            Referer: null,
+          },
           data: null,
+
           error: `Request failed ${error.message}` || 'Unknown axios error',
         };
       return {
         success: false,
         status: 500,
         data: null,
-        error: error instanceof Error ? error.message : 'Contact dev if you see this',
+        headers: {
+          Referer: null,
+        },
+        error: error instanceof Error ? error.message : 'Unknown Error',
       };
     }
+    if (!mediadataId)
+      return {
+        success: false,
+        error: 'Scraping error',
+        status: 204,
+        headers: {
+          Referer: null,
+        },
+        data: null,
+      };
+    const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
+      },
+    });
+    if (!dataLink.data)
+      return {
+        success: dataLink.status === 200,
+        error: dataLink.statusText || 'Server returned an empty response',
+        status: dataLink.status,
+        headers: {
+          Referer: null,
+        },
+        data: null,
+      };
+    // console.log(link, mediadataId);
+    // const id = link.split('/').at(-1);
+    // console.log(id);
+    // const sources = puppeteer(id);
+    //
+    const link = dataLink.data.link;
+
+    return await fetchEpisodeSources(link, server, category);
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
         status: error.response?.status || 500,
+        headers: {
+          Referer: null,
+        },
         data: null,
         error: `Request failed ${error.message}` || 'Unknown axios error',
       };
     return {
       success: false,
       status: 500,
+      headers: {
+        Referer: null,
+      },
       data: null,
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };

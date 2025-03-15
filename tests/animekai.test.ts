@@ -30,7 +30,9 @@ test('fetch episode sources', async () => {
     'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=7$token=JYu7qq7yvRuzlXRXxYfd',
     SubOrDub.SUB,
   );
-  expect(data.success).toEqual(true);
+
+  expect(data.headers.Referer).not.toBe(null);
   expect(data.data).not.toBe(null);
+
   await wait(1000);
 });

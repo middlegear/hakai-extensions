@@ -28,7 +28,7 @@ export interface ErrorResponse {
   error: string;
 }
 export interface SuccessResponse {
-  success: true;
+  success: boolean;
   status: number;
 }
 export type AnilistData = {
@@ -120,11 +120,11 @@ export async function searchAnime(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
-        data: [],
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
+        data: [],
         currentPage: 0,
         total: 0,
         lastPage: 0,
@@ -181,8 +181,8 @@ export async function searchAnime(
     }));
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -194,25 +194,25 @@ export async function searchAnime(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Internal Server Error ',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      status: 500,
-      error: error instanceof Error ? error.message : 'Contact dev ',
     };
   }
 }
@@ -228,9 +228,9 @@ export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
   if (!id) {
     return {
       success: false,
+      error: 'Missing required parameter : Anilistid!',
       status: 400,
       data: null,
-      error: 'Missing required parameter : id!',
     };
   }
   const variables = { id };
@@ -253,9 +253,9 @@ export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
 
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         data: null,
       };
 
@@ -319,8 +319,8 @@ export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
     };
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       data: res,
     };
   } catch (error) {
@@ -333,9 +333,9 @@ export async function fetchAnimeById(id: number): Promise<AnilistInfo> {
       };
     return {
       success: false,
-      data: null,
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
+      data: null,
     };
   }
 }
@@ -369,9 +369,9 @@ export async function fetchUpcoming(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         data: [],
         hasNextPage: false,
         currentPage: 0,
@@ -415,8 +415,8 @@ export async function fetchUpcoming(
     }));
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -428,25 +428,25 @@ export async function fetchUpcoming(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Err',
       hasNextPage: false,
       currentPage: 0,
-      status: 500,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -481,9 +481,9 @@ export async function fetchTopAiring(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
         currentPage: 0,
         total: 0,
@@ -540,8 +540,8 @@ export async function fetchTopAiring(
     }));
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -553,25 +553,25 @@ export async function fetchTopAiring(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
+      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Err',
       hasNextPage: false,
       currentPage: 0,
-      status: 500,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown Err',
     };
   }
 }
@@ -604,9 +604,9 @@ export async function fetchPopular(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
         currentPage: 0,
         total: 0,
@@ -664,8 +664,8 @@ export async function fetchPopular(
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -677,25 +677,25 @@ export async function fetchPopular(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -728,9 +728,9 @@ export async function fetchTopRated(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
         currentPage: 0,
         total: 0,
@@ -788,8 +788,8 @@ export async function fetchTopRated(
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -801,25 +801,25 @@ export async function fetchTopRated(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -838,13 +838,13 @@ export async function fetchSeason(
     return {
       success: false,
       status: 400,
+      error: 'Missing a required param : season | seasonYear',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: 'Missing a required param : season | seasonYear',
     };
   }
 
@@ -877,9 +877,9 @@ export async function fetchSeason(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
         currentPage: 0,
         total: 0,
@@ -937,8 +937,8 @@ export async function fetchSeason(
       producers: item.studios.nodes.map((item2: any) => item2.name),
     }));
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -950,25 +950,25 @@ export async function fetchSeason(
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -998,9 +998,9 @@ export async function getTrends(page: number, perPage: number): Promise<AnilistT
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         hasNextPage: false,
         currentPage: 0,
         total: 0,
@@ -1055,8 +1055,8 @@ export async function getTrends(page: number, perPage: number): Promise<AnilistT
       producers: item.studios?.nodes.map((item2: any) => item2.name),
     }));
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       hasNextPage: pagination.hasNextPage,
       currentPage: pagination.currentPage,
       total: pagination.total,
@@ -1068,25 +1068,25 @@ export async function getTrends(page: number, perPage: number): Promise<AnilistT
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         hasNextPage: false,
         currentPage: 0,
         total: 0,
         lastPage: 0,
         perPage: 0,
         data: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown err',
       hasNextPage: false,
       currentPage: 0,
       total: 0,
       lastPage: 0,
       perPage: 0,
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown err',
     };
   }
 }
@@ -1142,9 +1142,9 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.AN
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         data: [],
       };
 
@@ -1164,23 +1164,23 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.AN
     }));
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
-        data: [],
-        error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
+        data: [],
       };
     return {
       success: false,
-      data: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
+      data: [],
     };
   }
 }
@@ -1222,8 +1222,8 @@ export async function fetchAnimeCharacters(
     return {
       success: false,
       status: 400,
-      data: null,
       error: 'Missing required parameter : mediaid!',
+      data: null,
     };
   }
 
@@ -1247,9 +1247,9 @@ export async function fetchAnimeCharacters(
     );
     if (!response.data)
       return {
-        success: false,
-        status: 204,
-        error: 'Server returned an empty response',
+        success: response.status === 200,
+        status: response.status,
+        error: response.statusText || 'Server returned an empty response',
         data: null,
       };
     const res: ACharacters = {
@@ -1274,23 +1274,23 @@ export async function fetchAnimeCharacters(
     };
 
     return {
-      success: true,
-      status: 200,
+      success: response.status === 200,
+      status: response.status,
       data: res,
     };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
-        data: null,
-        error: `Request failed ${error.message}`,
         status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
+        data: null,
       };
     return {
       success: false,
       status: 500,
-      data: null,
       error: error instanceof Error ? error.message : 'Unknown err',
+      data: null,
     };
   }
 }
@@ -1315,9 +1315,9 @@ async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
     return {
       success: false,
       status: 400,
+      error: 'Invalid or missing required parameter: id!',
       data: null,
       animeProvider: null,
-      error: 'Invalid or missing required parameter: id!',
     };
   }
 
@@ -1363,9 +1363,9 @@ async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       data: null,
       animeProvider: null,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
@@ -1375,9 +1375,9 @@ async function getKaiProviderId(id: number): Promise<AnilistProviderId> {
     return {
       success: false,
       status: 400,
+      error: 'Invalid or missing required parameter: Anilistid!',
       data: null,
       animeProvider: null,
-      error: 'Invalid or missing required parameter: id!',
     };
   }
 
@@ -1423,9 +1423,9 @@ async function getKaiProviderId(id: number): Promise<AnilistProviderId> {
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       data: null,
       animeProvider: null,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
@@ -1434,9 +1434,9 @@ export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimePr
     return {
       success: false,
       status: 400,
+      error: 'Invalid or missing required parameter: Anilistid!',
       data: null,
       animeProvider: null,
-      error: 'Invalid or missing required parameter: Anilistid!',
     };
   }
   try {
@@ -1453,17 +1453,17 @@ export async function fetchAnimeProviderIdWithInfo(id: number, provider: AnimePr
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       data: null,
       animeProvider: null,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
-// type animeRes = {
-//   episodeId: string;
-//   number: number;
-//   title: string;
-// };
+type animeRes = {
+  episodeId: string;
+  episodeNumber: number;
+  title: string;
+};
 
 type CrossMatchedEpisodes = {
   episodeNumber: number;
@@ -1477,7 +1477,7 @@ type CrossMatchedEpisodes = {
 
 export interface SuccessEpisodesres extends SuccessResponse {
   data: AnilistData;
-  providerEpisodes: CrossMatchedEpisodes[];
+  providerEpisodes: animeRes[] | CrossMatchedEpisodes[];
 }
 export interface ErrorEpisodesres extends ErrorResponse {
   data: null;
@@ -1489,9 +1489,9 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
     return {
       success: false,
       status: 400,
+      error: 'Missing required parameter : AnilistId! ',
       data: null,
       providerEpisodes: [],
-      error: 'Missing required parameter : id! ',
     };
   }
   try {
@@ -1504,7 +1504,7 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
         const result = await ZoroAnime.fetchEpisodes(animeId);
         return result.data.map((item: any) => ({
           episodeId: item.episodeId,
-          number: item.number,
+          episodeNumber: item.number,
           title: item.title,
         }));
       } catch (error) {
@@ -1514,57 +1514,67 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
     };
 
     if (zoro) {
-      const [zoroanime, aniMapping2] = await Promise.all([
-        fetchZoroEpisodes(zoro.animeId as string),
-        getAnilistMapping(anilistId),
-      ]);
+      if (anilistData.data.episodes == null || anilistData.data.episodes > 64) {
+        const zoroEpisodes = await fetchZoroEpisodes(zoro.animeId as string);
+        return {
+          success: true,
+          status: 200,
+          data: anilistData.data,
+          providerEpisodes: zoroEpisodes as animeRes[],
+        };
+      } else {
+        const [zoroanime, aniMapping2] = await Promise.all([
+          fetchZoroEpisodes(zoro.animeId as string),
+          getAnilistMapping(anilistId),
+        ]);
 
-      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+        const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
 
-      const matchingResults2 = zoroanime?.map((anime: any) => {
-        const episodes = episodeMap2.get(anime.number);
+        const matchingResults2 = zoroanime?.map((anime: any) => {
+          const episodes = episodeMap2.get(anime.episodeNumber);
+
+          return {
+            episodeNumber: episodes?.episodeAnimeNumber ?? anime.episodeNumber ?? null,
+            rating: episodes?.rating ?? null,
+            aired: episodes?.aired ?? null,
+            episodeId: anime.episodeId ?? null,
+            title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+            overview: episodes?.overview ?? 'No overview available',
+            thumbnail: episodes?.image ?? null,
+          };
+        });
 
         return {
-          episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-          rating: episodes?.rating ?? null,
-          aired: episodes?.aired ?? null,
-          episodeId: anime.episodeId ?? null,
-          title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
-          overview: episodes?.overview ?? 'No overview available',
-          thumbnail: episodes?.image ?? null,
+          success: true,
+          status: 200,
+          data: anilistData.data,
+          providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
         };
-      });
-
-      return {
-        success: true,
-        status: 200,
-        data: anilistData.data,
-        providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
-      };
+      }
     }
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         data: null,
         providerEpisodes: [],
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
       data: null,
-      providerEpisodes: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
+      providerEpisodes: [],
     };
   }
   return {
     success: false,
-    data: null,
-    providerEpisodes: [],
     status: 500,
     error: 'Check the anilistId if its valid cause you cant get an null & empty res',
+    data: null,
+    providerEpisodes: [],
   };
 }
 
@@ -1572,10 +1582,10 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
   if (!anilistId) {
     return {
       success: false,
-      providerEpisodes: [],
       status: 400,
+      error: 'Missing required parameter :AnilistId',
       data: null,
-      error: 'Missing required parameter : id! ',
+      providerEpisodes: [],
     };
   }
   try {
@@ -1588,7 +1598,7 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
         const result = await animekai.fetchAnimeInfo(animeId);
         return result.providerEpisodes.map((item: any) => ({
           episodeId: item.episodeId,
-          number: item.number,
+          episodeNumber: item.number,
           title: item.title,
         }));
       } catch (error) {
@@ -1598,57 +1608,67 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
     };
 
     if (kai) {
-      const [hianime, aniMapping2] = await Promise.all([
-        fetchKaiEpisodes(kai.animeId as string),
-        getAnilistMapping(anilistId),
-      ]);
+      if (anilistData.data.episodes == null || anilistData.data.episodes > 64) {
+        const AnimekaiEpisodes = await fetchKaiEpisodes(kai.animeId as string);
+        return {
+          success: true,
+          status: 200,
+          data: anilistData.data,
+          providerEpisodes: AnimekaiEpisodes as animeRes[],
+        };
+      } else {
+        const [hianime, aniMapping2] = await Promise.all([
+          fetchKaiEpisodes(kai.animeId as string),
+          getAnilistMapping(anilistId),
+        ]);
 
-      const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
+        const episodeMap2 = new Map(aniMapping2.episodes?.map(item => [item.episodeAnimeNumber, item]));
 
-      const matchingResults2 = hianime?.map((anime: any) => {
-        const episodes = episodeMap2.get(anime.number);
+        const matchingResults2 = hianime?.map((anime: any) => {
+          const episodes = episodeMap2.get(anime.episodeNumber);
+
+          return {
+            episodeNumber: episodes?.episodeAnimeNumber ?? anime.episodeNumber ?? null,
+            rating: episodes?.rating ?? null,
+            aired: episodes?.aired ?? null,
+            episodeId: anime.episodeId ?? null,
+            title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
+            overview: episodes?.overview ?? 'No overview available',
+            thumbnail: episodes?.image ?? null,
+          };
+        });
 
         return {
-          episodeNumber: episodes?.episodeAnimeNumber ?? anime.number ?? null,
-          rating: episodes?.rating ?? null,
-          aired: episodes?.aired ?? null,
-          episodeId: anime.episodeId ?? null,
-          title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
-          overview: episodes?.overview ?? 'No overview available',
-          thumbnail: episodes?.image ?? null,
+          success: true,
+          status: 200,
+          data: anilistData.data,
+          providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
         };
-      });
-
-      return {
-        success: true,
-        status: 200,
-        data: anilistData.data,
-        providerEpisodes: matchingResults2 as CrossMatchedEpisodes[],
-      };
+      }
     }
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         success: false,
+        status: error.response?.status || 500,
+        error: `Request failed ${error.message}`,
         providerEpisodes: [],
         data: null,
-        error: `Request failed ${error.message}`,
-        status: error.response?.status || 500,
       };
     return {
       success: false,
-      data: null,
-      providerEpisodes: [],
       status: 500,
       error: error instanceof Error ? error.message : 'Unknown Err',
+      data: null,
+      providerEpisodes: [],
     };
   }
   return {
     success: false,
-    data: null,
-    providerEpisodes: [],
     status: 500,
+    data: null,
     error: 'Check the anilistId if its valid cause you cant get an null & empty res',
+    providerEpisodes: [],
   };
 }
 
@@ -1657,9 +1677,9 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
     return {
       success: false,
       status: 400,
+      error: 'Missing required parameter : AnilistID',
       providerEpisodes: [],
       data: null,
-      error: 'Missing required parameter : id! || provider',
     };
   }
   try {
@@ -1677,9 +1697,9 @@ export async function getAnimeProviderEpisodes(id: number, provider: AnimeProvid
     return {
       success: false,
       status: 500,
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
       providerEpisodes: [],
       data: null,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }

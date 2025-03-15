@@ -44,7 +44,7 @@ export interface SearchErrorResponse extends ErrorResponse {
 
 export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
 export async function searchanime(query: string, page: number): Promise<SearchResponse> {
-  if (!query)
+  if (!query.trim()) {
     return {
       success: false,
       status: 400,
@@ -52,29 +52,31 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       currentPage: 0,
       totalPages: 0,
       data: [],
-      error: 'Missing required Params : query',
+      error: 'Missing required parameter: query',
     };
+  }
+
   try {
-    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`, {
-      headers: headers,
-    });
+    const sanitizedQuery = query.replace(/[\W_]+/g, '+');
+    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${sanitizedQuery}&page=${page}`, { headers });
+
     const data$ = cheerio.load(response.data);
     const { res, searchresults } = extractsearchresults(data$);
-    if (!searchresults) {
+
+    if (!Array.isArray(searchresults) || searchresults.length === 0) {
       return {
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
         status: 204,
         success: false,
-        error: 'Scraper Error',
+        error: 'Scraper Error: No results found',
         data: [],
       };
     }
-    let success: boolean;
-    response.status === 200 ? (success = true) : (success = false);
+
     return {
-      success: success,
+      success: response.status === 200,
       status: response.status,
       hasNextPage: res.hasNextPage,
       currentPage: res.currentPage || 0,
@@ -82,16 +84,18 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       data: searchresults,
     };
   } catch (error) {
-    if (axios.isAxiosError(error))
+    if (axios.isAxiosError(error)) {
       return {
+        success: false,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
         status: error.response?.status || 500,
-        error: `Request failed: ${error.message}` || 'Unknown axios error',
-        success: false,
         data: [],
+        error: `Axios error: ${error.response?.statusText || error.message}`,
       };
+    }
+
     return {
       success: false,
       hasNextPage: false,
@@ -99,7 +103,7 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       totalPages: 0,
       status: 500,
       data: [],
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
@@ -119,7 +123,7 @@ export interface AnimeInfoError extends ErrorResponse {
 }
 export type AnimeInfoKai = AnimeInfoSuccess | AnimeInfoError;
 export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
-  if (!animeId) {
+  if (!animeId.trim()) {
     return {
       success: false,
       error: 'Missing required Params : animeId',
@@ -134,6 +138,15 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     });
     const data$ = cheerio.load(response.data);
     const { animeInfo } = extractAnimeInfo(data$);
+    if (!response.data) {
+      return {
+        status: response.status,
+        success: response.status === 200,
+        error: response.statusText || 'Scraper Error: No animeInfo found',
+        data: null,
+        providerEpisodes: [],
+      };
+    }
 
     const ani_id = data$('.rate-box#anime-rating').attr('data-id');
     const episodesAjax = await axios.get(
@@ -146,6 +159,15 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
         },
       },
     );
+    if (!episodesAjax.data.result) {
+      return {
+        status: episodesAjax.status,
+        success: episodesAjax.status === 200,
+        error: episodesAjax.statusText || 'Scraper Error: No Episodes found',
+        data: null,
+        providerEpisodes: [],
+      };
+    }
     const episodes$: cheerio.CheerioAPI = cheerio.load(episodesAjax.data.result);
     const episodes: {
       episodeId: string | null;
@@ -164,8 +186,22 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
         title: title,
       });
     });
+    if (!Array.isArray(episodes) || episodes.length === 0) {
+      return {
+        status: 204,
+        success: false,
+        error: 'Scraper Error: No results found',
+        data: null,
+        providerEpisodes: [],
+      };
+    }
 
-    return { success: true, status: 200, data: animeInfo, providerEpisodes: episodes };
+    return {
+      success: response.status === 200 && episodesAjax.status === 200,
+      status: response.status && episodesAjax.status,
+      data: animeInfo,
+      providerEpisodes: episodes,
+    };
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
@@ -210,7 +246,7 @@ export interface ErrorServerInfo extends ErrorResponse {
 // https://animekai.to/watch/dragon-ball-daima-ypr6#ep=4
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function getEpisodeServers(episodeId: string, category: SubOrDub): Promise<ServerInfoResponse> {
-  if (!episodeId) {
+  if (!episodeId.trim()) {
     return {
       success: false,
       status: 400,
@@ -230,6 +266,14 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
         ...headers,
       },
     });
+    if (!data.result) {
+      return {
+        status: data.status,
+        success: data.status === 200,
+        error: data.statusText || 'Scraper Error: No ServerUrl  found',
+        data: [],
+      };
+    }
     const $ = cheerio.load(data.result);
     const servers: serverInfo[] = [];
     const serverItems = $(`.server-items.lang-group[data-id="${category}"] .server`);
@@ -263,18 +307,19 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
       data: servers,
     };
   } catch (error) {
-    if (axios.isAxiosError(error))
+    if (axios.isAxiosError(error)) {
       return {
         status: error.response?.status || 500,
         data: [],
         error: `Request failed: ${error.message}` || 'Unknown axios error',
         success: false,
       };
+    }
     return {
       success: false,
       status: 500,
       data: [],
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? ` Request failed: ${error.message}` : 'Contact dev if you see this',
     };
   }
 }
@@ -286,6 +331,9 @@ export interface SuccessSourceRes extends SuccessResponse {
 }
 export interface ErrorSourceRes extends ErrorResponse {
   data: null;
+  headers: {
+    Referer: null;
+  };
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
 export async function getEpisodeSources(
@@ -293,10 +341,13 @@ export async function getEpisodeSources(
   category: SubOrDub,
   server: AnimeKaiServers = AnimeKaiServers.MegaUp,
 ): Promise<SourceResponse> {
-  if (!episodeId) {
+  if (!episodeId.trim) {
     return {
       success: false,
       status: 400,
+      headers: {
+        Referer: null,
+      },
       data: null,
       error: 'Missing required params episodeId',
     };
@@ -307,16 +358,17 @@ export async function getEpisodeSources(
       case AnimeKaiServers.MegaUp:
         return {
           headers: { Referer: serverUrl.href },
-          success: true,
-          status: 200,
-          data: await new MegaUp().extract(serverUrl),
+          // success: true,
+          // status: 200,
+          data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
+
       default:
         return {
           headers: { Referer: serverUrl.href },
-          success: true,
-          status: 200,
-          data: await new MegaUp().extract(serverUrl),
+          // success: true,
+          // status: 200,
+          data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
     }
   }
@@ -328,6 +380,9 @@ export async function getEpisodeSources(
       return {
         success: false,
         status: 400,
+        headers: {
+          Referer: null,
+        },
         data: null,
         error: `Server ${server} not found check the class `,
       };
@@ -339,6 +394,9 @@ export async function getEpisodeSources(
     if (axios.isAxiosError(error))
       return {
         status: error.response?.status || 500,
+        headers: {
+          Referer: null,
+        },
         data: null,
         error: `Request failed: ${error.message}` || 'Unknown axios error',
         success: false,
@@ -346,7 +404,11 @@ export async function getEpisodeSources(
     return {
       success: false,
       status: 500,
+      headers: {
+        Referer: null,
+      },
       data: null,
+
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }

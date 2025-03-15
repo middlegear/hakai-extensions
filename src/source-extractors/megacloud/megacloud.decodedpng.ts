@@ -1,8 +1,5 @@
-// @ts-nocheck
-
 // https://megacloud.tv/images/image.png?v=0.1.0
-// copied from consumet.ts thanks
-
+//  @ts-nocheck
 export const decoded_png = new Uint8ClampedArray([
   246, 246, 246, 255, 226, 234, 236, 255, 113, 170, 187, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60,
   139, 164, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60, 139, 164, 255, 60, 139, 164,

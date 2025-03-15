@@ -9,7 +9,7 @@ import {
   type SearchResponse,
   type EpisodeInfoRes,
   type ServerInfoResponse,
-  type SourceResponse,
+  HianimeSourceResponse,
 } from './hianime.js';
 import { HiAnimeServers } from './types.js';
 
@@ -62,7 +62,7 @@ class HiAnime {
     episodeId: string,
     server: HiAnimeServers = HiAnimeServers.HD1,
     category: SubOrDub = SubOrDub.SUB,
-  ): Promise<SourceResponse> {
+  ): Promise<HianimeSourceResponse> {
     return fetchEpisodeSources(episodeId, server, category);
   }
 }
