@@ -3,7 +3,11 @@ import { Anilist, Jikan, Meta } from './provider';
 import { HiAnime } from './provider/anime/hianime';
 import { AnimeKai } from './provider/anime/animekai';
 
-export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+
+const animeka = new AnimeKai();
+const data = await animeka.search('solo');
+console.log(data);
 import {
   type Seasons,
   type SubOrDub,
