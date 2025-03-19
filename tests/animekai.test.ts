@@ -4,9 +4,8 @@ import { AnimeKai, SubOrDub } from '../src/provider';
 const animekai = new AnimeKai();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 test('search anime ', async () => {
-  const data = await animekai.search('solo levelling');
-
-  // expect(data.data).not.toEqual([]);
+  const data = await animekai.search('bleach');
+  expect(data.data).not.toBe([]);
   expect(data.success).toBe(true);
   await wait(1000);
 });
