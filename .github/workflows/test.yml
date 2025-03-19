@@ -1,0 +1,45 @@
+name: Test Providers
+
+on:
+  workflow_dispatch:  
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: |
+          rm -f pnpm-lock.yaml
+          pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Run test anilist
+        run: pnpm test-anilist
+
+      - name: Run test jikan
+        run: pnpm test-jikan
+
+      - name: Run test Hianime
+        run: pnpm test-hianime
+      
+      - name: Run test Animekai
+        run: pnpm test-animekai
+
+     
+  

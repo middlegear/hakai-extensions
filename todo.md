@@ -11,3 +11,4 @@ especially one piece and bleach ,naruto
 
 ///upcoming in jikan shouldnt have status paramater
 ///fix the dub servers coming back as empty in hianime and also sources  this happens on the altzoro url
+  // "axios": "^1.8.3",

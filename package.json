@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
-    "axios": "^1.8.3",
+    "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "crypto-js": "^4.2.0"
   },
