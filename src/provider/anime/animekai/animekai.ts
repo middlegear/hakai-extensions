@@ -11,7 +11,7 @@ import { ErrorResponse, Info, searchRes, AnimeKaiServers, SuccessResponse } from
 import { providerClient } from '../../../config/clients';
 
 export const headers = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
   Accept: 'text/html, */*; q=0.01',
   'Accept-Language': 'en-US,en;q=0.5',
   'Sec-GPC': '1',
@@ -21,7 +21,7 @@ export const headers = {
   Priority: 'u=0',
   Pragma: 'no-cache',
   'Cache-Control': 'no-cache',
-  Referer: `${animekaiBaseUrl}`,
+  Referer: `${animekaiBaseUrl}/`,
   Cookie:
     'usertype=guest; session=hxYne0BNXguMc8zK1FHqQKXPmmoANzBBOuNPM64a; cf_clearance=WfGWV1bKGAaNySbh.yzCyuobBOtjg0ncfPwMhtsvsrs-1737611098-1.2.1.1-zWHcaytuokjFTKbCAxnSPDc_BWAeubpf9TAAVfuJ2vZuyYXByqZBXAZDl_VILwkO5NOLck8N0C4uQr4yGLbXRcZ_7jfWUvfPGayTADQLuh.SH.7bvhC7DmxrMGZ8SW.hGKEQzRJf8N7h6ZZ27GMyqOfz1zfrOiu9W30DhEtW2N7FAXUPrdolyKjCsP1AK3DqsDtYOiiPNLnu47l.zxK80XogfBRQkiGecCBaeDOJHenjn._Zgykkr.F_2bj2C3AS3A5mCpZSlWK5lqhV6jQSQLF9wKWitHye39V.6NoE3RE',
 };
@@ -40,7 +40,7 @@ export interface SearchErrorResponse extends ErrorResponse {
 }
 
 export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
-export async function searchanime(query: string, page: number): Promise<SearchResponse> {
+export async function searchanime(query: string, page: number = 1): Promise<SearchResponse> {
   if (0 >= page) {
     page = 1;
   }
@@ -58,8 +58,7 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
 
   try {
     const response = await gotScraping({
-      url: `${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`,
-      // headers: headers,
+      url: `${animekaiBaseUrl}/browser?keyword=${encodeURIComponent(query.trim())}&page=${page}`,
       responseType: 'text',
     });
 
@@ -71,7 +70,7 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
         currentPage: 0,
         totalPages: 0,
         data: [],
-        error: `Error: No response body`,
+        error: 'Error: No response ',
       };
     }
 
@@ -81,20 +80,21 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
     return {
       success: response.statusCode === 200,
       status: response.statusCode,
-      hasNextPage: res.hasNextPage,
-      currentPage: res.currentPage || 0,
-      totalPages: res.totalPages || 0,
+      hasNextPage: res.hasNextPage ?? false,
+      currentPage: res.currentPage ?? 0,
+      totalPages: res.totalPages ?? 0,
       data: searchresults,
     };
-  } catch (error) {
+  } catch (error: any) {
+    const statusCode = error?.response?.statusCode || 500;
     return {
       success: false,
+      status: statusCode,
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
-
       data: [],
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      error: error.message || 'Unknown error occurred',
     };
   }
 }
