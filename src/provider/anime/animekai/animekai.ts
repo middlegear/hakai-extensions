@@ -57,39 +57,42 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
   }
 
   try {
-    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`, {
+    const url = `${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`;
+    const response = await fetch(url, {
       headers: headers,
     });
 
-    if (!response.data) {
+    if (!response.ok) {
       return {
-        success: response.status === 200,
+        success: false,
         status: response.status,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
         data: [],
-        error: `Error: ${response?.statusText}`,
+        error: `Fetch error: ${response.statusText}`,
       };
     }
 
-    const data$ = cheerio.load(response.data);
+    const text = await response.text();
+
+    if (!text) {
+      return {
+        success: true, //response.ok already checked above
+        status: response.status,
+        hasNextPage: false,
+        currentPage: 0,
+        totalPages: 0,
+        data: [],
+        error: 'No data in response',
+      };
+    }
+
+    const data$ = cheerio.load(text);
     const { res, searchresults } = extractsearchresults(data$);
 
-    // if (!Array.isArray(searchresults) || searchresults.length === 0) {
-    //   return {
-    //     hasNextPage: false,
-    //     currentPage: 0,
-    //     totalPages: 0,
-    //     status: 204,
-    //     success: false,
-    //     error: 'Scraper Error: No results found',
-    //     data: [],
-    //   };
-    // }
-
     return {
-      success: response.status === 200,
+      success: response.ok,
       status: response.status,
       hasNextPage: res.hasNextPage,
       currentPage: res.currentPage || 0,
@@ -97,18 +100,6 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       data: searchresults,
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return {
-        success: false,
-        hasNextPage: false,
-        currentPage: 0,
-        totalPages: 0,
-        status: error.response?.status || 500,
-        data: [],
-        error: `Axios error: ${error.response?.statusText || error.message}`,
-      };
-    }
-
     return {
       success: false,
       hasNextPage: false,
