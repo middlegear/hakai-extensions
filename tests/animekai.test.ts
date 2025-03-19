@@ -6,7 +6,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 test('search anime ', async () => {
   const data = await animekai.search('solo levelling');
 
-  // expect(data.data).not.toEqual([]);
+  expect(data.data).not.toEqual([]);
   expect(data.success).toBe(true);
   await wait(1000);
 });
