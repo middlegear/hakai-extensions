@@ -1,7 +1,7 @@
 /// Gratitude goes to consumet
 
 import * as cheerio from 'cheerio';
-
+import { gotScraping } from 'got-scraping';
 import { animekaiBaseUrl } from '../../../utils/constants';
 import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
@@ -57,43 +57,30 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
   }
 
   try {
-    const url = `${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`;
-    const response = await fetch(url, {
-      headers: headers,
+    const response = await gotScraping({
+      url: `${animekaiBaseUrl}/browser?keyword=${query.replace(/[\W_]+/g, '+')}&page=${page}`,
+      // headers: headers,
+      responseType: 'text',
     });
 
-    if (!response.ok) {
+    if (!response.body) {
       return {
-        success: false,
-        status: response.status,
+        success: response.statusCode === 200,
+        status: response.statusCode,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
         data: [],
-        error: `Fetch error: ${response.statusText}`,
+        error: `Error: No response body`,
       };
     }
 
-    const text = await response.text();
-
-    if (!text) {
-      return {
-        success: true, //response.ok already checked above
-        status: response.status,
-        hasNextPage: false,
-        currentPage: 0,
-        totalPages: 0,
-        data: [],
-        error: 'No data in response',
-      };
-    }
-
-    const data$ = cheerio.load(text);
+    const data$ = cheerio.load(response.body);
     const { res, searchresults } = extractsearchresults(data$);
 
     return {
-      success: response.ok,
-      status: response.status,
+      success: response.statusCode === 200,
+      status: response.statusCode,
       hasNextPage: res.hasNextPage,
       currentPage: res.currentPage || 0,
       totalPages: res.totalPages || 0,
@@ -105,7 +92,7 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
-      status: 500,
+
       data: [],
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
