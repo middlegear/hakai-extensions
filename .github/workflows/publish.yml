@@ -26,14 +26,17 @@ jobs:
           rm -f pnpm-lock.yaml
           pnpm install --no-frozen-lockfile
 
-      - name: Run test anilist
+      - name: Run test Anilist
         run: pnpm test-anilist
 
-      - name: Run test jikan
+      - name: Run test Jikan
         run: pnpm test-jikan
 
       - name: Run test Hianime
         run: pnpm test-hianime
+      
+      - name: Run test Animekai
+        run: pnpm test-animekai
       
       - name: Lint
         run: pnpm lint

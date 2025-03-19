@@ -29,10 +29,10 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      - name: Run test anilist
+      - name: Run test Anilist
         run: pnpm test-anilist
 
-      - name: Run test jikan
+      - name: Run test Jikan
         run: pnpm test-jikan
 
       - name: Run test Hianime
