@@ -53,7 +53,7 @@ export async function searchanime(query: string, page: number): Promise<SearchRe
 
   try {
     const sanitizedQuery = query.replace(/[\W_]+/g, '+');
-    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${sanitizedQuery}&page=${page}`, { headers });
+    const response = await axios.get(`${animekaiBaseUrl}/browser?keyword=${sanitizedQuery}&page=${page}`);
 
     const data$ = cheerio.load(response.data);
     const { res, searchresults } = extractsearchresults(data$);
