@@ -11,22 +11,17 @@ import { ErrorResponse, Info, searchRes, AnimeKaiServers, SuccessResponse } from
 import { providerClient } from '../../../config/clients';
 
 export const headers = {
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'Accept-Language': 'en-GB,en;q=0.9',
-  'Cache-Control': 'max-age=0',
-  Cookie: '_ga=GA1.1.552928217.1741113813; _ga_9Q0DLZGNGV=GS1.1.1741113812.1.0.1741113812.0.0.0',
-  'Sec-Ch-Ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
-  'Sec-Ch-Ua-Mobile': '?0',
-  'Sec-Ch-Ua-Platform': '"Windows"',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Sec-GPC': '1',
   'Sec-Fetch-Dest': 'document',
   'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'none',
-  'Sec-Fetch-User': '?1',
-  'Upgrade-Insecure-Requests': '1',
-  'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+  'Sec-Fetch-Site': 'cross-site',
+  Referer: `${animekaiBaseUrl}/`,
+  Cookie:
+    'usertype=guest; session=hxYne0BNXguMc8zK1FHqQKXPmmoANzBBOuNPM64a; cf_clearance=WfGWV1bKGAaNySbh.yzCyuobBOtjg0ncfPwMhtsvsrs-1737611098-1.2.1.1-zWHcaytuokjFTKbCAxnSPDc_BWAeubpf9TAAVfuJ2vZuyYXByqZBXAZDl_VILwkO5NOLck8N0C4uQr4yGLbXRcZ_7jfWUvfPGayTADQLuh.SH.7bvhC7DmxrMGZ8SW.hGKEQzRJf8N7h6ZZ27GMyqOfz1zfrOiu9W30DhEtW2N7FAXUPrdolyKjCsP1AK3DqsDtYOiiPNLnu47l.zxK80XogfBRQkiGecCBaeDOJHenjn._Zgykkr.F_2bj2C3AS3A5mCpZSlWK5lqhV6jQSQLF9wKWitHye39V.6NoE3RE; __cf_bm=YOUR_CLOUDFLARE_BM_COOKIE_HERE', //Replace the __cf_bm cookie
+  'Cache-Control': 'max-age=0',
 };
 
 export interface SuccessSearchResponse extends SuccessResponse {
@@ -154,7 +149,7 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-          Referer: `${animekaiBaseUrl}/watch/${animeId}`,
+
           ...headers,
         },
       },
@@ -262,7 +257,6 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
   try {
     const { data } = await axios.get(episodeId, {
       headers: {
-        Referer: animekaiBaseUrl,
         ...headers,
       },
     });
