@@ -117,49 +117,65 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
   if (!animeId.trim()) {
     return {
       success: false,
-      error: 'Missing required Params : animeId',
+      error: 'Missing required Params: animeId',
       status: 400,
       data: null,
       providerEpisodes: [],
     };
   }
+
   try {
-    const response = await axios.get(`${animekaiBaseUrl}/watch/${animeId}`, {
-      headers: headers,
+    // Fetch anime info
+    const response = await gotScraping(`${animekaiBaseUrl}/watch/${encodeURIComponent(animeId.trim())}`, {
+      headers,
+      responseType: 'text',
     });
-    const data$ = cheerio.load(response.data);
+
+    if (!response.body) {
+      return {
+        status: response.statusCode,
+        success: false,
+        error: 'Scraper Error: No animeInfo found',
+        data: null,
+        providerEpisodes: [],
+      };
+    }
+
+    const data$ = cheerio.load(response.body);
     const { animeInfo } = extractAnimeInfo(data$);
-    if (!response.data) {
-      return {
-        status: response.status,
-        success: response.status === 200,
-        error: response.statusText || 'Scraper Error: No animeInfo found',
-        data: null,
-        providerEpisodes: [],
-      };
-    }
 
+    // Fetch episodes list
     const ani_id = data$('.rate-box#anime-rating').attr('data-id');
-    const episodesAjax = await axios.get(
-      `${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${new MegaUp().GenerateToken(ani_id!)}`,
-      {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-
-          ...headers,
-        },
-      },
-    );
-    if (!episodesAjax.data.result) {
+    if (!ani_id) {
       return {
-        status: episodesAjax.status,
-        success: episodesAjax.status === 200,
-        error: episodesAjax.statusText || 'Scraper Error: No Episodes found',
+        status: 404,
+        success: false,
+        error: 'Scraper Error: anime ID not found',
         data: null,
         providerEpisodes: [],
       };
     }
-    const episodes$: cheerio.CheerioAPI = cheerio.load(episodesAjax.data.result);
+
+    const token = new MegaUp().GenerateToken(ani_id);
+    const episodesResponse = await gotScraping(`${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${token}`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        ...headers,
+      },
+      responseType: 'text',
+    });
+
+    if (!episodesResponse.body) {
+      return {
+        status: episodesResponse.statusCode,
+        success: false,
+        error: 'Scraper Error: No Episodes found',
+        data: null,
+        providerEpisodes: [],
+      };
+    }
+
+    const episodes$: cheerio.CheerioAPI = cheerio.load(JSON.parse(episodesResponse.body).result);
     const episodes: {
       episodeId: string | null;
       number: number;
@@ -171,13 +187,14 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       const number = Number(episodes$(el).attr('num')!);
       const title = episodes$(el).children('span').text().trim() || null;
 
-      episodes?.push({
+      episodes.push({
         episodeId: episodeIdwithToken,
-        number: number,
-        title: title,
+        number,
+        title,
       });
     });
-    if (!Array.isArray(episodes) || episodes.length === 0) {
+
+    if (episodes.length === 0) {
       return {
         status: 204,
         success: false,
@@ -188,29 +205,23 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     }
 
     return {
-      success: response.status === 200 && episodesAjax.status === 200,
-      status: response.status && episodesAjax.status,
+      success: response.statusCode === 200 && episodesResponse.statusCode === 200,
+      status: response.statusCode,
       data: animeInfo,
       providerEpisodes: episodes,
     };
-  } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        status: error.response?.status || 500,
-        data: null,
-        providerEpisodes: [],
-        error: `Request failed: ${error.message}` || 'Unknown axios error',
-        success: false,
-      };
+  } catch (error: any) {
+    const statusCode = error?.response?.statusCode || 500;
     return {
       success: false,
-      status: 500,
+      status: statusCode,
       data: null,
       providerEpisodes: [],
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error.message || 'Unknown error occurred',
     };
   }
 }
+
 type Intro = {
   start: number;
   end: number;

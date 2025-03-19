@@ -11,7 +11,7 @@ test('search anime ', async () => {
 });
 
 test('fetch animeinfo including episodes', async () => {
-  const data = await animekai.fetchAnimeInfo('solo-leveling-season-2-arise-from-the-shadow-x7rq');
+  const data = await animekai.fetchAnimeInfo('dragon-ball-z-bardock-the-father-of-goku-jwnw');
 
   expect(data.data).not.toBe(null);
   await wait(1000);
