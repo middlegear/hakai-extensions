@@ -233,8 +233,8 @@ type Outro = {
 export type serverInfo = {
   name: string;
   url: string;
-  // intro: Intro;
-  // outro: Outro;
+  intro: Intro;
+  outro: Outro;
 };
 export interface SuccessServerInfo extends SuccessResponse {
   data: serverInfo[];
@@ -291,14 +291,14 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
         servers.push({
           name: `MegaUp ${$(server).text().trim()}`!,
           url: decodedData.url,
-          // intro: {
-          //   start: decodedData?.skip.intro[0],
-          //   end: decodedData?.skip.intro[1],
-          // },
-          // outro: {
-          //   start: decodedData?.skip.outro[0],
-          //   end: decodedData?.skip.outro[1],
-          // },
+          intro: {
+            start: decodedData?.skip.intro[0],
+            end: decodedData?.skip.intro[1],
+          },
+          outro: {
+            start: decodedData?.skip.outro[0],
+            end: decodedData?.skip.outro[1],
+          },
         });
       }),
     );
@@ -324,17 +324,20 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
     };
   }
 }
-export interface SuccessSourceRes extends SuccessResponse {
+export interface SuccessSourceRes {
+  data: ASource;
   headers: {
     Referer: string;
   };
-  data: ASource;
 }
-export interface ErrorSourceRes extends ErrorResponse {
+export interface ErrorSourceRes {
   data: null;
   headers: {
     Referer: null;
   };
+  success: boolean;
+  status: number;
+  error: string;
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
 export async function getEpisodeSources(
@@ -346,10 +349,10 @@ export async function getEpisodeSources(
     return {
       success: false,
       status: 400,
+      data: null,
       headers: {
         Referer: null,
       },
-      data: null,
       error: 'Missing required params episodeId',
     };
   }
@@ -358,17 +361,13 @@ export async function getEpisodeSources(
     switch (server) {
       case AnimeKaiServers.MegaUp:
         return {
-          headers: { Referer: serverUrl.href },
-          // success: true,
-          // status: 200,
+          headers: { Referer: `${serverUrl.href}` },
           data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
 
       default:
         return {
-          headers: { Referer: serverUrl.href },
-          // success: true,
-          // status: 200,
+          headers: { Referer: `${serverUrl.href}` },
           data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
     }
@@ -381,35 +380,41 @@ export async function getEpisodeSources(
       return {
         success: false,
         status: 400,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
         error: `Server ${server} not found check the class `,
       };
     }
     //@ts-ignore
     const serverUrl: URL = new URL(servers.data[urlIndex].url);
-    return await getEpisodeSources(serverUrl.href, category, server);
+    let sources;
+    sources = await getEpisodeSources(serverUrl.href, category, server);
+    if (sources.data) {
+      sources.data.intro = servers.data[urlIndex]?.intro as Intro;
+      sources.data.outro = servers.data[urlIndex]?.outro as Outro;
+    }
+
+    return sources;
   } catch (error) {
     if (axios.isAxiosError(error))
       return {
         status: error.response?.status || 500,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
         error: `Request failed: ${error.message}` || 'Unknown axios error',
         success: false,
       };
     return {
       success: false,
       status: 500,
+      data: null,
       headers: {
         Referer: null,
       },
-      data: null,
-
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }

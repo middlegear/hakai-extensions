@@ -33,7 +33,7 @@ test('fetches streaming servers', async () => {
   await wait(1000);
 });
 
-test('Fetches streaming sources on HD1', async () => {
+test('Fetches streaming sources ', async () => {
   const data = await zoro.fetchSources('solo-leveling-18718-episode-119497', HiAnimeServers.HD2, SubOrDub.DUB);
 
   expect(data.data).not.toEqual(null);

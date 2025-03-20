@@ -284,17 +284,20 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     };
   }
 }
-export interface SuccessSourceRes extends SuccessResponse {
+export interface SuccessSourceRes {
   data: ASource;
   headers: {
     Referer: string;
   };
 }
-export interface ErrorSourceRes extends ErrorResponse {
+export interface ErrorSourceRes {
   data: null;
   headers: {
     Referer: null;
   };
+  success: boolean;
+  status: number;
+  error: string;
 }
 export type HianimeSourceResponse = SuccessSourceRes | ErrorSourceRes;
 export async function fetchEpisodeSources(
@@ -306,10 +309,10 @@ export async function fetchEpisodeSources(
     return {
       success: false,
       status: 400,
+      data: null,
       headers: {
         Referer: null,
       },
-      data: null,
       error: 'Missing required params episodeId',
     };
   }
@@ -345,10 +348,10 @@ export async function fetchEpisodeSources(
         success: response.status === 200,
         error: response.statusText || 'Server returned an empty response ',
         status: response.status,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
       };
     const datares$: cheerio.CheerioAPI = cheerio.load(response.data.html);
     let mediadataId: string | null = null;
@@ -371,10 +374,10 @@ export async function fetchEpisodeSources(
           success: false,
           error: 'Scraping error',
           status: 204,
+          data: null,
           headers: {
             Referer: null,
           },
-          data: null,
         };
       const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
         headers: {
@@ -387,22 +390,21 @@ export async function fetchEpisodeSources(
           success: dataLink.status === 200,
           error: dataLink.statusText || 'Server returned an empty response',
           status: dataLink.status,
+          data: null,
           headers: {
             Referer: null,
           },
-          data: null,
         };
     } catch (error) {
       if (axios.isAxiosError(error))
         return {
           success: false,
           status: error.response?.status || 500,
+          error: `Request failed ${error.message}` || 'Unknown axios error',
+          data: null,
           headers: {
             Referer: null,
           },
-          data: null,
-
-          error: `Request failed ${error.message}` || 'Unknown axios error',
         };
       return {
         success: false,
@@ -419,10 +421,10 @@ export async function fetchEpisodeSources(
         success: false,
         error: 'Scraping error',
         status: 204,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
       };
     const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
       headers: {
@@ -435,10 +437,10 @@ export async function fetchEpisodeSources(
         success: dataLink.status === 200,
         error: dataLink.statusText || 'Server returned an empty response',
         status: dataLink.status,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
       };
     // console.log(link, mediadataId);
     // const id = link.split('/').at(-1);
@@ -453,19 +455,19 @@ export async function fetchEpisodeSources(
       return {
         success: false,
         status: error.response?.status || 500,
+        data: null,
         headers: {
           Referer: null,
         },
-        data: null,
         error: `Request failed ${error.message}` || 'Unknown axios error',
       };
     return {
       success: false,
       status: 500,
+      data: null,
       headers: {
         Referer: null,
       },
-      data: null,
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }

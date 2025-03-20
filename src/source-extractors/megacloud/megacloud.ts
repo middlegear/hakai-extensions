@@ -2,7 +2,6 @@ import { ASource } from '../../types/types.js';
 import { getSources } from './megacloud.getsrcs.js';
 
 class MegaCloud {
-  // protected override sources: ASource =
   async extract(embedIframeURL: URL) {
     try {
       const extractedData: ASource = {
@@ -17,11 +16,17 @@ class MegaCloud {
         subtitles: [],
         sources: [],
       };
+      const errRes = {
+        success: false,
+        status: 500,
+        error: 'MegaCloud Changed Encryption',
+        data: null,
+      };
 
       const xrax = embedIframeURL.pathname.split('/').pop() || '';
 
       const resp = await getSources(xrax);
-      if (!resp) return extractedData;
+      if (!resp) return errRes;
 
       if (Array.isArray(resp.sources)) {
         extractedData.sources = resp.sources.map((s: { file: any; type: any }) => ({
@@ -32,18 +37,15 @@ class MegaCloud {
       extractedData.intro = resp.intro ? resp.intro : extractedData.intro;
       extractedData.outro = resp.outro ? resp.outro : extractedData.outro;
       extractedData.subtitles = resp.tracks;
-      const headers = {
-        Referer: embedIframeURL.origin,
-      };
-      // headers: embedIframeURL.origin
+
+      return extractedData;
+    } catch (error) {
       return {
-        Notice: 'Use a m3u8 proxy with Referer headers or enjoy 403 cors error',
-        success: true,
-        status: 200,
-        data: extractedData,
+        success: false,
+        status: 500,
+        data: null,
+        error: error instanceof Error ? error.message : 'Unknown Error',
       };
-    } catch (err) {
-      throw err;
     }
   }
 }

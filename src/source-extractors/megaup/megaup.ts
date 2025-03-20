@@ -158,7 +158,7 @@ export class MegaUp {
       });
 
       const decrypted = JSON.parse(this.Decode(res.data.result).replace(/\\/g, ''));
-      const data: ASource = {
+      const data = {
         sources: decrypted.sources.map((s: { file: string }) => ({
           url: s.file,
           isM3U8: s.file.includes('.m3u8') || s.file.endsWith('m3u8'),
@@ -177,11 +177,7 @@ export class MegaUp {
           data: null,
         };
       }
-      return {
-        success: res.status === 200,
-        status: res.status,
-        data: data,
-      };
+      return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return {

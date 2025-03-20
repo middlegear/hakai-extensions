@@ -284,49 +284,6 @@ The `Anime` class provides access to anime providers for sources
 - **`Anime.HiAnime`**  
 - **`Anime.AnimeKai`**  
 
-#### **Example**  
-
-```typescript
-const zoro = new Anime.HiAnime();
-const data = await zoro.fetchSources('bleach-thousand-year-blood-war-the-conflict-19322-episode-128578');
-console.log(data)
-```
-fetching episodeSources returns:
-```json
-{
-  "success": true,
-  "status": 200,
-  "data": {
-    "intro": {
-      "start": 169,
-      "end": 270
-    },
-    "outro": {
-      "start": 1357,
-      "end": 1448
-    },
-    "sources": [
-      {
-        "url": "https://gg3.jonextugundu.net/_v7/dda8797f088784e2d24e400a1f1850df291385b0fb0197eaac9e7bf8d0b565c6c2b2c8c0fe12b74bb83a55549c5ec6299025e6ce3f385f1804a3a6a0230f0d5aded0476ddfb61cec01389d45b062cb1de2246a7fb8e614aa5badfa8d844b70b0c56a969bf915ea543b2b0aa5340d5f0e2544ed000bb16442ce8de6534364954c/master.m3u8",
-        "isM3U8": true,
-        "type": "hls"
-      }
-    ],
-    "subtitles": [
-      {
-        "url": "https://ccb.megafiles.store/6b/07/6b07fd2233dbeed89a932c63e460c871/eng-2.vtt",
-        "lang": "English"
-      },
-      {
-        "url": "https://imgb.megafiles.store/_a_preview/77/774781b623c2b02c78eb551da68ead3f/thumbnails/sprite.vtt",
-        "lang": "thumbnails"
-      }
-    ]
-  }
-}
-
-```
----  
 
 
 ## ⚖ License  
