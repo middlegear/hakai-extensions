@@ -1,4 +1,4 @@
-name: Push Readme Update to NPM (No Version Change)
+name: Push Readme Update to NPM
 
 on:
   workflow_dispatch:  # Allows manual triggering of the workflow
@@ -31,7 +31,6 @@ jobs:
 
       - name: Publish README to NPM (No Version Change)
         run: |
-          npm publish --access public --no-git-checks --dry-run
           npm publish --access public --no-git-checks --force
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
