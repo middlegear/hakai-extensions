@@ -5,7 +5,7 @@
 
 ##  Overview  
 
-**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers.  
+**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers. An API is available visit the  <strong> [Docs 🤷](https://github.com/middlegear/documentation/blob/main/README.md) </strong>
 
 > **Disclaimer:**  
 > This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
@@ -109,7 +109,10 @@ searching anime returns:
 const jikan = new Meta.Jikan();
 const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.HiAnime);
 ```
-fetching provider episodes  returns: 
+<details> 
+
+<summary> 📄 Response Schema </summary>
+
 ```json
 
 {
@@ -273,6 +276,8 @@ fetching provider episodes  returns:
   ]
 }
 ```
+</details>
+
 ---
 
 ### `Anime` Class  
@@ -283,8 +288,13 @@ The `Anime` class provides access to anime providers for sources
 
 - **`Anime.HiAnime`**  
 - **`Anime.AnimeKai`**  
+  
+---
+## 🎖 Credits
 
+ **[Consumet](https://github.com/consumet/consumet.ts)**
 
+---
 
 ## ⚖ License  
 

@@ -223,7 +223,7 @@ export interface SuccessServerInfo extends SuccessResponse {
   data: ServerInfo;
 }
 export interface ErrorServerInfo extends ErrorResponse {
-  data: [];
+  data: null;
 }
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function fetchServers(episodeId: string): Promise<ServerInfoResponse> {
@@ -231,7 +231,7 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     return {
       success: false,
       status: 400,
-      data: [],
+      data: null,
       error: 'Missing required params :episodeId!',
     };
 
@@ -249,18 +249,18 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
         success: response.status === 200,
         status: response.status,
         error: response.statusText || 'Server returned an empty response',
-        data: [],
+        data: null,
       };
 
     const res$: cheerio.CheerioAPI = cheerio.load(response.data.html);
 
     const { servers } = extractServerData(res$);
-    if (!Array.isArray(servers) || servers.length === 0) {
+    if (!servers) {
       return {
         status: 204,
         success: false,
         error: 'Scraper Error: No results found',
-        data: [],
+        data: null,
       };
     }
     return {
@@ -273,14 +273,14 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
       return {
         success: false,
         status: error.response?.status || 500,
-        data: [],
+        data: null,
         error: `Request failed ${error.message}` || 'Unknown axios error',
       };
     return {
       success: false,
       status: 500,
       error: error instanceof Error ? error.message : 'Internal Server Error',
-      data: [],
+      data: null,
     };
   }
 }

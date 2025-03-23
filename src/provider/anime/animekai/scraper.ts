@@ -59,7 +59,7 @@ export function extractAnimeInfo($: cheerio.CheerioAPI) {
     title: null,
     romaji: null,
     posterImage: null,
-
+    status: null,
     type: null,
     synopsis: null,
     episodes: {
@@ -73,6 +73,13 @@ export function extractAnimeInfo($: cheerio.CheerioAPI) {
   animeInfo.romaji = $('.entity-scroll > .title').attr('data-jp')?.trim() || null;
   animeInfo.posterImage = $('div.poster > div >img').attr('src') || null;
   animeInfo.synopsis = $('.entity-scroll > .desc').text().trim() || null;
+  animeInfo.status =
+    $('div.detail div')
+      .filter((_, el) => $(el).text().includes('Status:'))
+      .find('span')
+      .text()
+      .trim() || null;
+
   animeInfo.type = $('.entity-scroll > .info').children().last().text().toUpperCase() || null;
   animeInfo.episodes.sub = Number($('.entity-scroll > .info').find('.info span.sub')?.text() || null);
   animeInfo.episodes.dub = Number($('.entity-scroll > .info').find('.info span.dub')?.text() || null);

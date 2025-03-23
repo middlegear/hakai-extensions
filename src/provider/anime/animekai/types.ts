@@ -22,7 +22,7 @@ export type Info = {
   title: null | string;
   posterImage: null | string;
   romaji: null | string;
-
+  status: string | null;
   type: null | string;
   synopsis: null | string;
   episodes: {

@@ -82,7 +82,7 @@ export async function searchAnime(query: string, page: number, limit: number): P
     const response = await axios.get(`${jikanBaseUrl}/anime?q=${query}&page=${page}&limit=${limit}`);
     if (!response.data)
       return {
-        success: response.data === 200,
+        success: response.status === 200,
         status: response.status,
         error: 'Server returned an empty response',
         hasNextPage: false,
@@ -95,7 +95,7 @@ export async function searchAnime(query: string, page: number, limit: number): P
     const pagination: Pagination = {
       hasNextPage: response.data.pagination.has_next_page,
       lastPage: response.data.pagination.last_visible_page,
-      currentPage: response.data.pagination.currentPage,
+      currentPage: page,
       total: response.data.pagination.items.total,
       perPage: response.data.pagination.items.per_page,
     };
@@ -142,7 +142,7 @@ export async function searchAnime(query: string, page: number, limit: number): P
     }));
 
     return {
-      success: response.data === 200,
+      success: response.status === 200,
       status: response.status,
       hasNextPage: pagination.hasNextPage,
       total: pagination.total,
@@ -197,7 +197,7 @@ export async function getInfoById(Id: number): Promise<JikanInfo> {
     const response = await axios.get(`${jikanBaseUrl}/anime/${Id}`);
     if (!response.data)
       return {
-        success: response.data === 200,
+        success: response.status === 200,
         status: response.status,
         error: response.statusText || 'Server returned an empty response',
         data: null,
@@ -250,7 +250,7 @@ export async function getInfoById(Id: number): Promise<JikanInfo> {
       producers: response.data.data.producers,
     };
     return {
-      success: response.data === 200,
+      success: response.status === 200,
       status: response.status,
       data: animeInfo as JIkanData,
     };
@@ -380,7 +380,7 @@ export async function getCurrentSeason(page: number, limit: number, filter: Form
     const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
-      currentPage: res.pagination.currentPage,
+      currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
@@ -498,7 +498,7 @@ export async function getNextSeason(page: number, limit: number, filter: Format)
     const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
-      currentPage: res.pagination.currentPage,
+      currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
@@ -625,7 +625,7 @@ export async function getSeason(
     const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
-      currentPage: res.pagination.currentPage,
+      currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
@@ -733,7 +733,7 @@ export async function getTopUpcoming(
     const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
-      currentPage: res.pagination.currentPage,
+      currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
@@ -840,7 +840,7 @@ export async function getTopAnime(page: number, limit: number, filter: JikanStat
     const pagination: Pagination = {
       hasNextPage: res.pagination.has_next_page,
       lastPage: res.pagination.last_visible_page,
-      currentPage: res.pagination.currentPage,
+      currentPage: page,
       total: res.pagination.items.total,
       perPage: res.pagination.items.per_page,
     };
@@ -926,6 +926,7 @@ export async function getTopAnime(page: number, limit: number, filter: JikanStat
 }
 type episodePagination = {
   hasNextPage: boolean;
+  currentPage: number;
   lastPage: number;
 };
 type EpisodeRes = {
@@ -938,11 +939,13 @@ type EpisodeRes = {
 export interface SuccessJikanEpisodes extends SuccessResponse {
   data: EpisodeRes[];
   hasNextPage: boolean;
+  currentPage: number;
   lastPage: number;
 }
 export interface ErrorJikanEpisodes extends ErrorResponse {
   data: [];
   hasNextPage: boolean;
+  currentPage: number;
   lastPage: number;
 }
 export type JikanEpisodes = SuccessJikanEpisodes | ErrorJikanEpisodes;
@@ -954,6 +957,7 @@ export async function getEpisodes(id: number, page: number): Promise<JikanEpisod
       error: 'Missing required parameter : Malid!',
       data: [],
       hasNextPage: false,
+      currentPage: 0,
       lastPage: 0,
     };
   }
@@ -962,16 +966,18 @@ export async function getEpisodes(id: number, page: number): Promise<JikanEpisod
     const response = await axios.get(`${jikanBaseUrl}/anime/${id}/episodes?page=${page}`);
     if (!response.data)
       return {
-        success: response.data === 200,
+        success: response.status === 200,
         status: response.status,
         error: response.statusText || 'Server returned an empty response',
         data: [],
         hasNextPage: false,
+        currentPage: 0,
         lastPage: 0,
       };
     const pagination: episodePagination = {
       hasNextPage: response.data.pagination.has_next_page,
       lastPage: response.data.pagination.last_visible_page,
+      currentPage: page,
     };
 
     const data: EpisodeRes[] = response.data.data.map((item: any) => ({
@@ -982,9 +988,10 @@ export async function getEpisodes(id: number, page: number): Promise<JikanEpisod
       score: item.score,
     }));
     return {
-      success: response.data === 200,
+      success: response.status === 200,
       status: response.status,
       hasNextPage: pagination.hasNextPage,
+      currentPage: pagination.currentPage,
       lastPage: pagination.lastPage,
       data: data as EpisodeRes[],
     };
@@ -996,6 +1003,7 @@ export async function getEpisodes(id: number, page: number): Promise<JikanEpisod
         error: `Request failed ${error.message}`,
         hasNextPage: false,
         lastPage: 0,
+        currentPage: 0,
         data: [],
       };
     return {
@@ -1004,6 +1012,7 @@ export async function getEpisodes(id: number, page: number): Promise<JikanEpisod
       error: error instanceof Error ? error.message : 'Unknown err ',
       hasNextPage: false,
       lastPage: 0,
+      currentPage: 0,
       data: [],
     };
   }
@@ -1029,7 +1038,7 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number): Promise
     const response = await axios.get(`${jikanBaseUrl}/anime/${Id}/episodes/${episodeNumber}`);
     if (!response.data)
       return {
-        success: response.data === 200,
+        success: response.status === 200,
         status: response.status,
         error: response.statusText || 'Server returned an empty response',
         data: null,
@@ -1042,7 +1051,7 @@ export async function getEpisodeInfo(Id: number, episodeNumber: number): Promise
       synopsis: response.data.data.synopsis,
     };
     return {
-      success: response.data === 200,
+      success: response.status === 200,
       status: response.status,
       data: data,
     };
