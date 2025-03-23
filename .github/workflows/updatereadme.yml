@@ -1,22 +1,30 @@
-name: Manual README Update
+name: Manual Update README on npm
 
 on:
-  workflow_dispatch:  # Enables manual trigger
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions
 
 jobs:
-  update-readme:
+  update-readme-npm:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org/'
 
-      - name: Commit and push README.md changes
-        run: |
-          git add README.md
-          git commit -m "chore: update README.md [GitHub Actions]" || echo "No changes to commit"
-          git push
+      - name: Install dependencies
+        run: npm ci  # Ensures clean install
+
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Publish README to npm
+        run: npm publish --access public --tag latest --dry-run
+
+      - name: Force Publish (Optional)
+        if: success()
+        run: npm publish --access public --force
