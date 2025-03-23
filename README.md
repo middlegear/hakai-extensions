@@ -5,7 +5,7 @@
 
 ##  Overview  
 
-**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers. An API is available visit the  <strong> [Docs 🤷](https://github.com/middlegear/documentation/blob/main/README.md) </strong>
+**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers. An API is available visit the  <strong> [Docs 🤷](https://github.com/middlegear/documentation) </strong>
 
 > **Disclaimer:**  
 > This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
@@ -60,9 +60,11 @@ The `Meta` class provides **metadata retrieval** from various sources.
 const anilist = new Meta.Anilist();
 const data = await anilist.search('akame ga kill');
 ``` 
-## 🔄 API Response Example  
+ 
+<details> 
 
-searching anime returns:  
+<summary> 📄 Response </summary>
+
 ```json
 {
   "success": true,
@@ -104,14 +106,19 @@ searching anime returns:
     }
   ]
 }
+
+
 ```
+</details>
+
+
 ```typescript
 const jikan = new Meta.Jikan();
 const data = await jikan.fetchAnimeProviderEpisodes(52299, AnimeProvider.HiAnime);
 ```
 <details> 
 
-<summary> 📄 Response Schema </summary>
+<summary> 📄 Response </summary>
 
 ```json
 

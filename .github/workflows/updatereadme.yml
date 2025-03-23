@@ -1,0 +1,22 @@
+name: Manual README Update
+
+on:
+  workflow_dispatch:  # Enables manual trigger
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push README.md changes
+        run: |
+          git add README.md
+          git commit -m "chore: update README.md [GitHub Actions]" || echo "No changes to commit"
+          git push
