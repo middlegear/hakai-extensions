@@ -1,7 +1,10 @@
 name: Update README on npm
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:  
+
+permissions:
+  id-token: write  # ✅ Required for provenance
 
 jobs:
   update-readme:
@@ -27,6 +30,6 @@ jobs:
           pnpm install --no-frozen-lockfile
 
       - name: Force Update README on npm
-        run: npm publish --access public --provenance --no-git-checks --tag latest
+        run: npm publish --access public --no-git-checks --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
