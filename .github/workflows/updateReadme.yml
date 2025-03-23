@@ -1,10 +1,10 @@
-name: Publish Readme Update
+name: Push Readme Update to NPM (No Version Change)
 
 on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  update-readme:
+  update-readme-npm:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Required to push changes
@@ -29,8 +29,9 @@ jobs:
           git commit -m "Update README via GitHub Actions" || echo "No changes to commit"
           git push origin HEAD || echo "No changes to push"
 
-      - name: Publish to NPM
+      - name: Publish README to NPM (No Version Change)
         run: |
-          npm publish --access public --no-git-checks
+          npm publish --access public --no-git-checks --dry-run
+          npm publish --access public --no-git-checks --force
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
