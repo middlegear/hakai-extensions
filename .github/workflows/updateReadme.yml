@@ -1,7 +1,7 @@
 name: Update README on npm
 
 on:
-  workflow_dispatch:  # Allows manual triggering of the workflow
+  workflow_dispatch: 
 
 jobs:
   update-readme:
@@ -26,7 +26,7 @@ jobs:
           rm -f pnpm-lock.yaml
           pnpm install --no-frozen-lockfile
 
-      - name: Refresh README on npm (without version bump)
-        run: npm publish --provenance --dry-run
+      - name: Force Update README on npm
+        run: npm publish --access public --provenance --no-git-checks --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
