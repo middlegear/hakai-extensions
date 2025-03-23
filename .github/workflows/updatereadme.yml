@@ -1,30 +1,35 @@
-name: Manual Update README on npm
+name: Update README on npm
 
 on:
-  workflow_dispatch:  # Allows manual trigger from GitHub Actions
+  workflow_dispatch:  
 
 jobs:
-  update-readme-npm:
+  update-readme:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: npm ci  # Ensures clean install
+        run: |
+          rm -f pnpm-lock.yaml
+          pnpm install --no-frozen-lockfile
 
-      - name: Authenticate with npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Update README on npm
+        run: pnpm publish --access public --no-git-checks --dry-run
 
-      - name: Publish README to npm
-        run: npm publish --access public --tag latest --dry-run
-
-      - name: Force Publish (Optional)
-        if: success()
-        run: npm publish --access public --force
+      - name: Force Update README on npm (if needed)
+        run: pnpm publish --access public --no-git-checks --force
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
