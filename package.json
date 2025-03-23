@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/middlegear/hakai-extensions.git"
+    "url": "git+https://github.com/middlegear/hakai-extensions.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
