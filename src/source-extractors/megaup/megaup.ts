@@ -3,7 +3,7 @@ import { ASource } from '../../types/types';
 import { headers } from '../../provider/anime/animekai/animekai';
 //my gratitude goes to consumet
 //extractor for https://animekai.to
-
+//https://megaup.cc/assets/megaup/min/app.js
 export class MegaUp {
   protected sources: ASource[] = [];
 
