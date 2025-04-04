@@ -4,6 +4,8 @@ import { headers } from '../../provider/anime/animekai/animekai';
 //my gratitude goes to consumet
 //extractor for https://animekai.to
 //https://megaup.cc/assets/megaup/min/app.js
+// https://megaup.cc/assets/megaup/min/app.js?v=195f6edfe51
+// https://github.com/MelvinHK/consumet.ts
 export class MegaUp {
   protected sources: ASource[] = [];
 
@@ -27,18 +29,13 @@ export class MegaUp {
       f = '';
 
     for (let w = 0; w < 256; w++) {
-      //@ts-ignore
       c = (c + v[w] + n.charCodeAt(w % n.length)) % 256;
-      //@ts-ignore
       [v[w], v[c]] = [v[c], v[w]];
     }
     for (let a = (c = 0), w = 0; a < t.length; a++) {
       w = (w + 1) % 256;
-      //@ts-ignore
       c = (c + v[w]) % 256;
-      //@ts-ignore
       [v[w], v[c]] = [v[c], v[w]];
-      //@ts-ignore
       f += String.fromCharCode(t.charCodeAt(a) ^ v[(v[w] + v[c]) % 256]);
     }
 
@@ -117,47 +114,46 @@ export class MegaUp {
     return decodeURIComponent(n);
   };
   Decode = (n: string) => {
-    n = this.#substitute(
-      this.#transform(
-        'fnxEj3tD4Bl0X',
-        this.#base64UrlDecode(
+    n = this.#transform(
+      'A6mkJw3XMsruY',
+      this.#base64UrlDecode(
+        this.#substitute(
           this.#reverseIt(
             this.#reverseIt(
               this.#transform(
-                'IjilzMV57GrnF',
+                'Sv7tijKFrwDxsl9',
                 this.#base64UrlDecode(
                   this.#substitute(
-                    this.#reverseIt(
-                      this.#substitute(
-                        this.#transform('PlzI69YVCtGwoa8', this.#base64UrlDecode(this.#base64UrlDecode(`${n}`))),
-                        'c2IfHZwSX1mj',
-                        'mwfXcS2ZjI1H',
+                    this.#transform(
+                      'j8971KLwSyI',
+                      this.#base64UrlDecode(
+                        this.#reverseIt(this.#substitute(this.#base64UrlDecode(`${n}`), 'kxV4iJtRZg3', 'VJx34RtgkZi')),
                       ),
                     ),
-                    '82NkgQDYbIF',
-                    '82IQNkFgYbD',
+                    'BjZ9dF6AxHTqn',
+                    'jxqZdB6n9FTHA',
                   ),
                 ),
               ),
             ),
           ),
+          'FpPBdhzCyGYoDvO',
+          'YGFpvoBdCyDPhzO',
         ),
       ),
-      'crwkth05iJR8',
-      'JRkt8rw0i5ch',
     );
-
     return decodeURIComponent(n);
   };
-
-  extract = async (videoUrl: URL) => {
+  extract = async (videoUrl: URL, customDecoder?: (n: string) => string) => {
     try {
       const url = videoUrl.href.replace(/\/(e|e2)\//, '/media/');
       const res = await axios.get(url, {
-        headers: headers,
+        // headers: headers,
       });
 
-      const decrypted = JSON.parse(this.Decode(res.data.result).replace(/\\/g, ''));
+      const decrypted = JSON.parse(
+        (customDecoder ? customDecoder(res.data.result) : this.Decode(res.data.result)).replace(/\\/g, ''),
+      );
       const data = {
         sources: decrypted.sources.map((s: { file: string }) => ({
           url: s.file,
@@ -169,6 +165,7 @@ export class MegaUp {
         })),
         download: decrypted.download,
       };
+
       if (!res.data) {
         return {
           status: res.status,
