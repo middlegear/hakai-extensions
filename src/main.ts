@@ -3,10 +3,10 @@ import { Anilist, Jikan, Meta } from './provider';
 import { HiAnime } from './provider/anime/hianime';
 import { AnimeKai } from './provider/anime/animekai';
 
-// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
-const anime = new AnimeKai();
-const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
-console.log(data);
+export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+// const anime = new AnimeKai();
+// const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
+// console.log(data);
 
 import {
   AnimeKaiServers,

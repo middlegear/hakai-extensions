@@ -114,41 +114,42 @@ export class MegaUp {
     return decodeURIComponent(n);
   };
   Decode = (n: string) => {
-    n = this.#transform(
-      'A6mkJw3XMsruY',
-      this.#base64UrlDecode(
-        this.#substitute(
-          this.#reverseIt(
-            this.#reverseIt(
-              this.#transform(
-                'Sv7tijKFrwDxsl9',
-                this.#base64UrlDecode(
-                  this.#substitute(
-                    this.#transform(
-                      'j8971KLwSyI',
-                      this.#base64UrlDecode(
-                        this.#reverseIt(this.#substitute(this.#base64UrlDecode(`${n}`), 'kxV4iJtRZg3', 'VJx34RtgkZi')),
-                      ),
+    n = this.#substitute(
+      this.#reverseIt(
+        this.#transform(
+          '3U8XtHJfgam02k',
+          this.#base64UrlDecode(
+            this.#transform(
+              'PgiY5eIZWn',
+              this.#base64UrlDecode(
+                this.#substitute(
+                  this.#reverseIt(
+                    this.#substitute(
+                      this.#transform('QKbVomcBHysCW9', this.#base64UrlDecode(this.#reverseIt(this.#base64UrlDecode(n)))),
+                      '0GsO8otUi21aY',
+                      'Go1UiY82st0Oa',
                     ),
-                    'BjZ9dF6AxHTqn',
-                    'jxqZdB6n9FTHA',
                   ),
+                  'rXjnhU3SsbEd',
+                  'rXEsS3nbjhUd',
                 ),
               ),
             ),
           ),
-          'FpPBdhzCyGYoDvO',
-          'YGFpvoBdCyDPhzO',
         ),
       ),
+      '7DtY4mHcMA2yIL',
+      'IM7Am4D2yYHctL',
     );
+
     return decodeURIComponent(n);
   };
+
   extract = async (videoUrl: URL, customDecoder?: (n: string) => string) => {
     try {
       const url = videoUrl.href.replace(/\/(e|e2)\//, '/media/');
       const res = await axios.get(url, {
-        // headers: headers,
+        headers: headers,
       });
 
       const decrypted = JSON.parse(
