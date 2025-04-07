@@ -6,7 +6,7 @@ import { AnimeKai } from './provider/anime/animekai';
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
 // const anime = new AnimeKai();
 // const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
-// console.log(data);
+// console.log(JSON.stringify(data));
 
 import {
   AnimeKaiServers,

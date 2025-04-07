@@ -23,6 +23,8 @@ export class MegaUp {
       .join('');
     return a;
   };
+
+  ///RC4
   #transform = (n: string, t: string) => {
     const v = Array.from({ length: 256 }, (_, i) => i);
     let c = 0,
@@ -114,32 +116,34 @@ export class MegaUp {
     return decodeURIComponent(n);
   };
   Decode = (n: string) => {
-    n = this.#substitute(
-      this.#reverseIt(
-        this.#transform(
-          '3U8XtHJfgam02k',
-          this.#base64UrlDecode(
+    n = this.#reverseIt(
+      this.#transform(
+        'hI8JxsWF9G',
+        this.#base64UrlDecode(
+          this.#substitute(
             this.#transform(
-              'PgiY5eIZWn',
+              'HzdLUrxnhcS',
               this.#base64UrlDecode(
                 this.#substitute(
                   this.#reverseIt(
-                    this.#substitute(
-                      this.#transform('QKbVomcBHysCW9', this.#base64UrlDecode(this.#reverseIt(this.#base64UrlDecode(n)))),
-                      '0GsO8otUi21aY',
-                      'Go1UiY82st0Oa',
+                    this.#reverseIt(
+                      this.#substitute(
+                        this.#transform('Zd5yYckQ38h', this.#base64UrlDecode(this.#base64UrlDecode((n = `${n}`)))),
+                        'RuFt8YWnQA',
+                        'RQunFW8AYt',
+                      ),
                     ),
                   ),
-                  'rXjnhU3SsbEd',
-                  'rXEsS3nbjhUd',
+                  'GJRdPQgXn34ul',
+                  'JGQ34nPlRudgX',
                 ),
               ),
             ),
+            '9mz6PhsUQVNS',
+            'mN9sQhVUPSz6',
           ),
         ),
       ),
-      '7DtY4mHcMA2yIL',
-      'IM7Am4D2yYHctL',
     );
 
     return decodeURIComponent(n);

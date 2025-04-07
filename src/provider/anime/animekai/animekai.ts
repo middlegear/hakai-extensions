@@ -9,7 +9,6 @@ import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource, SubOrDub } from '../../../types/types';
 import { ErrorResponse, Info, searchRes, AnimeKaiServers, SuccessResponse } from './types';
 import { providerClient } from '../../../config/clients';
-import { StrictDeobfuscator } from '../../../source-extractors/megaup/mega';
 
 export const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
@@ -345,7 +344,6 @@ export async function getEpisodeSources(
   episodeId: string,
   category: SubOrDub,
   server: AnimeKaiServers = AnimeKaiServers.MegaUp,
-  customDecoder?: (n: string) => string,
 ): Promise<SourceResponse> {
   if (!episodeId.trim) {
     return {
@@ -364,13 +362,13 @@ export async function getEpisodeSources(
       case AnimeKaiServers.MegaUp:
         return {
           headers: { Referer: `${serverUrl.href}` },
-          data: (await new MegaUp().extract(serverUrl, customDecoder)) as ASource,
+          data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
 
       default:
         return {
           headers: { Referer: `${serverUrl.href}` },
-          data: (await new MegaUp().extract(serverUrl, customDecoder)) as ASource,
+          data: (await new MegaUp().extract(serverUrl)) as ASource,
         };
     }
   }
@@ -392,7 +390,7 @@ export async function getEpisodeSources(
 
     const serverUrl: URL = new URL(servers.data[urlIndex].url);
 
-    const sources = await getEpisodeSources(serverUrl.href, category, server, customDecoder);
+    const sources = await getEpisodeSources(serverUrl.href, category, server);
     if (sources.data) {
       sources.data.intro = servers.data[urlIndex]?.intro as Intro;
       sources.data.outro = servers.data[urlIndex]?.outro as Outro;
