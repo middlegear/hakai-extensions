@@ -32,10 +32,10 @@ importers:
         version: 3.5.3
       tsup:
         specifier: ^8.4.0
-        version: 8.4.0(postcss@8.5.3)(typescript@5.8.2)
+        version: 8.4.0(postcss@8.5.3)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.2
-        version: 5.8.2
+        version: 5.8.3
       vitest:
         specifier: ^3.0.8
         version: 3.1.1(@types/node@22.14.0)
@@ -1316,8 +1316,8 @@ packages:
     resolution: {integrity: sha512-S/5/0kFftkq27FPNye0XM1e2NsnoD/3FS+pBmbjmmtLT6I+i344KoOf7pvXreaFsDamWeaJX55nczA1m5PsBDg==}
     engines: {node: '>=16'}
 
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2508,7 +2508,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.4.0(postcss@8.5.3)(typescript@5.8.2):
+  tsup@8.4.0(postcss@8.5.3)(typescript@5.8.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.1)
       cac: 6.7.14
@@ -2528,7 +2528,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.5.3
-      typescript: 5.8.2
+      typescript: 5.8.3
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -2539,7 +2539,7 @@ snapshots:
 
   type-fest@4.37.0: {}
 
-  typescript@5.8.2: {}
+  typescript@5.8.3: {}
 
   undici-types@6.21.0: {}
 
