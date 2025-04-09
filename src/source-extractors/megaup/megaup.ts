@@ -217,30 +217,9 @@ export class MegaUp {
         download: decryptedResult.download,
       };
 
-      if (!res.data) {
-        return {
-          status: res.status,
-          success: res.status === 200,
-          error: res.statusText || 'Scraper Error: No M3U8 found',
-          data: null,
-        };
-      }
       return data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          status: error.response?.status || 500,
-          data: null,
-          error: `Request failed: ${error.message}` || 'Unknown axios error',
-          success: false,
-        };
-      }
-      return {
-        success: false,
-        status: 500,
-        data: null,
-        error: error instanceof Error ? ` Request failed: ${error.message}` : 'Contact dev if you see this',
-      };
+      throw new Error((error as Error).message);
     }
   };
 }

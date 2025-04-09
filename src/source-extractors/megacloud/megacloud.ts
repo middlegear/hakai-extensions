@@ -40,12 +40,7 @@ class MegaCloud {
 
       return extractedData;
     } catch (error) {
-      return {
-        success: false,
-        status: 500,
-        data: null,
-        error: error instanceof Error ? error.message : 'Unknown Error',
-      };
+      throw new Error((error as Error).message);
     }
   }
 }

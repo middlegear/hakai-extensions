@@ -1,12 +1,3 @@
-export interface ErrorResponse {
-  success: boolean;
-  status: number;
-  error: string;
-}
-export interface SuccessResponse {
-  success: boolean;
-  status: number;
-}
 export type searchRes = {
   id: string | null;
   title: string | null;

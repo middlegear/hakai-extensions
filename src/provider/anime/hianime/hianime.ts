@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { HiAnimeServers, SuccessResponse, Anime, ErrorResponse, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
+import { HiAnimeServers, Anime, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -11,15 +11,16 @@ import { providerClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.
 import axios from 'axios';
 import { ASource, SubOrDub } from '../../../types/types.js';
 
-export interface SuccessSearchResponse extends SuccessResponse {
+export interface SuccessSearchResponse {
   data: Anime[];
   hasNextPage: boolean;
   currentPage: number;
   totalPages: number;
 }
-export interface SearchErrorResponse extends ErrorResponse {
+export interface SearchErrorResponse {
   data: [];
   hasNextPage: boolean;
+  error: string;
   totalPages: number;
   currentPage: number;
 }
@@ -27,8 +28,6 @@ export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
 export async function searchAnime(query: string, page: number): Promise<SearchResponse> {
   if (!query)
     return {
-      success: false,
-      status: 400,
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
@@ -43,11 +42,9 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
 
     if (!response.data) {
       return {
-        success: response.status === 200,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
-        status: response.status,
         error: response.statusText || `Received empty response from server`,
         data: [],
       };
@@ -62,55 +59,38 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
-        status: 204,
-        success: false,
         error: 'Scraper Error: No results found',
         data: [],
       };
     }
     return {
-      success: response.status === 200,
-      status: response.status,
       hasNextPage: hasNextPage,
       currentPage: Number(currentPage) || 0,
       totalPages: Number(totalPages) || 0,
       data: anime,
     };
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        hasNextPage: false,
-        currentPage: 0,
-        totalPages: 0,
-        status: error.response?.status || 500,
-        error: `Request failed: ${error.message}` || 'Unknown axios error',
-        success: false,
-        data: [],
-      };
     return {
-      success: false,
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
-      status: 500,
+      error: error instanceof Error ? error.message : 'Unknown Error',
       data: [],
-      error: error instanceof Error ? error.message : 'Internal Server error',
     };
   }
 }
 
-export interface AnimeInfoSuccess extends SuccessResponse {
+export interface AnimeInfoSuccess {
   data: AnimeInfo;
 }
-export interface AnimeInfoError extends ErrorResponse {
+export interface AnimeInfoError {
   data: null;
+  error: string;
 }
 export type ZoroAnimeInfo = AnimeInfoSuccess | AnimeInfoError;
 export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
   if (!animeId.trim())
     return {
-      success: false,
-      status: 400,
       data: null,
       error: 'Missing required params :animeId',
     };
@@ -125,52 +105,38 @@ export async function fetchAnimeInfo(animeId: string): Promise<ZoroAnimeInfo> {
 
     if (!response.data)
       return {
-        success: response.status === 200,
         error: response.statusText || 'Server returned an empty response',
         data: null,
-        status: response.status,
       };
 
     const $animeData = cheerio.load(response.data);
     const { res } = extractAnimeInfo($animeData);
     if (!res) {
       return {
-        success: false,
-        status: 204,
         error: 'Scraper error',
         data: null,
       };
     }
-    return { status: response.status, success: response.status === 200, data: res };
+    return { data: res };
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        success: false,
-        error: `Request failed ${error.message}` || ' Unknown axios error',
-        status: error.response?.status || 500,
-        data: null,
-      };
     return {
-      success: false,
-      status: 500,
       data: null,
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }
 }
 
-export interface EpisodeSuccessInfoResponse extends SuccessResponse {
+export interface EpisodeSuccessInfoResponse {
   data: EpisodeInfo[];
 }
-export interface EpisodeErrorInfoResponse extends ErrorResponse {
+export interface EpisodeErrorInfoResponse {
   data: [];
+  error: string;
 }
 export type EpisodeInfoRes = EpisodeSuccessInfoResponse | EpisodeErrorInfoResponse;
 export async function getEpisodes(animeId: string): Promise<EpisodeInfoRes> {
   if (!animeId)
     return {
-      success: false,
-      status: 400,
       data: [],
       error: 'Missing required params :animeId',
     };
@@ -184,10 +150,8 @@ export async function getEpisodes(animeId: string): Promise<EpisodeInfoRes> {
 
     if (!response.data)
       return {
-        success: response.status === 200,
         error: response.statusText || 'Server returned an empty response',
         data: [],
-        status: response.status,
       };
 
     const $episodes = cheerio.load(response.data.html);
@@ -195,42 +159,30 @@ export async function getEpisodes(animeId: string): Promise<EpisodeInfoRes> {
     const { resEpisodeList } = extractEpisodesList($episodes, episodesSelector);
     if (!Array.isArray(resEpisodeList) || resEpisodeList.length === 0) {
       return {
-        status: 204,
-        success: false,
         error: 'Scraper Error: No results found',
         data: [],
       };
     }
 
-    return { status: response.status, success: response.status === 200, data: resEpisodeList };
+    return { data: resEpisodeList };
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        success: false,
-        error: `Request failed ${error.message}` || ' Unknown axios error',
-        status: error.response?.status || 500,
-        data: [],
-      };
     return {
-      success: false,
-      status: 500,
       data: [],
       error: error instanceof Error ? error.message : 'Contact dev if you see this',
     };
   }
 }
-export interface SuccessServerInfo extends SuccessResponse {
+export interface SuccessServerInfo {
   data: ServerInfo;
 }
-export interface ErrorServerInfo extends ErrorResponse {
+export interface ErrorServerInfo {
   data: null;
+  error: string;
 }
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function fetchServers(episodeId: string): Promise<ServerInfoResponse> {
   if (!episodeId)
     return {
-      success: false,
-      status: 400,
       data: null,
       error: 'Missing required params :episodeId!',
     };
@@ -246,8 +198,6 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     });
     if (!response.data)
       return {
-        success: response.status === 200,
-        status: response.status,
         error: response.statusText || 'Server returned an empty response',
         data: null,
       };
@@ -257,28 +207,15 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     const { servers } = extractServerData(res$);
     if (!servers) {
       return {
-        status: 204,
-        success: false,
         error: 'Scraper Error: No results found',
         data: null,
       };
     }
     return {
-      success: response.status === 200,
-      status: response.status,
       data: servers,
     };
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        success: false,
-        status: error.response?.status || 500,
-        data: null,
-        error: `Request failed ${error.message}` || 'Unknown axios error',
-      };
     return {
-      success: false,
-      status: 500,
       error: error instanceof Error ? error.message : 'Internal Server Error',
       data: null,
     };
@@ -295,8 +232,7 @@ export interface ErrorSourceRes {
   headers: {
     Referer: null;
   };
-  success: boolean;
-  status: number;
+
   error: string;
 }
 export type HianimeSourceResponse = SuccessSourceRes | ErrorSourceRes;
@@ -307,8 +243,6 @@ export async function fetchEpisodeSources(
 ): Promise<HianimeSourceResponse> {
   if (!episodeId) {
     return {
-      success: false,
-      status: 400,
       data: null,
       headers: {
         Referer: null,
@@ -345,9 +279,7 @@ export async function fetchEpisodeSources(
 
     if (!response.data)
       return {
-        success: response.status === 200,
         error: response.statusText || 'Server returned an empty response ',
-        status: response.status,
         data: null,
         headers: {
           Referer: null,
@@ -371,9 +303,8 @@ export async function fetchEpisodeSources(
       }
       if (!mediadataId)
         return {
-          success: false,
           error: 'Scraping error',
-          status: 204,
+
           data: null,
           headers: {
             Referer: null,
@@ -387,9 +318,7 @@ export async function fetchEpisodeSources(
       });
       if (!dataLink.data)
         return {
-          success: dataLink.status === 200,
           error: dataLink.statusText || 'Server returned an empty response',
-          status: dataLink.status,
           data: null,
           headers: {
             Referer: null,
@@ -398,8 +327,6 @@ export async function fetchEpisodeSources(
     } catch (error) {
       if (axios.isAxiosError(error))
         return {
-          success: false,
-          status: error.response?.status || 500,
           error: `Request failed ${error.message}` || 'Unknown axios error',
           data: null,
           headers: {
@@ -407,8 +334,6 @@ export async function fetchEpisodeSources(
           },
         };
       return {
-        success: false,
-        status: 500,
         data: null,
         headers: {
           Referer: null,
@@ -418,9 +343,8 @@ export async function fetchEpisodeSources(
     }
     if (!mediadataId)
       return {
-        success: false,
         error: 'Scraping error',
-        status: 204,
+
         data: null,
         headers: {
           Referer: null,
@@ -434,9 +358,8 @@ export async function fetchEpisodeSources(
     });
     if (!dataLink.data)
       return {
-        success: dataLink.status === 200,
         error: dataLink.statusText || 'Server returned an empty response',
-        status: dataLink.status,
+
         data: null,
         headers: {
           Referer: null,
@@ -451,19 +374,7 @@ export async function fetchEpisodeSources(
 
     return await fetchEpisodeSources(link, server, category);
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        success: false,
-        status: error.response?.status || 500,
-        data: null,
-        headers: {
-          Referer: null,
-        },
-        error: `Request failed ${error.message}` || 'Unknown axios error',
-      };
     return {
-      success: false,
-      status: 500,
       data: null,
       headers: {
         Referer: null,

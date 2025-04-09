@@ -7,7 +7,7 @@ import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
 import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource, SubOrDub } from '../../../types/types';
-import { ErrorResponse, Info, searchRes, AnimeKaiServers, SuccessResponse } from './types';
+import { Info, searchRes, AnimeKaiServers } from './types';
 import { providerClient } from '../../../config/clients';
 
 export const headers = {
@@ -26,17 +26,18 @@ export const headers = {
     'usertype=guest; session=hxYne0BNXguMc8zK1FHqQKXPmmoANzBBOuNPM64a; cf_clearance=WfGWV1bKGAaNySbh.yzCyuobBOtjg0ncfPwMhtsvsrs-1737611098-1.2.1.1-zWHcaytuokjFTKbCAxnSPDc_BWAeubpf9TAAVfuJ2vZuyYXByqZBXAZDl_VILwkO5NOLck8N0C4uQr4yGLbXRcZ_7jfWUvfPGayTADQLuh.SH.7bvhC7DmxrMGZ8SW.hGKEQzRJf8N7h6ZZ27GMyqOfz1zfrOiu9W30DhEtW2N7FAXUPrdolyKjCsP1AK3DqsDtYOiiPNLnu47l.zxK80XogfBRQkiGecCBaeDOJHenjn._Zgykkr.F_2bj2C3AS3A5mCpZSlWK5lqhV6jQSQLF9wKWitHye39V.6NoE3RE',
 };
 
-export interface SuccessSearchResponse extends SuccessResponse {
+export interface SuccessSearchResponse {
   data: searchRes[];
   hasNextPage: boolean;
   currentPage: number;
   totalPages: number;
 }
-export interface SearchErrorResponse extends ErrorResponse {
+export interface SearchErrorResponse {
   data: [];
   hasNextPage: boolean;
   totalPages: number;
   currentPage: number;
+  error: string;
 }
 
 export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
@@ -46,8 +47,6 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
   }
   if (!query.trim()) {
     return {
-      success: false,
-      status: 400,
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
@@ -64,8 +63,6 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
 
     if (!response.body) {
       return {
-        success: response.statusCode === 200,
-        status: response.statusCode,
         hasNextPage: false,
         currentPage: 0,
         totalPages: 0,
@@ -78,18 +75,13 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
     const { res, searchresults } = extractsearchresults(data$);
 
     return {
-      success: response.statusCode === 200,
-      status: response.statusCode,
       hasNextPage: res.hasNextPage ?? false,
       currentPage: res.currentPage ?? 0,
       totalPages: res.totalPages ?? 0,
       data: searchresults,
     };
   } catch (error: any) {
-    const statusCode = error?.response?.statusCode || 500;
     return {
-      success: false,
-      status: statusCode,
       hasNextPage: false,
       currentPage: 0,
       totalPages: 0,
@@ -104,21 +96,20 @@ type episodes = {
   number: number;
   title: string | null;
 };
-export interface AnimeInfoSuccess extends SuccessResponse {
+export interface AnimeInfoSuccess {
   data: Info;
   providerEpisodes: episodes[];
 }
-export interface AnimeInfoError extends ErrorResponse {
+export interface AnimeInfoError {
   data: null;
   providerEpisodes: [];
+  error: string;
 }
 export type AnimeInfoKai = AnimeInfoSuccess | AnimeInfoError;
 export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
   if (!animeId.trim()) {
     return {
-      success: false,
       error: 'Missing required Params: animeId',
-      status: 400,
       data: null,
       providerEpisodes: [],
     };
@@ -133,8 +124,6 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 
     if (!response.body) {
       return {
-        status: response.statusCode,
-        success: false,
         error: 'Scraper Error: No animeInfo found',
         data: null,
         providerEpisodes: [],
@@ -148,8 +137,6 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     const ani_id = data$('.rate-box#anime-rating').attr('data-id');
     if (!ani_id) {
       return {
-        status: 404,
-        success: false,
         error: 'Scraper Error: anime ID not found',
         data: null,
         providerEpisodes: [],
@@ -167,8 +154,6 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 
     if (!episodesResponse.body) {
       return {
-        status: episodesResponse.statusCode,
-        success: false,
         error: 'Scraper Error: No Episodes found',
         data: null,
         providerEpisodes: [],
@@ -196,8 +181,6 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 
     if (episodes.length === 0) {
       return {
-        status: 204,
-        success: false,
         error: 'Scraper Error: No results found',
         data: null,
         providerEpisodes: [],
@@ -205,16 +188,12 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     }
 
     return {
-      success: response.statusCode === 200 && episodesResponse.statusCode === 200,
-      status: response.statusCode,
       data: animeInfo,
       providerEpisodes: episodes,
     };
   } catch (error: any) {
     const statusCode = error?.response?.statusCode || 500;
     return {
-      success: false,
-      status: statusCode,
       data: null,
       providerEpisodes: [],
       error: error.message || 'Unknown error occurred',
@@ -235,12 +214,14 @@ export type serverInfo = {
   url: string;
   intro: Intro;
   outro: Outro;
+  download: string;
 };
-export interface SuccessServerInfo extends SuccessResponse {
+export interface SuccessServerInfo {
   data: serverInfo[];
 }
-export interface ErrorServerInfo extends ErrorResponse {
+export interface ErrorServerInfo {
   data: [];
+  error: string;
 }
 // broken from here
 /// i guess puppeteer can do wonders just pass the episodeID with out the token stuff eg like below and wait for ajax links to generate stuff html document called server notice
@@ -250,8 +231,6 @@ export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function getEpisodeServers(episodeId: string, category: SubOrDub): Promise<ServerInfoResponse> {
   if (!episodeId.trim()) {
     return {
-      success: false,
-      status: 400,
       data: [],
       error: 'Missing required params episodeId',
     };
@@ -269,8 +248,6 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
     });
     if (!data.result) {
       return {
-        status: data.status,
-        success: data.status === 200,
         error: data.statusText || 'Scraper Error: No ServerUrl  found',
         data: [],
       };
@@ -299,26 +276,15 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
             start: decodedData?.skip.outro[0],
             end: decodedData?.skip.outro[1],
           },
+          download: decodedData.url.replace(/\/e\//, '/download/'),
         });
       }),
     );
     return {
-      success: true,
-      status: 200,
       data: servers,
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return {
-        status: error.response?.status || 500,
-        data: [],
-        error: `Request failed: ${error.message}` || 'Unknown axios error',
-        success: false,
-      };
-    }
     return {
-      success: false,
-      status: 500,
       data: [],
       error: error instanceof Error ? ` Request failed: ${error.message}` : 'Contact dev if you see this',
     };
@@ -335,8 +301,6 @@ export interface ErrorSourceRes {
   headers: {
     Referer: null;
   };
-  success: boolean;
-  status: number;
   error: string;
 }
 export type SourceResponse = SuccessSourceRes | ErrorSourceRes;
@@ -347,8 +311,6 @@ export async function getEpisodeSources(
 ): Promise<SourceResponse> {
   if (!episodeId.trim) {
     return {
-      success: false,
-      status: 400,
       data: null,
       headers: {
         Referer: null,
@@ -378,8 +340,6 @@ export async function getEpisodeSources(
     const urlIndex = servers.data.findIndex(s => s.name.toLowerCase().includes(server));
     if (urlIndex === -1) {
       return {
-        success: false,
-        status: 400,
         data: null,
         headers: {
           Referer: null,
@@ -398,19 +358,7 @@ export async function getEpisodeSources(
 
     return sources;
   } catch (error) {
-    if (axios.isAxiosError(error))
-      return {
-        status: error.response?.status || 500,
-        data: null,
-        headers: {
-          Referer: null,
-        },
-        error: `Request failed: ${error.message}` || 'Unknown axios error',
-        success: false,
-      };
     return {
-      success: false,
-      status: 500,
       data: null,
       headers: {
         Referer: null,

@@ -52,12 +52,3 @@ export const HiAnimeServers = {
   HD2: 'hd-2',
 } as const;
 export type HiAnimeServers = (typeof HiAnimeServers)[keyof typeof HiAnimeServers];
-export interface ErrorResponse {
-  success: boolean;
-  status: number;
-  error: string;
-}
-export interface SuccessResponse {
-  success: boolean;
-  status: number;
-}
