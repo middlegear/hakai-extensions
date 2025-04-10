@@ -7,5 +7,5 @@ export default defineConfig({
   shims: true,
   clean: true,
   splitting: true,
-  sourcemap: true,
+  sourcemap: false,
 });
