@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  publish:
+  Publish-NPM-Package:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
