@@ -192,7 +192,6 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       providerEpisodes: episodes,
     };
   } catch (error: any) {
-    const statusCode = error?.response?.statusCode || 500;
     return {
       data: null,
       providerEpisodes: [],
