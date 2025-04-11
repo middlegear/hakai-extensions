@@ -1,6 +1,6 @@
 {
-  "name": "hakai-extensions",
-  "version": "1.0.13",
+  "name": "hakai-extension",
+  "version": "1.0.0",
   "description": "scraper package serving anime media infomation",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -22,18 +22,20 @@
   ],
   "keywords": [
     "scrapper",
-    "anime"
+    "anime",
+    "jikan",
+    "anilist"
   ],
   "author": "middlegear",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/middlegear/hakai-extensions.git"
+    "url": "git+https://github.com/middlegear/hakai-extension.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://github.com/middlegear/hakai-extensions#readme",
+  "homepage": "https://github.com/middlegear/hakai-extension#readme",
   "devDependencies": {
     "@types/node": "^22.13.10",
     "prettier": "^3.5.3",
