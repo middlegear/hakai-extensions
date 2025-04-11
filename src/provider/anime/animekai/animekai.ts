@@ -30,12 +30,12 @@ export interface SuccessSearchResponse {
   data: searchRes[];
   hasNextPage: boolean;
   currentPage: number;
-  totalPages: number;
+  lastPage: number;
 }
 export interface SearchErrorResponse {
   data: [];
   hasNextPage: boolean;
-  totalPages: number;
+  lastPage: number;
   currentPage: number;
   error: string;
 }
@@ -49,7 +49,7 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
     return {
       hasNextPage: false,
       currentPage: 0,
-      totalPages: 0,
+      lastPage: 0,
       data: [],
       error: 'Missing required parameter: query',
     };
@@ -65,7 +65,7 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
       return {
         hasNextPage: false,
         currentPage: 0,
-        totalPages: 0,
+        lastPage: 0,
         data: [],
         error: 'Error: No response ',
       };
@@ -77,14 +77,14 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
     return {
       hasNextPage: res.hasNextPage ?? false,
       currentPage: res.currentPage ?? 0,
-      totalPages: res.totalPages ?? 0,
+      lastPage: res.totalPages ?? 0,
       data: searchresults,
     };
   } catch (error: any) {
     return {
       hasNextPage: false,
       currentPage: 0,
-      totalPages: 0,
+      lastPage: 0,
       data: [],
       error: error.message || 'Unknown error occurred',
     };

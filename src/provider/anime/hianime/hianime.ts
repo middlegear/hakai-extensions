@@ -15,13 +15,13 @@ export interface SuccessSearchResponse {
   data: Anime[];
   hasNextPage: boolean;
   currentPage: number;
-  totalPages: number;
+  lastPage: number;
 }
 export interface SearchErrorResponse {
   data: [];
   hasNextPage: boolean;
   error: string;
-  totalPages: number;
+  lastPage: number;
   currentPage: number;
 }
 export type SearchResponse = SuccessSearchResponse | SearchErrorResponse;
@@ -30,7 +30,7 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
     return {
       hasNextPage: false,
       currentPage: 0,
-      totalPages: 0,
+      lastPage: 0,
       data: [],
       error: 'Missing required Params : query',
     };
@@ -44,7 +44,7 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
       return {
         hasNextPage: false,
         currentPage: 0,
-        totalPages: 0,
+        lastPage: 0,
         error: response.statusText || `Received empty response from server`,
         data: [],
       };
@@ -58,7 +58,7 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
       return {
         hasNextPage: false,
         currentPage: 0,
-        totalPages: 0,
+        lastPage: 0,
         error: 'Scraper Error: No results found',
         data: [],
       };
@@ -66,14 +66,14 @@ export async function searchAnime(query: string, page: number): Promise<SearchRe
     return {
       hasNextPage: hasNextPage,
       currentPage: Number(currentPage) || 0,
-      totalPages: Number(totalPages) || 0,
+      lastPage: Number(totalPages) || 0,
       data: anime,
     };
   } catch (error) {
     return {
       hasNextPage: false,
       currentPage: 0,
-      totalPages: 0,
+      lastPage: 0,
       error: error instanceof Error ? error.message : 'Unknown Error',
       data: [],
     };
