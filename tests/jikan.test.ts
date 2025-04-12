@@ -13,7 +13,7 @@ test('fetch top upcoming anime', async () => {
   const data = await jikan.fetchTopUpcoming(1, 25);
   expect(data.data).not.toEqual([]);
 
-  await wait(400);
+  await wait(800);
 });
 test('fetch top airing anime', async () => {
   const data = await jikan.fetchTopAiring(1, 25);
@@ -25,7 +25,7 @@ test('fetch most popular anime', async () => {
   const data = await jikan.fetchMostPopular(1, 20, 'MOVIE', 'airing');
   expect(data.data).not.toEqual([]);
 
-  await wait(400);
+  await wait(800);
 });
 
 test('fetch top movies category', async () => {
@@ -38,7 +38,7 @@ test('fetch top movies category', async () => {
 test('fetch anime by season', async () => {
   const data = await jikan.fetchSeason(Seasons.FALL, 2022, 'MOVIE');
   expect(data.data).not.toEqual([]);
-  await wait(400);
+  await wait(800);
 });
 
 test('fetch next season anime', async () => {
@@ -58,7 +58,7 @@ test('fetch animeinfo by id', async () => {
 test('fetch Mal anime episodes', async () => {
   const data = await jikan.fetchMalEpisodes(56784);
   expect(data.data).not.toEqual([]);
-  await wait(400);
+  await wait(800);
 });
 
 test('fetch detailed mal info about an episode', async () => {
@@ -71,7 +71,7 @@ test('fetch provider animeId', async () => {
   const data = await jikan.fetchProviderAnimeId(52299, AnimeProvider.HiAnime);
   expect(data.data).not.toEqual(null);
   expect(data.animeProvider).not.toEqual(null);
-  await wait(400);
+  await wait(800);
 });
 
 test('fetch anime current season', async () => {
