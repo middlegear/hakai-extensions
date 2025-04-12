@@ -9,6 +9,7 @@ export type SearchResults = {
   animeId: string;
   name?: string;
   romaji?: string;
+  providerName?: string;
 };
 
 function normalizeTitle(title: string) {
@@ -47,6 +48,7 @@ export function bestTitleMatch(title: AnilistTitle, results: SearchResults[]) {
     animeId: match?.animeId || null,
     name: match?.name || null,
     romaji: match?.romaji || null,
+    providerName: match?.providerName || null,
     score: bestTitle?.bestMatch.rating || null,
   };
 }

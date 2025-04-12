@@ -895,6 +895,7 @@ type titleRes = {
   name: string;
   romaji: string;
   score: number;
+  providerName: string;
 };
 export interface SuccessJikanProviderId extends SuccessJIkanInfo {
   data: JIkanData;
@@ -932,6 +933,7 @@ async function getZoroProviderId(id: number): Promise<JikanProviderId> {
             animeId: item.id,
             name: item.name,
             romaji: item.romanji,
+            providerName: 'HiAnime',
           })) || []
         );
       } catch (error) {
@@ -987,6 +989,7 @@ async function getKaiProviderId(id: number): Promise<JikanProviderId> {
             animeId: item.id,
             name: item.title,
             romaji: item.romaji,
+            providerName: 'AnimeKai',
           })) || []
         );
       } catch (error) {
@@ -1046,6 +1049,7 @@ type animeRes = {
   episodeId: string;
   episodeNumber: number;
   title: string;
+  providerName: string;
 };
 
 type CrossMatchedEpisodes = {
@@ -1056,6 +1060,7 @@ type CrossMatchedEpisodes = {
   title: string;
   overview: string;
   thumbnail: string;
+  providerName: string;
 };
 
 export interface SuccessEpisodesres {
@@ -1088,8 +1093,9 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
         return (
           result.data?.map((item: any) => ({
             episodeId: item.episodeId,
-            episodeNumber: item.number,
+            episodeNumber: item.episodeNumber,
             title: item.title,
+            providerName: 'HiAnime',
           })) || []
         );
       } catch (error) {
@@ -1124,6 +1130,7 @@ async function getZoroEpisodeswithInfo(jikanId: number): Promise<JikanMatchedEpi
             title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
             overview: episodes?.overview ?? 'No overview available',
             thumbnail: episodes?.image ?? null,
+            providerName: anime.providerName ?? null,
           };
         });
 
@@ -1165,8 +1172,9 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
         return (
           result.providerEpisodes.map((item: any) => ({
             episodeId: item.episodeId,
-            episodeNumber: item.number,
+            episodeNumber: item.episodeNumber,
             title: item.title,
+            providerName: 'AnimeKai',
           })) || []
         );
       } catch (error) {
@@ -1201,6 +1209,7 @@ async function getEpisodeswithInfoKai(jikanId: number): Promise<JikanMatchedEpis
             title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
             overview: episodes?.overview ?? 'No overview available',
             thumbnail: episodes?.image ?? null,
+            providerName: anime.providerName ?? null,
           };
         });
 

@@ -1,30 +1,28 @@
-//@ts-nocheck
+export function compareTwoStrings(first: string, second: string): number {
+  first = first.trim().toLowerCase();
+  second = second.trim().toLowerCase();
 
-// export function compareTwoStrings(first: string, second: string): number {
-//   first = first.trim().toLowerCase();
-//   second = second.trim().toLowerCase();
+  if (first === second) return 1;
+  if (first.length < 2 || second.length < 2) return 0;
 
-//   if (first === second) return 1;
-//   if (first.length < 2 || second.length < 2) return 0;
+  const firstBigrams = new Set<string>();
+  for (let i = 0; i < first.length - 1; i++) {
+    firstBigrams.add(first.substring(i, i + 2));
+  }
 
-//   const firstBigrams = new Set<string>();
-//   for (let i = 0; i < first.length - 1; i++) {
-//     firstBigrams.add(first.substring(i, i + 2));
-//   }
+  let intersectionSize = 0;
+  // More efficient iteration: avoid repeated substring calls
+  for (let i = 0, len = second.length - 1; i < len; i++) {
+    const bigram = second.slice(i, i + 2); // Use slice for slight performance gain
+    if (firstBigrams.has(bigram)) {
+      intersectionSize++;
+      // Consider if deletion is actually beneficial.  Often it isn't.
+      // firstBigrams.delete(bigram);  // Removing can be slower than just counting
+    }
+  }
 
-//   let intersectionSize = 0;
-//   // More efficient iteration: avoid repeated substring calls
-//   for (let i = 0, len = second.length - 1; i < len; i++) {
-//     const bigram = second.slice(i, i + 2); // Use slice for slight performance gain
-//     if (firstBigrams.has(bigram)) {
-//       intersectionSize++;
-//       // Consider if deletion is actually beneficial.  Often it isn't.
-//       // firstBigrams.delete(bigram);  // Removing can be slower than just counting
-//     }
-//   }
-
-//   return (2.0 * intersectionSize) / (first.length + second.length - 2);
-// }
+  return (2.0 * intersectionSize) / (first.length + second.length - 2);
+}
 
 export function findBestMatch(
   mainString: string,
@@ -47,10 +45,10 @@ export function findBestMatch(
 
   const ratings = targetStrings.map(target => ({
     target,
+    /// tricky
     rating: compareTwoStringsOptimized(trimmedMainString, target.trim().toLowerCase(), mainStringBigrams), // Use optimized comparison
   }));
 
-  //  More efficient best match finding (avoids repeated array access)
   let bestRating = -1;
   let bestMatchIndex = -1;
   for (let i = 0; i < ratings.length; i++) {
@@ -67,7 +65,6 @@ export function findBestMatch(
   };
 }
 
-// Optimized comparison function that reuses pre-calculated bigrams
 function compareTwoStringsOptimized(first: string, second: string, firstBigrams: Set<string>): number {
   if (first === second) return 1;
   if (first.length < 2 || second.length < 2) return 0;

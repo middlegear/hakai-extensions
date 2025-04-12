@@ -93,7 +93,7 @@ export async function searchanime(query: string, page: number = 1): Promise<Sear
 
 type episodes = {
   episodeId: string | null;
-  number: number;
+  episodeNumber: number;
   title: string | null;
 };
 export interface AnimeInfoSuccess {
@@ -163,18 +163,18 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
     const episodes$: cheerio.CheerioAPI = cheerio.load(JSON.parse(episodesResponse.body).result);
     const episodes: {
       episodeId: string | null;
-      number: number;
+      episodeNumber: number;
       title: string | null;
     }[] = [];
 
     episodes$('div.eplist > ul > li > a').each((i, el) => {
       const episodeIdwithToken = `${animeId}$ep=${episodes$(el).attr('num')}$token=${episodes$(el).attr('token')}` || null;
-      const number = Number(episodes$(el).attr('num')!);
+      const episodeNumber = Number(episodes$(el).attr('num')!);
       const title = episodes$(el).children('span').text().trim() || null;
 
       episodes.push({
         episodeId: episodeIdwithToken,
-        number,
+        episodeNumber,
         title,
       });
     });

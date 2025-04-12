@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { Anime, AnimeInfo, EpisodeInfo, ServerInfo } from './types.js';
-import { SubOrDub } from '../../index.js';
+import { SubOrDub, zoroBaseUrl } from '../../index.js';
 
 export function extractSearchResults($: cheerio.CheerioAPI, selector: cheerio.SelectorType) {
   const anime: Anime[] = [];
@@ -94,8 +94,8 @@ export function extractEpisodesList($: cheerio.CheerioAPI, selector: cheerio.Sel
     resEpisodeList.push({
       episodeId: $(element)?.attr('href')?.split('/')?.at(2)?.trim()?.replace('?ep=', '-episode-') || null,
       title: $(element)?.attr('title')?.trim() || null,
-      number: Number($(element).attr('data-number')),
-      href: $(element)?.attr('href')?.split('/')?.at(2)?.trim() || null,
+      episodeNumber: Number($(element).attr('data-number')),
+      href: `${zoroBaseUrl}/${$(element)?.attr('href')?.split('/')?.at(2)?.trim()}` || null,
     });
   });
 

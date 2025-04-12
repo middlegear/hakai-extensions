@@ -993,20 +993,22 @@ export async function getRelated(mediaId: number, type: MediaType = MediaType.AN
         data: [],
       };
 
-    const res: RelatedAnilistData[] = response.data.data.Media.relations.edges.map((item: any) => ({
-      anilistId: item.node.id,
-      malId: item.node.idMal,
-      title: {
-        romaji: item.node.title.romaji ?? item.node.title.userPreferred,
-        english: item.node.title.english,
-        native: item.node.title.native,
-      },
-      type: item.node.type,
-      score: item.node.averageScore ?? item.node.meanScore,
-      image: item.node.coverImage.extraLarge ?? item.node.coverImage.large ?? item.node.coverImage.medium,
-      bannerImage: item.node.bannerImage ?? item.node.coverImage.extraLarge ?? item.node.coverImage.large,
-      color: item.node.coverImage.color ?? null,
-    }));
+    const res: RelatedAnilistData[] = response.data.data.Media.relations.edges
+      .filter((item: any) => item.node.type === 'ANIME')
+      .map((item: any) => ({
+        anilistId: item.node.id,
+        malId: item.node.idMal,
+        title: {
+          romaji: item.node.title.romaji ?? item.node.title.userPreferred,
+          english: item.node.title.english,
+          native: item.node.title.native,
+        },
+        type: item.node.type,
+        score: item.node.averageScore ?? item.node.meanScore,
+        image: item.node.coverImage.extraLarge ?? item.node.coverImage.large ?? item.node.coverImage.medium,
+        bannerImage: item.node.bannerImage ?? item.node.coverImage.extraLarge ?? item.node.coverImage.large,
+        color: item.node.coverImage.color ?? null,
+      }));
 
     return {
       data: res,
@@ -1120,6 +1122,7 @@ type titleRes = {
   name: string;
   romaji: string;
   score: number;
+  providerName: string;
 };
 export interface SuccessAnilistProviderId extends SuccessAnilistInfoRes {
   data: AnilistData;
@@ -1157,6 +1160,7 @@ async function getZoroProviderId(id: number): Promise<AnilistProviderId> {
             animeId: item.id,
             name: item.name,
             romaji: item.romanji,
+            providerName: 'HiAnime',
           })) || []
         );
       } catch (error) {
@@ -1211,6 +1215,7 @@ async function getKaiProviderId(id: number): Promise<AnilistProviderId> {
             animeId: item.id,
             name: item.title,
             romaji: item.romaji,
+            providerName: 'AnimeKai',
           })) || []
         );
       } catch (error) {
@@ -1267,6 +1272,7 @@ type animeRes = {
   episodeId: string;
   episodeNumber: number;
   title: string;
+  providerName: string;
 };
 
 type CrossMatchedEpisodes = {
@@ -1277,6 +1283,7 @@ type CrossMatchedEpisodes = {
   title: string;
   overview: string;
   thumbnail: string;
+  providerName: string;
 };
 
 export interface SuccessEpisodesres {
@@ -1307,8 +1314,9 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
         const result = await ZoroAnime.fetchEpisodes(animeId);
         return result.data.map((item: any) => ({
           episodeId: item.episodeId,
-          episodeNumber: item.number,
+          episodeNumber: item.episodeNumber,
           title: item.title,
+          providerName: 'HiAnime',
         }));
       } catch (error) {
         console.error('Error fetching from HiAnime:', error);
@@ -1342,6 +1350,7 @@ async function getEpisodeswithInfoZoro(anilistId: number): Promise<AnilistEpisod
             title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
             overview: episodes?.overview ?? 'No overview available',
             thumbnail: episodes?.image ?? null,
+            providerName: anime.providerName ?? null,
           };
         });
 
@@ -1384,8 +1393,9 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
         const result = await animekai.fetchAnimeInfo(animeId);
         return result.providerEpisodes.map((item: any) => ({
           episodeId: item.episodeId,
-          episodeNumber: item.number,
+          episodeNumber: item.episodeNumber,
           title: item.title,
+          providerName: 'Animekai',
         }));
       } catch (error) {
         console.error('Error fetching from HiAnime:', error);
@@ -1419,6 +1429,7 @@ async function getEpisodeswithInfoKai(anilistId: number): Promise<AnilistEpisode
             title: episodes?.title?.english ?? episodes?.title?.romanizedJapanese ?? null,
             overview: episodes?.overview ?? 'No overview available',
             thumbnail: episodes?.image ?? null,
+            providerName: anime.providerName ?? null,
           };
         });
 

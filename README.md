@@ -5,7 +5,7 @@
 
 ##  Overview  
 
-**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers. 
+**Hakai Extensions** is a **TypeScript** package designed to fetch detailed **anime-related data** from the **Anilist** and **Jikan** APIs, mapped to structured class providers. An API is available visit the  <strong> [Docs 🤷](https://github.com/middlegear/documentation) </strong>
 
 > **Disclaimer:**  
 > This package is **unofficial** and is **not affiliated** with Anilist, Jikan, or any third-party providers. It does not host, own, or distribute any content. All data belongs to its respective owners.  
@@ -51,7 +51,7 @@ The `Meta` class provides **metadata retrieval** from various sources.
 
 #### **Structure**  
 
-- **`Meta.Anilist`** – Fetches anime/manga metadata from **Anilist API**.  
+- **`Meta.Anilist`** – Fetches anime metadata from **Anilist API**.  
 - **`Meta.Jikan`** – Retrieves metadata from **Jikan (MyAnimeList API)**.  
 
 #### **Examples**  

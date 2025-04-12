@@ -30,7 +30,7 @@ export type AnimeInfo = {
 };
 export type EpisodeInfo = {
   episodeId: string | null;
-  number: number | null;
+  episodeNumber: number | null;
   title: string | null;
   href: string | null;
 };

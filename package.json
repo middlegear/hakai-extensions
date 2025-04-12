@@ -8,12 +8,13 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
+    "dev": "pnpm build && node dist/main.js",
     "test-jikan": "vitest jikan.test.ts   --config vitest.config.ts",
     "test-anilist": "vitest anilist.test.ts  --config vitest.config.ts",
     "test-hianime": "vitest hianime.test.ts --silent run --config vitest.config.ts",
     "test-animekai": "vitest animekai.test --config vitest.config.ts",
     "test": "vitest --silent run --config vitest.config.ts",
-    "lint": "tsc",
+    "lint": "tsc && pnpm format",
     "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write ."
   },
@@ -21,7 +22,7 @@
     "dist"
   ],
   "keywords": [
-    "scrapper",
+    "scraper",
     "anime"
   ],
   "author": "middlegear",
