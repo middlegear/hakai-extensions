@@ -14,7 +14,7 @@
     "test-hianime": "vitest hianime.test.ts --silent run --config vitest.config.ts",
     "test-animekai": "vitest animekai.test --config vitest.config.ts",
     "test": "vitest --silent run --config vitest.config.ts",
-    "lint": "tsc && pnpm format",
+    "lint": "tsc",
     "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write ."
   },
