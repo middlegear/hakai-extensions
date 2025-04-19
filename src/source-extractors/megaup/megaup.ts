@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ASource } from '../../types/types';
 import { headers } from '../../provider/anime/animekai/animekai';
+//https://raw.githubusercontent.com/amarullz/kaicodex/refs/heads/main/generated/kai_codex.js
 
 export class MegaUp {
   protected sources: ASource[] = [];
@@ -114,14 +115,14 @@ export class MegaUp {
     );
     return decodeURIComponent(n);
   };
+
   private async fetchDecodingSteps(): Promise<void> {
     try {
-      const response = await axios.get(this.decodingStepsUrl, { headers: headers });
+      const response = await axios.get(this.decodingStepsUrl);
       if (!response.data?.megaup?.decrypt) {
         throw new Error('Failed to retrieve megaup decryption steps from the JSON.');
       }
       this.decodingSteps = response.data.megaup.decrypt;
-      // console.log(this.decodingSteps);
     } catch (error) {
       console.error('Error fetching decoding steps:', error);
       this.decodingSteps = null;
@@ -137,7 +138,7 @@ export class MegaUp {
     return this.decodingStepsFetchPromise;
   }
 
-  decodeFromSteps = (encodedString: string, steps: any[]): string => {
+  OrderOfOperations = (encodedString: string, steps: any[]): string => {
     let decoded = encodedString;
 
     for (const step of steps) {
@@ -148,6 +149,9 @@ export class MegaUp {
         switch (operation) {
           case 'safeb64_decode':
             decoded = this.#base64UrlDecode(decoded);
+            break;
+          case 'safeb64_encode':
+            decoded = this.#base64UrlEncode(decoded);
             break;
 
           case 'reverse':
@@ -164,6 +168,10 @@ export class MegaUp {
 
           case 'urldecode':
             decoded = decodeURIComponent(decoded);
+            break;
+
+          case 'urlencode':
+            decoded = encodeURIComponent(decoded);
             break;
 
           default:
@@ -184,7 +192,7 @@ export class MegaUp {
       throw new Error('Decoding steps not loaded. Call loadDecodingSteps() first.');
     }
     try {
-      const decoded = this.decodeFromSteps(encodedString, this.decodingSteps);
+      const decoded = this.OrderOfOperations(encodedString, this.decodingSteps);
       return decoded;
     } catch (e) {
       console.error('Decoding failed:', e);

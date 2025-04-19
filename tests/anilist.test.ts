@@ -1,7 +1,7 @@
-import { Anilist } from '../src/provider/meta/anilist/index.js';
 import { test, expect } from 'vitest';
 
 import { AnimeProvider, Seasons } from '../src/types/types.js';
+import { Anilist } from '../src/provider/index.js';
 
 const anilist = new Anilist();
 

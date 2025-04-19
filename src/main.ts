@@ -3,14 +3,6 @@ import { Anilist, Jikan, Meta } from './provider';
 import { HiAnime } from './provider/anime/hianime';
 import { AnimeKai } from './provider/anime/animekai';
 
-export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
-// const anime = new Anilist();
-// const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
-// console.log(JSON.stringify(data));
-// const data = await anime.fetchRelatedAnime(269);
-
-// console.log(data.data);
-
 import {
   AnimeKaiServers,
   type Seasons,
@@ -36,3 +28,10 @@ export {
   type HiAnimeServers,
   type AnimeProvider,
 };
+export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+// const anime = new AnimeKai();
+// const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
+// console.log(JSON.stringify(data));
+// const data = await anime.fetchRelatedAnime(269);
+
+// console.log(data.data);

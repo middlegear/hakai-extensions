@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
-import { Jikan } from '../src/provider/meta/jikan/index.js';
 import { AnimeProvider, Seasons } from '../src/types/types.js';
+import { Jikan } from '../src/provider/index.js';
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const jikan = new Jikan();
 test('search anime ', async () => {

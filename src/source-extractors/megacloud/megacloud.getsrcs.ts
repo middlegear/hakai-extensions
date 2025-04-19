@@ -409,7 +409,6 @@ function initWasm() {
         index: number,
         // @ts-ignore
         decodeIndex: number,
-        // @ts-ignore
         decodeOffset: number,
       ) {
         //let attr = get(index).getAttribute(decodeSub(decodeIndex, decodeOffset));

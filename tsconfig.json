@@ -7,8 +7,7 @@
     "moduleResolution": "node", 
     "noEmit": true,
     "emitDeclarationOnly": false,
-    //changed from false
-    "isolatedModules":true,
+    "isolatedModules":false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
