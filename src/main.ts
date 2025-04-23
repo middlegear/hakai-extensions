@@ -30,8 +30,8 @@ export {
 };
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
 // const anime = new AnimeKai();
-// const data = await anime.fetchSources('bleach-thousand-year-blood-war-the-conflict-zev9$ep=1$token=MIWzueTktEjhmW9Nj5TU');
-// console.log(JSON.stringify(data));
+// const data = await anime.fetchSources('solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=10$token=KYXztvv4oRux0X1Mi82c');
+// console.log(data);
 // const data = await anime.fetchRelatedAnime(269);
 
 // console.log(data.data);

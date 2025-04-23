@@ -1,7 +1,108 @@
 import axios from 'axios';
 import { ASource } from '../../types/types';
 import { headers } from '../../provider/anime/animekai/animekai';
-//https://raw.githubusercontent.com/amarullz/kaicodex/refs/heads/main/generated/kai_codex.js
+
+function base64UrlEncode(str: string): string {
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlDecode(base64Url: string): string {
+  let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  return atob(base64);
+}
+
+const encodeTransforms: ((n: number) => number)[] = [
+  n => (n + 111) % 256,
+  n => (n + 212) % 256,
+  n => n ^ 217,
+  n => (n + 214) % 256,
+  n => (n + 151) % 256,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => (n - 1 + 256) % 256,
+  n => (n - 96 + 256) % 256,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => (n - 206 + 256) % 256,
+  n => ~n & 255,
+  n => (n + 116) % 256,
+  n => n ^ 70,
+  n => n ^ 147,
+  n => (n + 190) % 256,
+  n => n ^ 222,
+  n => (n - 118 + 256) % 256,
+  n => (n - 227 + 256) % 256,
+  n => ~n & 255,
+  n => ((n << 4) | (n >>> 4)) & 255,
+  n => (n + 22) % 256,
+  n => ~n & 255,
+  n => (n + 94) % 256,
+  n => (n + 146) % 256,
+  n => ~n & 255,
+  n => (n - 206 + 256) % 256,
+  n => (n - 62 + 256) % 256,
+];
+
+function encodeKaihome(input: string): string {
+  const encoded = encodeURIComponent(input);
+  const transformedBytes: number[] = [];
+  for (let i = 0; i < encoded.length; i++) {
+    const charCode = encoded.charCodeAt(i);
+    const transformedCode = encodeTransforms[i % encodeTransforms.length](charCode) & 255;
+    transformedBytes.push(transformedCode);
+  }
+  const transformedString = String.fromCharCode(...transformedBytes);
+  return base64UrlEncode(transformedString);
+}
+
+const decodeTransforms: ((n: number) => number)[] = [
+  n => (n - 111 + 256) % 256,
+  n => (n - 212 + 256) % 256,
+  n => n ^ 217,
+  n => (n - 214 + 256) % 256,
+  n => (n - 151 + 256) % 256,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => (n + 1) % 256,
+  n => (n + 96) % 256,
+  n => ~n & 255,
+  n => ~n & 255,
+  n => (n + 206) % 256,
+  n => ~n & 255,
+  n => (n - 116 + 256) % 256,
+  n => n ^ 70,
+  n => n ^ 147,
+  n => (n - 190 + 256) % 256,
+  n => n ^ 222,
+  n => (n + 118) % 256,
+  n => (n + 227) % 256,
+  n => ~n & 255,
+  n => ((n >>> 4) | (n << 4)) & 255,
+  n => (n - 22 + 256) % 256,
+  n => ~n & 255,
+  n => (n - 94 + 256) % 256,
+  n => (n - 146 + 256) % 256,
+  n => ~n & 255,
+  n => (n + 206) % 256,
+  n => (n + 62) % 256,
+];
+
+function decodeKaihome(input: string): string {
+  const decodedBase64 = base64UrlDecode(input);
+  const transformedChars: number[] = [];
+  for (let i = 0; i < decodedBase64.length; i++) {
+    const charCode = decodedBase64.charCodeAt(i);
+    const transformedCode = decodeTransforms[i % decodeTransforms.length](charCode) & 255;
+    transformedChars.push(transformedCode);
+  }
+  const transformedString = String.fromCharCode(...transformedChars);
+  return decodeURIComponent(transformedString);
+}
 
 export class MegaUp {
   protected sources: ASource[] = [];
@@ -13,9 +114,7 @@ export class MegaUp {
   #reverseIt = (n: string) => {
     return n.split('').reverse().join('');
   };
-  #base64UrlEncode = (str: string) => {
-    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  };
+  #base64UrlEncode = base64UrlEncode;
   #substitute = (input: string, keys: string, values: string) => {
     const map = Object.fromEntries(keys.split('').map((key, i) => [key, values[i] || '']));
     const a = input
@@ -42,78 +141,14 @@ export class MegaUp {
     }
     return f;
   };
-  #base64UrlDecode = (n: string) => {
-    n = n
-      .padEnd(n.length + ((4 - (n.length % 4)) % 4), '=')
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    return atob(n);
-  };
+  #base64UrlDecode = base64UrlDecode;
 
   GenerateToken = (n: string) => {
-    n = encodeURIComponent(n);
-    return (n = this.#base64UrlEncode(
-      this.#substitute(
-        this.#base64UrlEncode(
-          this.#transform(
-            'sXmH96C4vhRrgi8',
-            this.#reverseIt(
-              this.#reverseIt(
-                this.#base64UrlEncode(
-                  this.#transform(
-                    'kOCJnByYmfI',
-                    this.#substitute(
-                      this.#substitute(
-                        this.#reverseIt(this.#base64UrlEncode(this.#transform('0DU8ksIVlFcia2', n))),
-                        '1wctXeHqb2',
-                        '1tecHq2Xbw',
-                      ),
-                      '48KbrZx1ml',
-                      'Km8Zb4lxr1',
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        'hTn79AMjduR5',
-        'djn5uT7AMR9h',
-      ),
-    ));
+    return encodeKaihome(n);
   };
 
   DecodeIframeData = (n: string) => {
-    n = `${n}`;
-    n = this.#transform(
-      '0DU8ksIVlFcia2',
-      this.#base64UrlDecode(
-        this.#reverseIt(
-          this.#substitute(
-            this.#substitute(
-              this.#transform(
-                'kOCJnByYmfI',
-                this.#base64UrlDecode(
-                  this.#reverseIt(
-                    this.#reverseIt(
-                      this.#transform(
-                        'sXmH96C4vhRrgi8',
-                        this.#base64UrlDecode(this.#substitute(this.#base64UrlDecode(n), 'djn5uT7AMR9h', 'hTn79AMjduR5')),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              'Km8Zb4lxr1',
-              '48KbrZx1ml',
-            ),
-            '1tecHq2Xbw',
-            '1wctXeHqb2',
-          ),
-        ),
-      ),
-    );
-    return decodeURIComponent(n);
+    return decodeKaihome(n);
   };
 
   private async fetchDecodingSteps(): Promise<void> {
@@ -143,7 +178,6 @@ export class MegaUp {
 
     for (const step of steps) {
       const operation = step[0];
-      // console.log(`Applying ${operation} to: ${decoded.substring(0, 50)}...`);
 
       try {
         switch (operation) {
