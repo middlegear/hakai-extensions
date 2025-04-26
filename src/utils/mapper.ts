@@ -12,43 +12,45 @@ export type SearchResults = {
   providerName?: string;
 };
 
-function normalizeTitle(title: string) {
-  return title ? title.toLowerCase().trim() : 'No title provided';
+function normalizeTitle(title?: string) {
+  return title?.toLowerCase().trim() || '';
 }
 
 export function bestTitleMatch(title: AnilistTitle, results: SearchResults[]) {
-  const normalizedRomaji = normalizeTitle(title.romaji);
-  const normalizedEngishTitle = normalizeTitle(title.english);
+  if (!results.length) return null;
+
+  const normRomaji = normalizeTitle(title.romaji);
+  const normEnglish = normalizeTitle(title.english);
 
   const normalizedResults = results.map(item => ({
     ...item,
-    normalizedname: normalizeTitle(item.name as string),
-    normalizedRomaji: normalizeTitle(item.romaji as string),
+    _name: normalizeTitle(item.name),
+    _romaji: normalizeTitle(item.romaji),
   }));
 
-  const bestTitle =
-    normalizedResults.length > 0
-      ? findBestMatch(
-          normalizedEngishTitle,
-          normalizedResults.map(title => title.normalizedname),
-        ) ||
-        findBestMatch(
-          normalizedRomaji,
-          normalizedResults.map(item => item.normalizedRomaji),
-        )
-      : null;
+  const englishMatch = findBestMatch(
+    normEnglish,
+    normalizedResults.map(r => r._name),
+  );
 
-  let match = null;
-  if (bestTitle !== null && bestTitle.bestMatch !== null) {
-    match = normalizedResults.find(
-      item => item.normalizedname === bestTitle.bestMatch.target || item.normalizedRomaji === bestTitle.bestMatch.target,
-    );
-  }
-  return {
-    animeId: match?.animeId || null,
-    name: match?.name || null,
-    romaji: match?.romaji || null,
-    providerName: match?.providerName || null,
-    score: bestTitle?.bestMatch.rating || null,
-  };
+  const romajiMatch = findBestMatch(
+    normRomaji,
+    normalizedResults.map(r => r._romaji),
+  );
+
+  // Pick better of the two
+  const best =
+    englishMatch.bestMatch.rating >= romajiMatch.bestMatch.rating ? englishMatch.bestMatch : romajiMatch.bestMatch;
+
+  const match = normalizedResults.find(r => r._name === best.target || r._romaji === best.target);
+
+  return match
+    ? {
+        animeId: match.animeId,
+        name: match.name || null,
+        romaji: match.romaji || null,
+        providerName: match.providerName || null,
+        score: best.rating,
+      }
+    : null;
 }

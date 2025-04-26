@@ -30,7 +30,7 @@ test('fetch trending anime', async () => {
   expect(data.data).not.toEqual([]);
 });
 
-test('fetch provider anime with info', async () => {
+test('fetch animeProviderId with info', async () => {
   const data = await anilist.fetchProviderAnimeId(169755, AnimeProvider.HiAnime);
   expect(data.animeProvider).not.toEqual(null);
   expect(data.data).not.toEqual(null);
@@ -64,7 +64,7 @@ test('fetch upcoming anime', async () => {
   expect(data.data).not.toEqual([]);
 });
 
-test('fetch provider episodes with info', async () => {
+test('fetch animeprovider episodes with info', async () => {
   const data = await anilist.fetchAnimeProviderEpisodes(159322, AnimeProvider.HiAnime);
   expect(data.providerEpisodes).not.toBe([]);
   expect(data.data).not.toEqual(null);

@@ -2,89 +2,77 @@ export function compareTwoStrings(first: string, second: string): number {
   first = first.trim().toLowerCase();
   second = second.trim().toLowerCase();
 
-  if (first === second) return 1;
-  if (first.length < 2 || second.length < 2) return 0;
+  const len1 = first.length;
+  const len2 = second.length;
 
-  const firstBigrams = new Set<string>();
-  for (let i = 0; i < first.length - 1; i++) {
-    firstBigrams.add(first.substring(i, i + 2));
+  if (first === second) return 1;
+  if (len1 < 2 || len2 < 2) return 0;
+
+  const bigrams1 = new Set<string>();
+  for (let i = 0; i < len1 - 1; i++) {
+    bigrams1.add(first[i] + first[i + 1]);
   }
 
-  let intersectionSize = 0;
-  // More efficient iteration: avoid repeated substring calls
-  for (let i = 0, len = second.length - 1; i < len; i++) {
-    const bigram = second.slice(i, i + 2); // Use slice for slight performance gain
-    if (firstBigrams.has(bigram)) {
-      intersectionSize++;
-      // Consider if deletion is actually beneficial.  Often it isn't.
-      // firstBigrams.delete(bigram);  // Removing can be slower than just counting
+  let matches = 0;
+  for (let i = 0; i < len2 - 1; i++) {
+    if (bigrams1.has(second[i] + second[i + 1])) {
+      matches++;
     }
   }
 
-  return (2.0 * intersectionSize) / (first.length + second.length - 2);
+  return (2 * matches) / (len1 + len2 - 2);
 }
 
-export function findBestMatch(
-  mainString: string,
-  targetStrings: string[],
-): {
-  ratings: { target: string; rating: number }[];
-  bestMatch: { target: string; rating: number };
-  bestMatchIndex: number;
-} {
-  if (!isValidInput(mainString, targetStrings)) {
-    throw new Error('Bad arguments: First argument should be a string, second should be an array of strings');
+export function findBestMatch(main: string, targets: string[]) {
+  if (typeof main !== 'string' || !Array.isArray(targets) || targets.length === 0) {
+    throw new Error('Bad arguments');
   }
 
-  // Pre-calculate mainString bigrams outside the loop for significant performance improvement
-  const mainStringBigrams = new Set<string>();
-  const trimmedMainString = mainString.trim().toLowerCase();
-  for (let i = 0; i < trimmedMainString.length - 1; i++) {
-    mainStringBigrams.add(trimmedMainString.slice(i, i + 2));
+  const mainTrimmed = main.trim().toLowerCase();
+  const lenMain = mainTrimmed.length;
+
+  if (lenMain < 2) {
+    return {
+      ratings: targets.map(t => ({ target: t, rating: 0 })),
+      bestMatch: { target: targets[0], rating: 0 },
+      bestMatchIndex: 0,
+    };
   }
 
-  const ratings = targetStrings.map(target => ({
-    target,
-    /// tricky
-    rating: compareTwoStringsOptimized(trimmedMainString, target.trim().toLowerCase(), mainStringBigrams), // Use optimized comparison
-  }));
+  const bigrams = new Set<string>();
+  for (let i = 0; i < lenMain - 1; i++) {
+    bigrams.add(mainTrimmed[i] + mainTrimmed[i + 1]);
+  }
 
+  let bestIndex = 0;
   let bestRating = -1;
-  let bestMatchIndex = -1;
-  for (let i = 0; i < ratings.length; i++) {
-    if (ratings[i].rating > bestRating) {
-      bestRating = ratings[i].rating;
-      bestMatchIndex = i;
+
+  const ratings = targets.map((t, i) => {
+    const s = t.trim().toLowerCase();
+    const lenS = s.length;
+
+    if (lenS < 2) return { target: t, rating: 0 };
+
+    let score = 0;
+    for (let j = 0; j < lenS - 1; j++) {
+      if (bigrams.has(s[j] + s[j + 1])) {
+        score++;
+      }
     }
-  }
+
+    const rating = (2 * score) / (lenMain + lenS - 2);
+
+    if (rating > bestRating) {
+      bestRating = rating;
+      bestIndex = i;
+    }
+
+    return { target: t, rating };
+  });
 
   return {
     ratings,
-    bestMatch: ratings[bestMatchIndex],
-    bestMatchIndex,
+    bestMatch: ratings[bestIndex],
+    bestMatchIndex: bestIndex,
   };
-}
-
-function compareTwoStringsOptimized(first: string, second: string, firstBigrams: Set<string>): number {
-  if (first === second) return 1;
-  if (first.length < 2 || second.length < 2) return 0;
-
-  let intersectionSize = 0;
-  for (let i = 0, len = second.length - 1; i < len; i++) {
-    const bigram = second.slice(i, i + 2);
-    if (firstBigrams.has(bigram)) {
-      intersectionSize++;
-    }
-  }
-
-  return (2.0 * intersectionSize) / (first.length + second.length - 2);
-}
-
-function isValidInput(mainString: string, targetStrings: string[]): boolean {
-  return (
-    typeof mainString === 'string' &&
-    Array.isArray(targetStrings) &&
-    targetStrings.length > 0 &&
-    targetStrings.every(str => typeof str === 'string')
-  );
 }
