@@ -21,7 +21,7 @@ test('fetch servers using episodeId', async () => {
   const data = await animekai.fetchServers(
     'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=1$token=nlDUzxikR-FjjoaHrd1v',
   );
-  expect(data.data).not.toBe([]);
+  expect(data.data).not.toEqual([]);
   await wait(1000);
 });
 
