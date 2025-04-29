@@ -60,7 +60,7 @@ class HiAnime {
    */
   async fetchSources(
     episodeId: string,
-    server: HiAnimeServers = HiAnimeServers.HD1,
+    server: HiAnimeServers = HiAnimeServers.HD2,
     category: SubOrDub = SubOrDub.SUB,
   ): Promise<HianimeSourceResponse> {
     return fetchEpisodeSources(episodeId, server, category);
