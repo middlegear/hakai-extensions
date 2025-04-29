@@ -54,7 +54,7 @@ class HiAnime {
   /**
    * Fetches streaming sources for a given anime episode.
    * @param {string} episodeId - The unique identifier for the episode (required).
-   * @param {HiAnimeServers} [server=HiAnimeServers.HD1] - The server to use (optional, defaults to HiAnimeServers.HD1).
+   * @param {HiAnimeServers} [server=HiAnimeServers.HD2] - The server to use (optional, defaults to HiAnimeServers.HD2).HD1 is Cors protected (Error 403). Use a proxy or switch to HD-2
    * @param {SubOrDub} [category=SubOrDub.SUB] - The category (SubOrDub) (optional, defaults to SubOrDub.SUB).
    * @returns {Promise<SourceResponse>} - An object containing streaming sources.
    */
