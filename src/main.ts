@@ -30,7 +30,7 @@ export {
 };
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
 const anime = new AnimeKai();
-const data = await anime.fetchServers('solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=4$token=KYXkrP3loU3k2nVMz4fV');
+const data = await anime.fetchAnimeInfo('solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=4$token=KYXkrP3loU3k2nVMz4fV');
 console.log(data);
 // const data = await anime.fetchAnimeProviderEpisodes(5114, 'animekai');
 
