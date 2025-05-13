@@ -9,6 +9,7 @@ import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource, SubOrDub } from '../../../types/types';
 import { Info, searchRes, AnimeKaiServers } from './types';
 import { providerClient } from '../../../config/clients';
+import { text } from 'stream/consumers';
 
 export const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
@@ -117,50 +118,50 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 
   try {
     // Fetch anime info
-    const response = await gotScraping(`${animekaiBaseUrl}/watch/${encodeURIComponent(animeId.trim())}`, {
-      headers,
-      responseType: 'text',
+    const response = await axios.get(`${animekaiBaseUrl}/api/info/${encodeURIComponent(animeId.trim())}`, {
+      // responseType: 'text',
     });
 
-    if (!response.body) {
+    if (!response.data) {
       return {
         error: 'Scraper Error: No animeInfo found',
         data: null,
         providerEpisodes: [],
       };
     }
+    const res = response.data;
 
-    const data$ = cheerio.load(response.body);
+    const data$ = cheerio.load(res.data);
     const { animeInfo } = extractAnimeInfo(data$);
 
     // Fetch episodes list
-    const ani_id = data$('.rate-box#anime-rating').attr('data-id');
-    if (!ani_id) {
-      return {
-        error: 'Scraper Error: anime ID not found',
-        data: null,
-        providerEpisodes: [],
-      };
-    }
+    // const ani_id = data$('.rate-box#anime-rating').attr('data-id');
+    // if (!ani_id) {
+    //   return {
+    //     error: 'Scraper Error: anime ID not found',
+    //     data: null,
+    //     providerEpisodes: [],
+    //   };
+    // }
 
-    const token = new MegaUp().GenerateToken(ani_id);
-    const episodesResponse = await gotScraping(`${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${token}`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        ...headers,
-      },
-      responseType: 'text',
-    });
+    // const token = new MegaUp().GenerateToken(ani_id);
+    // const episodesResponse = await gotScraping(`${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${token}`, {
+    //   headers: {
+    //     'X-Requested-With': 'XMLHttpRequest',
+    //     ...headers,
+    //   },
+    //   responseType: 'text',
+    // });
 
-    if (!episodesResponse.body) {
-      return {
-        error: 'Scraper Error: No Episodes found',
-        data: null,
-        providerEpisodes: [],
-      };
-    }
+    // if (!episodesResponse.body) {
+    //   return {
+    //     error: 'Scraper Error: No Episodes found',
+    //     data: null,
+    //     providerEpisodes: [],
+    //   };
+    // }
 
-    const episodes$: cheerio.CheerioAPI = cheerio.load(JSON.parse(episodesResponse.body).result);
+    const episodes$: cheerio.CheerioAPI = cheerio.load(res.data);
     const episodes: {
       episodeId: string | null;
       episodeNumber: number;
@@ -237,50 +238,49 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
   // undefined can really give 404
   //my id   'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=5$token=O9jut_zlt0e70m9Qj5SD
   const tokenstuff = episodeId.split('$token=')[1];
-  if (tokenstuff)
-    episodeId = `${animekaiBaseUrl}/ajax/links/list?token=${tokenstuff}&_=${new MegaUp().GenerateToken(tokenstuff)}`;
+  const lol = `${animekaiBaseUrl}/api/servers/${episodeId}?category=${category}`;
   try {
-    const { data } = await axios.get(episodeId, {
+    const { data } = await axios.get(lol, {
       headers: {
         ...headers,
       },
     });
-    if (!data.result) {
+    if (!data) {
       return {
         error: data.statusText || 'Scraper Error: No ServerUrl  found',
         data: [],
       };
     }
-    const $ = cheerio.load(data.result);
-    const servers: serverInfo[] = [];
-    const serverItems = $(`.server-items.lang-group[data-id="${category}"] .server`);
-    await Promise.all(
-      serverItems.map(async (i, server) => {
-        const id = $(server).attr('data-lid');
-        const { data } = await providerClient.get(
-          `${animekaiBaseUrl}/ajax/links/view?id=${id}&_=${new MegaUp().GenerateToken(id!)}`,
-          {
-            headers: headers,
-          },
-        );
-        const decodedData = JSON.parse(new MegaUp().DecodeIframeData(data.result));
-        servers.push({
-          name: `MegaUp ${$(server).text().trim()}`!,
-          url: decodedData.url,
-          intro: {
-            start: decodedData?.skip.intro[0],
-            end: decodedData?.skip.intro[1],
-          },
-          outro: {
-            start: decodedData?.skip.outro[0],
-            end: decodedData?.skip.outro[1],
-          },
-          download: decodedData.url.replace(/\/e\//, '/download/'),
-        });
-      }),
-    );
+    // const $ = cheerio.load(data.result);
+    // const servers: serverInfo[] = [];
+    // const serverItems = $(`.server-items.lang-group[data-id="${category}"] .server`);
+    // await Promise.all(
+    //   serverItems.map(async (i, server) => {
+    //     const id = $(server).attr('data-lid');
+    //     const { data } = await providerClient.get(
+    //       `${animekaiBaseUrl}/ajax/links/view?id=${id}&_=${new MegaUp().GenerateToken(id!)}`,
+    //       {
+    //         headers: headers,
+    //       },
+    //     );
+    //     const decodedData = JSON.parse(new MegaUp().DecodeIframeData(data.result));
+    //     servers.push({
+    //       name: `MegaUp ${$(server).text().trim()}`!,
+    //       url: decodedData.url,
+    //       intro: {
+    //         start: decodedData?.skip.intro[0],
+    //         end: decodedData?.skip.intro[1],
+    //       },
+    //       outro: {
+    //         start: decodedData?.skip.outro[0],
+    //         end: decodedData?.skip.outro[1],
+    //       },
+    //       download: decodedData.url.replace(/\/e\//, '/download/'),
+    //     });
+    //   }),
+    // );
     return {
-      data: servers,
+      data: data.result.data,
     };
   } catch (error) {
     return {
@@ -350,10 +350,10 @@ export async function getEpisodeSources(
     const serverUrl: URL = new URL(servers.data[urlIndex].url);
 
     const sources = await getEpisodeSources(serverUrl.href, category, server);
-    if (sources.data) {
-      sources.data.intro = servers.data[urlIndex]?.intro as Intro;
-      sources.data.outro = servers.data[urlIndex]?.outro as Outro;
-    }
+    // if (sources.data) {
+    //   sources.data.intro = servers.data[urlIndex]?.intro as Intro;
+    //   sources.data.outro = servers.data[urlIndex]?.outro as Outro;
+    // }
 
     return sources;
   } catch (error) {
@@ -362,7 +362,7 @@ export async function getEpisodeSources(
       headers: {
         Referer: null,
       },
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? error.message : 'Broken ',
     };
   }
 }
