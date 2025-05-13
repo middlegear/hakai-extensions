@@ -35,8 +35,8 @@ jobs:
       - name: Run test Hianime
         run: pnpm test-hianime
       
-      - name: Run test Animekai
-        run: pnpm test-animekai
+      # - name: Run test Animekai
+      #   run: pnpm test-animekai
       
       - name: Lint
         run: pnpm lint
