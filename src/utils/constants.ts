@@ -6,5 +6,4 @@ export const zoroSearch = `${zoroBaseUrl}/search` as const; ///keyword is the qu
 
 /// animekai
 const kaicodex = 'https://kaicodex-level-1.vercel.app';
-export const animekaiBaseUrl = kaicodex;
-const mainurl = 'https://animekai.to';
+export const animekaiBaseUrl = 'https://animekai.to' as const;

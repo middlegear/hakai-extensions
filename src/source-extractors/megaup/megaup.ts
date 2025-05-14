@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { ASource } from '../../types/types';
 import { headers } from '../../provider/anime/animekai/animekai';
-import { AnimekaiDecoder } from './extractor';
 
 interface IKaiCodex {
   enc: (n: string) => string;
@@ -15,53 +14,53 @@ export class MegaUp {
   private isKaiCodexLoaded = false;
   private keysChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-~!*().'";
 
-  // constructor() {
-  //   this.loadKaiCodex();
-  // }
+  constructor() {
+    this.loadKaiCodex();
+  }
 
-  // async loadKaiCodex() {
-  //   try {
-  //     const response = await axios.get(
-  //       'https://raw.githubusercontent.com/amarullz/kaicodex/refs/heads/main/generated/kai_codex.js',
-  //     );
+  async loadKaiCodex() {
+    try {
+      const response = await axios.get(
+        'https://raw.githubusercontent.com/amarullz/kaicodex/refs/heads/main/generated/kai_codex.js',
+      );
 
-  //     const loadCode = new Function(`
-  //       ${response.data}
-  //       return KAICODEX;
-  //     `);
+      const loadCode = new Function(`
+        ${response.data}
+        return KAICODEX;
+      `);
 
-  //     this.kaiCodex = loadCode() as IKaiCodex;
-  //     this.isKaiCodexLoaded = true;
-  //     console.log('KaiCodex loaded successfully.');
-  //   } catch (error) {
-  //     console.error('Failed to load KaiCodex:', error);
-  //     this.isKaiCodexLoaded = false;
-  //   }
-  // }
+      this.kaiCodex = loadCode() as IKaiCodex;
+      this.isKaiCodexLoaded = true;
+      console.log('KaiCodex loaded successfully.');
+    } catch (error) {
+      console.error('Failed to load KaiCodex:', error);
+      this.isKaiCodexLoaded = false;
+    }
+  }
 
-  // GenerateToken = (n: string): string => {
-  //   if (!this.kaiCodex) {
-  //     console.warn('KaiCodex not loaded yet.');
-  //     return '';
-  //   }
-  //   return this.kaiCodex.enc(n);
-  // };
+  GenerateToken = (n: string): string => {
+    if (!this.kaiCodex) {
+      console.warn('KaiCodex not loaded yet.');
+      return '';
+    }
+    return this.kaiCodex.enc(n);
+  };
 
-  // DecodeIframeData = (n: string): string => {
-  //   if (!this.kaiCodex) {
-  //     console.warn('KaiCodex not loaded yet.');
-  //     return '';
-  //   }
-  //   return this.kaiCodex.dec(n);
-  // };
+  DecodeIframeData = (n: string): string => {
+    if (!this.kaiCodex) {
+      console.warn('KaiCodex not loaded yet.');
+      return '';
+    }
+    return this.kaiCodex.dec(n);
+  };
 
-  // Decode = (n: string): string => {
-  //   if (!this.kaiCodex) {
-  //     console.warn('KaiCodex not loaded yet.');
-  //     return '';
-  //   }
-  //   return this.kaiCodex.decMega(n);
-  // };
+  Decode = (n: string): string => {
+    if (!this.kaiCodex) {
+      console.warn('KaiCodex not loaded yet.');
+      return '';
+    }
+    return this.kaiCodex.decMega(n);
+  };
 
   extract = async (videoUrl: URL) => {
     try {
@@ -71,7 +70,7 @@ export class MegaUp {
         headers: headers,
       });
       // console.log(res.data.result);
-      const decodedString = await new AnimekaiDecoder().decode(res.data.result);
+      const decodedString = this.Decode(res.data.result);
       if (!decodedString) {
         throw new Error('Failed to decode video data.');
       }
