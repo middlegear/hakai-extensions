@@ -1,12 +1,15 @@
 import { findBestMatch } from './string-similarity.js';
 
-export type AnilistTitle = {
+export type Title = {
   english: string;
-  romaji: string;
+  tvTitle?: string;
+  romaji?: string;
+  // movieTitle?: string;
 };
 
-export type SearchResults = {
+type SearchResults = {
   animeId: string;
+  resId?: string;
   name?: string;
   romaji?: string;
   providerName?: string;
@@ -16,7 +19,7 @@ function normalizeTitle(title?: string) {
   return title?.toLowerCase().trim() || '';
 }
 
-export function bestTitleMatch(title: AnilistTitle, results: SearchResults[]) {
+export function bestTitleMatch(title: Title, results: SearchResults[]) {
   if (!results.length) return null;
 
   const normRomaji = normalizeTitle(title.romaji);
@@ -50,6 +53,32 @@ export function bestTitleMatch(title: AnilistTitle, results: SearchResults[]) {
         name: match.name || null,
         romaji: match.romaji || null,
         providerName: match.providerName || null,
+        score: best.rating,
+      }
+    : null;
+}
+
+export function bestTVTitle(title: Title, results: SearchResults[]) {
+  if (!results.length) return null;
+
+  const normTvtitle = normalizeTitle(title.english);
+
+  const normalizedResults = results.map(item => ({
+    ...item,
+    _name: normalizeTitle(item.name),
+  }));
+
+  const findTitle = findBestMatch(
+    normTvtitle,
+    normalizedResults.map(r => r._name),
+  );
+  const best = findTitle.bestMatch;
+  const match = normalizedResults.find(r => r._name === best.target);
+  return match
+    ? {
+        Id: match.resId,
+        name: match.name || null,
+        // providerName: match.providerName || null,
         score: best.rating,
       }
     : null;
