@@ -5,10 +5,11 @@ import { gotScraping } from 'got-scraping';
 import { animekaiBaseUrl } from '../../../utils/constants';
 import { extractAnimeInfo, extractsearchresults } from './scraper';
 import axios from 'axios';
-import { MegaUp } from '../../../source-extractors/megaup/megaup';
+// import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { ASource, SubOrDub } from '../../../types/types';
 import { Info, searchRes, AnimeKaiServers } from './types';
 import { providerClient } from '../..';
+import { AnimekaiDecoder } from '../../../source-extractors/megaup/megaup';
 
 export const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
@@ -21,7 +22,7 @@ export const headers = {
   Priority: 'u=0',
   Pragma: 'no-cache',
   'Cache-Control': 'no-cache',
-  Referer: `https://animekai.to/`,
+  referer: 'https://animekai.to/',
   Cookie:
     'usertype=guest; session=hxYne0BNXguMc8zK1FHqQKXPmmoANzBBOuNPM64a; cf_clearance=WfGWV1bKGAaNySbh.yzCyuobBOtjg0ncfPwMhtsvsrs-1737611098-1.2.1.1-zWHcaytuokjFTKbCAxnSPDc_BWAeubpf9TAAVfuJ2vZuyYXByqZBXAZDl_VILwkO5NOLck8N0C4uQr4yGLbXRcZ_7jfWUvfPGayTADQLuh.SH.7bvhC7DmxrMGZ8SW.hGKEQzRJf8N7h6ZZ27GMyqOfz1zfrOiu9W30DhEtW2N7FAXUPrdolyKjCsP1AK3DqsDtYOiiPNLnu47l.zxK80XogfBRQkiGecCBaeDOJHenjn._Zgykkr.F_2bj2C3AS3A5mCpZSlWK5lqhV6jQSQLF9wKWitHye39V.6NoE3RE',
 };
@@ -132,6 +133,7 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
 
     const data$ = cheerio.load(response.body);
     const { animeInfo } = extractAnimeInfo(data$);
+    // console.log(animeInfo);
 
     // Fetch episodes list
     const ani_id = data$('.rate-box#anime-rating').attr('data-id');
@@ -143,7 +145,10 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       };
     }
 
-    const token = new MegaUp().GenerateToken(ani_id);
+    const tokenInstance = new AnimekaiDecoder();
+    const token = await tokenInstance.GenerateToken(ani_id);
+    // console.log(token);
+
     const episodesResponse = await gotScraping(`${animekaiBaseUrl}/ajax/episodes/list?ani_id=${ani_id}&_=${token}`, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -151,6 +156,7 @@ export async function getAnimeInfo(animeId: string): Promise<AnimeInfoKai> {
       },
       responseType: 'text',
     });
+    // console.log(episodesResponse.body);
 
     if (!episodesResponse.body) {
       return {
@@ -221,10 +227,7 @@ export interface ErrorServerInfo {
   data: [];
   error: string;
 }
-// broken from here
-/// i guess puppeteer can do wonders just pass the episodeID with out the token stuff eg like below and wait for ajax links to generate stuff html document called server notice
-//
-// https://animekai.to/watch/dragon-ball-daima-ypr6#ep=4
+
 export type ServerInfoResponse = SuccessServerInfo | ErrorServerInfo;
 export async function getEpisodeServers(episodeId: string, category: SubOrDub): Promise<ServerInfoResponse> {
   if (!episodeId.trim()) {
@@ -236,8 +239,9 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
   // undefined can really give 404
   //my id   'solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=5$token=O9jut_zlt0e70m9Qj5SD
   const tokenstuff = episodeId.split('$token=')[1];
-  if (tokenstuff)
-    episodeId = `${animekaiBaseUrl}/ajax/links/list?token=${tokenstuff}&_=${new MegaUp().GenerateToken(tokenstuff)}`;
+  const token = new AnimekaiDecoder();
+  const gentoken = await token.GenerateToken(tokenstuff);
+  if (tokenstuff) episodeId = `${animekaiBaseUrl}/ajax/links/list?token=${tokenstuff}&_=${gentoken}`;
   try {
     const { data } = await axios.get(episodeId, {
       headers: {
@@ -257,12 +261,12 @@ export async function getEpisodeServers(episodeId: string, category: SubOrDub): 
       serverItems.map(async (i, server) => {
         const id = $(server).attr('data-lid');
         const { data } = await providerClient.get(
-          `${animekaiBaseUrl}/ajax/links/view?id=${id}&_=${new MegaUp().GenerateToken(id!)}`,
+          `${animekaiBaseUrl}/ajax/links/view?id=${id}&_=${new AnimekaiDecoder().GenerateToken(id!)}`,
           {
             headers: headers,
           },
         );
-        const decodedData = JSON.parse(new MegaUp().DecodeIframeData(data.result));
+        const decodedData = JSON.parse(new AnimekaiDecoder().DecodeIframeData(data.result) as unknown as string);
         servers.push({
           name: `MegaUp ${$(server).text().trim()}`!,
           url: decodedData.url,
@@ -322,13 +326,13 @@ export async function getEpisodeSources(
       case AnimeKaiServers.MegaUp:
         return {
           headers: { Referer: `${serverUrl.href}` },
-          data: (await new MegaUp().extract(serverUrl)) as ASource,
+          data: (await new AnimekaiDecoder().extract(serverUrl)) as ASource,
         };
 
       default:
         return {
           headers: { Referer: `${serverUrl.href}` },
-          data: (await new MegaUp().extract(serverUrl)) as ASource,
+          data: (await new AnimekaiDecoder().extract(serverUrl)) as ASource,
         };
     }
   }

@@ -28,10 +28,11 @@ export {
   type HiAnimeServers,
   type AnimeProvider,
 };
-export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
 const anime = new Anilist();
-// const data = await anime.fetchAnimeInfo('solo-leveling-season-2-arise-from-the-shadow-x7rq$ep=4$token=KYXkrP3loU3k2nVMz4fV');
-// console.log(data);
-const data = await anime.fetchAnimeProviderEpisodes(5114, 'animekai');
-
+// const data = await anime.fetchAnimeInfo('solo-leveling-season-2-arise-from-the-shadow-x7rq');
+const data = await anime.fetchSeasonalAnime('SUMMER', 2010, 'TV', 1, 100);
 console.log(data);
+// const data = await anime.fetchAnimeProviderEpisodes(5114, 'animekai');
+
+// console.log(data);
