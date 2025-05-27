@@ -7,19 +7,22 @@ export type Title = {
   // movieTitle?: string;
 };
 
-type SearchResults = {
+type AnimeSearchResults = {
   animeId: string;
-  resId?: string;
-  name?: string;
-  romaji?: string;
-  providerName?: string;
+  name: string;
+  romaji: string;
+  providerName: string;
+};
+type TvSearchResults = {
+  name: string;
+  tmdbId: number;
 };
 
 function normalizeTitle(title?: string) {
   return title?.toLowerCase().trim() || '';
 }
 
-export function bestTitleMatch(title: Title, results: SearchResults[]) {
+export function bestTitleMatch(title: Title, results: AnimeSearchResults[]) {
   if (!results.length) return null;
 
   const normRomaji = normalizeTitle(title.romaji);
@@ -58,10 +61,10 @@ export function bestTitleMatch(title: Title, results: SearchResults[]) {
     : null;
 }
 
-export function bestTVTitle(title: Title, results: SearchResults[]) {
+export function bestTVTitle(title: string, results: TvSearchResults[]) {
   if (!results.length) return null;
 
-  const normTvtitle = normalizeTitle(title.english);
+  const normTvtitle = normalizeTitle(title);
 
   const normalizedResults = results.map(item => ({
     ...item,
@@ -76,9 +79,8 @@ export function bestTVTitle(title: Title, results: SearchResults[]) {
   const match = normalizedResults.find(r => r._name === best.target);
   return match
     ? {
-        Id: match.resId,
+        tmdbId: match.tmdbId,
         name: match.name || null,
-        // providerName: match.providerName || null,
         score: best.rating,
       }
     : null;

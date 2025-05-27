@@ -1,4 +1,4 @@
-import { getInfo, getInfoDetailed, searchImdb, searchShows, searchTvdb } from './tvmaze';
+import { getExternal, getInfo, getInfoDetailed, searchImdb, searchShows, searchTvdb } from './tvmaze';
 
 class TvMaze {
   /**
@@ -53,6 +53,15 @@ class TvMaze {
    */
   async fetchDetailedInfo(tvMazeId: number) {
     return getInfoDetailed(tvMazeId);
+  }
+  /**
+   * Look up external tvshow id to other databases
+   * @param {number} tvMazeId The tvMazeId of the show
+   *
+   * @returns object containing id to other databases
+   */
+  async fetchExternal(tvMazeId: number) {
+    return getExternal(tvMazeId);
   }
 }
 export { TvMaze };

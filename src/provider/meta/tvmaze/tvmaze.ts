@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { TheMovieDb } from '../tmdb';
+import { bestTVTitle } from '../../../utils/mapper';
 
 const tvMazeApiUrl = 'https://api.tvmaze.com' as const;
 type searchData = {
@@ -80,7 +82,7 @@ export async function searchShows(query: string) {
       officialSite: item.show.officialSite,
       airSchedule: item.show.schedule,
       rating: item.show.rating.average,
-      image: item.show.image.original || item.show.image.medium,
+      image: item.show.image,
       network: item.show.network,
       summary: item.show.summary,
       previousEpisode: item.show._links.previousepisode,
@@ -124,7 +126,7 @@ export async function searchTvdb(tvdbId: number) {
       officialSite: response.data.officialSite || null,
       airSchedule: response.data.schedule || null,
       rating: response.data.rating.average || null,
-      image: response.data.image.original || response.data.image.medium || null,
+      image: response.data.image || null,
       network: response.data.network || null,
       summary: response.data.summary || null,
       previousEpisode: response.data._links.previousepisode || null,
@@ -167,7 +169,7 @@ export async function searchImdb(imdbId: string) {
       officialSite: response.data.officialSite || null,
       airSchedule: response.data.schedule || null,
       rating: response.data.rating.average || null,
-      image: response.data.image.original || response.data.image.medium || null,
+      image: response.data.image || null,
       network: response.data.network || null,
       summary: response.data.summary || null,
       previousEpisode: response.data._links.previousepisode || null,
@@ -211,7 +213,7 @@ export async function getInfo(tvmazeId: number) {
       officialSite: response.data.officialSite || null,
       airSchedule: response.data.schedule || null,
       rating: response.data.rating.average || null,
-      image: response.data.image.original || response.data.image.medium || null,
+      image: response.data.image || null,
       network: response.data.network || null,
       summary: response.data.summary || null,
       previousEpisode: response.data._links.previousepisode || null,
@@ -254,7 +256,7 @@ export async function getInfoDetailed(tvmazeId: number) {
       officialSite: response.data.officialSite || null,
       airSchedule: response.data.schedule || null,
       rating: response.data.rating.average || null,
-      image: response.data.image.original || response.data.image.medium || null,
+      image: response.data.image || null,
       network: response.data.network || null,
       summary: response.data.summary || null,
       previousEpisode: response.data._links.previousepisode || null,
@@ -351,7 +353,7 @@ export async function getShowEpisodes(tvmazeId: number) {
   }
 }
 
-export async function getIdMapping(tvMazeId: number) {
+export async function getExternal(tvMazeId: number) {
   if (!tvMazeId) {
     return { data: null, error: 'Missing required params tvmaze Id' };
   }
@@ -364,14 +366,20 @@ export async function getIdMapping(tvMazeId: number) {
       theTvDb: response.data.externals.thetvdb || null,
       imdb: response.data.externals.imdb || null,
     };
-    ////do a search function for the tmdb with string similarity and get the id
+
     if (!response.data)
       return {
         data: null,
         error: response.statusText,
       };
+    //search tmdb
+    const tmdb = new TheMovieDb();
+    const res = await tmdb.searchTvShows(data.name);
+    const title = bestTVTitle(data.name, res.data);
+
+    const resp = { TheMovieDb: title?.tmdbId, ...data };
     return {
-      data: data,
+      data: resp,
     };
   } catch (error) {
     return {
@@ -380,5 +388,3 @@ export async function getIdMapping(tvMazeId: number) {
     };
   }
 }
-
-export async function getSources(imdbId: string, season: number, episode: number) {}

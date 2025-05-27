@@ -3,7 +3,9 @@
 // import { HiAnime } from './provider/anime/hianime';
 // import { AnimeKai } from './provider/anime/animekai';
 
-import { searchShows } from './provider/meta/tmdb/tmdb';
+import { Anilist, Jikan } from './provider';
+import { TheMovieDb } from './provider/meta/tmdb';
+import { getTvEpisodes, getTvShowInfo } from './provider/meta/tmdb/tmdb';
 
 // import {
 //   AnimeKaiServers,
@@ -38,6 +40,19 @@ import { searchShows } from './provider/meta/tmdb/tmdb';
 
 // // console.log(data);
 
-// import { searchImdb, getInfoDetailed, getShowEpisodes, searchShows } from './provider/meta/tvmaze/tvmaze';
-const data = await searchShows('bleach', 1);
-console.log(data);
+import {
+  searchImdb,
+  getInfoDetailed,
+  getShowEpisodes,
+  searchShows,
+  getExternal,
+  //   getEmbed,
+} from './provider/meta/tvmaze/tvmaze';
+const Movie = new TheMovieDb();
+const anilist = new Jikan();
+
+const data = await getTvEpisodes(100088, 1, 'b29bfe548cc2a3e4225effbd54ef0fda');
+// const data = await searchShows('under the dome');
+// const data = await getEmbed(46562, 1, 1);
+// const data = await anilist.fetchProviderAnimeId(56784, 'animekai');
+console.log(JSON.stringify(data));
