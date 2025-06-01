@@ -1,7 +1,7 @@
 import { providerClient } from '../config/clients.js';
 import { USER_AGENT_HEADER, ACCEPT_ENCODING, ACCEPT_HEADER } from '../config/headers.js';
 import MegaCloud from '../source-extractors/megacloud/megacloud.js';
-import { MegaUp } from '../source-extractors/megaup/megaup.js';
+// import { MegaUp } from '../source-extractors/megaup/megaup.js';
 import { animekaiBaseUrl, zoroBaseUrl, zoroSearch } from '../utils/constants.js';
 import { AnimeKai } from './anime/animekai/index.js';
 import { HiAnime } from './anime/hianime/index.js';
@@ -18,7 +18,7 @@ export {
   zoroBaseUrl,
   zoroSearch,
   MegaCloud,
-  MegaUp,
+  // MegaUp,
   AnimeKai,
   SubOrDub,
   HiAnime,
