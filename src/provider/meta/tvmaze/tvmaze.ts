@@ -374,7 +374,7 @@ export async function getExternal(tvMazeId: number) {
       };
     //search tmdb
     const tmdb = new TheMovieDb();
-    const res = await tmdb.searchTvShows(data.name);
+    const res = await tmdb.searchShows(data.name);
     const title = bestTVTitle(data.name, res.data);
 
     const resp = { TheMovieDb: title?.tmdbId, ...data };

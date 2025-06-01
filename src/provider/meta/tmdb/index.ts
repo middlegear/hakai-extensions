@@ -1,4 +1,4 @@
-import { searchShows, searchTmdbMovie } from './tmdb';
+import { searchTmdbMovie, searchTVShows } from './tmdb';
 
 class TheMovieDb {
   private apiKey: string = 'b29bfe548cc2a3e4225effbd54ef0fda';
@@ -10,8 +10,8 @@ class TheMovieDb {
    *
    * @returns Array of related tv shows
    */
-  async searchTvShows(query: string, page: number = 1) {
-    return searchShows(query, page, this.apiKey);
+  async searchShows(query: string, page: number = 1) {
+    return searchTVShows(query, page, this.apiKey);
   }
   /**
    * Searches for Movies based on the provided query.

@@ -5,7 +5,17 @@
 
 import { Anilist, Jikan } from './provider';
 import { TheMovieDb } from './provider/meta/tmdb';
-import { getTvEpisodes, getTvShowInfo } from './provider/meta/tmdb/tmdb';
+import {
+  getMovieInfo,
+  getPopularMovies,
+  getTopRatedMovies,
+  getTrendingMovies,
+  getTvEpisodes,
+  getTvShowInfo,
+  getUpcomingMovies,
+  searchTmdbMovie,
+  searchTVShows,
+} from './provider/meta/tmdb/tmdb';
 
 // import {
 //   AnimeKaiServers,
@@ -51,8 +61,9 @@ import {
 const Movie = new TheMovieDb();
 const anilist = new Jikan();
 
-const data = await getTvEpisodes(100088, 1, 'b29bfe548cc2a3e4225effbd54ef0fda');
-// const data = await searchShows('under the dome');
+const data = await getUpcomingMovies('b29bfe548cc2a3e4225effbd54ef0fda');
+// const data = await getTvEpisodes(278704, 1, 'b29bfe548cc2a3e4225effbd54ef0fda');
 // const data = await getEmbed(46562, 1, 1);
 // const data = await anilist.fetchProviderAnimeId(56784, 'animekai');
-console.log(JSON.stringify(data));
+// console.log(JSON.stringify(data));
+console.log(data);

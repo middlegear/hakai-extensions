@@ -8,8 +8,7 @@
 so use puppeteer to scrape for html content info(can be stored for later use) and servers
 use server url in  a new page (another instance of puppeteer ) to get m3u8 links listening in evaluating js
 
-
-/// the cached  serverurl changes at every hour
+ Trending,toprated,popular ,upcoming movies and tv series
 
 
  Backdrops:
