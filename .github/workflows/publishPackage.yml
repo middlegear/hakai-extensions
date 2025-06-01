@@ -85,5 +85,6 @@ jobs:
 
       - name: Publish to NPM
         run: pnpm semantic-release
-        # env:
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        env:
+          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}   PROBLEMS COULD ARISE HERE IT COULD BE NPM_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
