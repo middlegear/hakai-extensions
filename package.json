@@ -1,6 +1,10 @@
 {
   "name": "hakai-extensions",
-  "version": "1.0.20",
+
+  "version": "0.0.0-development",
+
+  "version": "0.0.0-development",
+
   "description": "scraper package serving anime media infomation",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -9,6 +13,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm build && node dist/main.js",
+    "commit": "git-cz",
     "test-jikan": "vitest jikan.test.ts   --config vitest.config.ts",
     "test-anilist": "vitest anilist.test.ts  --config vitest.config.ts",
     "test-hianime": "vitest hianime.test.ts --silent run --config vitest.config.ts",
@@ -16,7 +21,8 @@
     "test": "vitest --silent run --config vitest.config.ts",
     "lint": "tsc",
     "ci": "tsc && pnpm test && pnpm run build",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "semantic-release": "semantic-release --branches main"
   },
   "files": [
     "dist"
@@ -29,7 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/middlegear/hakai-extensions.git"
+    "url": "https://github.com/middlegear/hakai-extensions.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -37,7 +43,9 @@
   "homepage": "https://github.com/middlegear/hakai-extensions#readme",
   "devDependencies": {
     "@types/node": "^22.15.2",
+    "cz-conventional-changelog": "^3.3.0",
     "prettier": "^3.5.3",
+    "semantic-release": "^24.2.5",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3",
     "vitest": "^3.1.2"
@@ -49,5 +57,10 @@
     "crypto-js": "^4.2.0",
     "got-scraping": "^4.1.1"
   },
-  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6"
+  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }

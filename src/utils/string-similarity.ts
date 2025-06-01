@@ -1,74 +1,87 @@
+/**
+ * Improved string similarity comparison focusing on TV show title matching
+ */
 export function compareTwoStrings(first: string, second: string): number {
-  first = first.trim().toLowerCase();
-  second = second.trim().toLowerCase();
+  // Enhanced normalization for TV show titles
+  const normalize = (str: string) => {
+    return str
+      .toLowerCase()
+      .replace(/[^\w\s]|_/g, ' ') // Replace punctuation with spaces
+      .replace(/\s+/g, ' ') // Collapse multiple spaces
+      .trim();
+  };
+
+  first = normalize(first);
+  second = normalize(second);
+
+  if (first === second) return 1;
 
   const len1 = first.length;
   const len2 = second.length;
 
-  if (first === second) return 1;
-  if (len1 < 2 || len2 < 2) return 0;
+  // More lenient minimum length check
+  if (len1 < 1 || len2 < 1) return 0;
+
+  // Special case for very short strings
+  if (len1 === 1 && len2 === 1) {
+    return first[0] === second[0] ? 1 : 0;
+  }
 
   const bigrams1 = new Set<string>();
   for (let i = 0; i < len1 - 1; i++) {
-    bigrams1.add(first[i] + first[i + 1]);
+    const bigram = first.substr(i, 2);
+    if (bigram.trim().length === 2) {
+      // Only add proper 2-character bigrams
+      bigrams1.add(bigram);
+    }
   }
 
   let matches = 0;
   for (let i = 0; i < len2 - 1; i++) {
-    if (bigrams1.has(second[i] + second[i + 1])) {
+    const bigram = second.substr(i, 2);
+    if (bigrams1.has(bigram)) {
       matches++;
     }
   }
 
-  return (2 * matches) / (len1 + len2 - 2);
+  // More accurate denominator calculation
+  const totalPossible = Math.max(len1, len2) - 1;
+  return totalPossible > 0 ? matches / totalPossible : 0;
 }
 
+/**
+ * Improved best match finder for TV show titles
+ */
 export function findBestMatch(main: string, targets: string[]) {
-  if (typeof main !== 'string' || !Array.isArray(targets) || targets.length === 0) {
-    throw new Error('Bad arguments');
+  if (typeof main !== 'string' || !Array.isArray(targets)) {
+    throw new Error('Invalid arguments: main must be string and targets must be array');
   }
 
-  const mainTrimmed = main.trim().toLowerCase();
-  const lenMain = mainTrimmed.length;
-
-  if (lenMain < 2) {
+  if (targets.length === 0) {
     return {
-      ratings: targets.map(t => ({ target: t, rating: 0 })),
-      bestMatch: { target: targets[0], rating: 0 },
-      bestMatchIndex: 0,
+      ratings: [],
+      bestMatch: { target: '', rating: 0 },
+      bestMatchIndex: -1,
     };
   }
 
-  const bigrams = new Set<string>();
-  for (let i = 0; i < lenMain - 1; i++) {
-    bigrams.add(mainTrimmed[i] + mainTrimmed[i + 1]);
-  }
+  const normalizedMain = compareTwoStrings.normalize(main);
+  const lenMain = normalizedMain.length;
 
   let bestIndex = 0;
   let bestRating = -1;
+  const ratings = [];
 
-  const ratings = targets.map((t, i) => {
-    const s = t.trim().toLowerCase();
-    const lenS = s.length;
-
-    if (lenS < 2) return { target: t, rating: 0 };
-
-    let score = 0;
-    for (let j = 0; j < lenS - 1; j++) {
-      if (bigrams.has(s[j] + s[j + 1])) {
-        score++;
-      }
-    }
-
-    const rating = (2 * score) / (lenMain + lenS - 2);
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    const rating = compareTwoStrings(normalizedMain, target);
+    ratings.push({ target, rating });
 
     if (rating > bestRating) {
       bestRating = rating;
       bestIndex = i;
     }
-
-    return { target: t, rating };
-  });
+  }
 
   return {
     ratings,
@@ -76,3 +89,11 @@ export function findBestMatch(main: string, targets: string[]) {
     bestMatchIndex: bestIndex,
   };
 }
+
+compareTwoStrings.normalize = (str: string) => {
+  return str
+    .toLowerCase()
+    .replace(/[^\w\s]|_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};

@@ -1,7 +1,21 @@
-import { Anime } from './provider/anime/anime';
-import { Anilist, Jikan, Meta } from './provider';
-import { HiAnime } from './provider/anime/hianime';
-import { AnimeKai } from './provider/anime/animekai';
+// import { Anime } from './provider/anime/anime';
+// import { Anilist, Jikan, Meta } from './provider';
+// import { HiAnime } from './provider/anime/hianime';
+// import { AnimeKai } from './provider/anime/animekai';
+
+import { Anilist, Jikan } from './provider';
+import { TheMovieDb } from './provider/meta/tmdb';
+import {
+  getMovieInfo,
+  getPopularMovies,
+  getTopRatedMovies,
+  getTrendingMovies,
+  getTvEpisodes,
+  getTvShowInfo,
+  getUpcomingMovies,
+  searchTmdbMovie,
+  searchTVShows,
+} from './provider/meta/tmdb/tmdb';
 
 import {
   AnimeKaiServers,
@@ -28,11 +42,5 @@ export {
   type HiAnimeServers,
   type AnimeProvider,
 };
-// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
-const anime = new Anilist();
-// const data = await anime.fetchAnimeInfo('solo-leveling-season-2-arise-from-the-shadow-x7rq');
-const data = await anime.fetchSeasonalAnime('SUMMER', 2010, 'TV', 1, 100);
-console.log(data);
-// const data = await anime.fetchAnimeProviderEpisodes(5114, 'animekai');
+export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
 
-// console.log(data);
