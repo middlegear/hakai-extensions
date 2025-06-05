@@ -1,7 +1,9 @@
 import { ASource } from '../../types/types.js';
+import { zoroBaseUrl } from '../../utils/constants.js';
 import { getSources } from './megacloud.getsrcs.js';
 
 class MegaCloud {
+  readonly referer: string = zoroBaseUrl;
   async extract(embedIframeURL: URL) {
     try {
       const extractedData: ASource = {
@@ -25,7 +27,7 @@ class MegaCloud {
 
       const xrax = embedIframeURL.pathname.split('/').pop() || '';
 
-      const resp = await getSources(xrax);
+      const resp = await getSources(xrax, this.referer);
       if (!resp) return errRes;
 
       if (Array.isArray(resp.sources)) {

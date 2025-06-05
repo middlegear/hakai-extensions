@@ -685,11 +685,11 @@ const V = async () => {
   }
 };
 
-const getMeta = async (url: string) => {
+const getMeta = async (url: string, referer: string) => {
   let resp = await fetch(url, {
     headers: {
       UserAgent: user_agent,
-      Referrer: referrer,
+      Referrer: referer,
     },
   });
   let txt = await resp.text();
@@ -723,8 +723,8 @@ function z(a: any) {
   return [(a & 4278190080) >> 24, (a & 16711680) >> 16, (a & 65280) >> 8, a & 255];
 }
 
-export async function getSources(xrax: string) {
-  await getMeta(embed_url + xrax + '?k=1');
+export async function getSources(xrax: string, referer: string) {
+  await getMeta(embed_url + xrax + '?k=1', referer);
   fake_window.xrax = xrax;
   fake_window.G = xrax;
   canvas.baseUrl = embed_url + xrax + '?k=1';

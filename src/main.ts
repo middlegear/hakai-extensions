@@ -12,6 +12,7 @@ import {
   searchTmdbMovie,
   searchTVShows,
 } from './provider/meta/tmdb/tmdb';
+import { _getInfo, _search } from './provider/movies/flixhq/flixhq';
 
 import {
   AnimeKaiServers,
@@ -38,4 +39,8 @@ export {
   type HiAnimeServers,
   type AnimeProvider,
 };
-export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };
+
+const data = await _getInfo('movie/bad-boys-18997');
+// const data = await anime.fetchSources('solo-leveling-18718-episode-119497', 'hd-2');
+console.log(data);
+// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };

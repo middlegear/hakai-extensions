@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/middlegear/hakai-extensions#readme",
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.15.2",
     "cz-conventional-changelog": "^3.3.0",
     "prettier": "^3.5.3",
@@ -47,7 +48,6 @@
     "vitest": "^3.1.2"
   },
   "dependencies": {
-    "@types/crypto-js": "^4.2.2",
     "axios": "^1.9.0",
     "cheerio": "^1.0.0",
     "crypto-js": "^4.2.0",

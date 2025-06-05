@@ -126,3 +126,7 @@ getTvShowDetails(999999999, 'YOUR_API_READ_ACCESS_TOKEN') // Non-existent ID
         }
     });
 */
+
+
+1. Referer for megacloud needs to be dynamic
+2. remove the anoyinh folders
