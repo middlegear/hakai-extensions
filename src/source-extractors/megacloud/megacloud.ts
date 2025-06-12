@@ -19,8 +19,6 @@ class MegaCloud {
         sources: [],
       };
       const errRes = {
-        success: false,
-        status: 500,
         error: 'MegaCloud Changed Encryption',
         data: null,
       };

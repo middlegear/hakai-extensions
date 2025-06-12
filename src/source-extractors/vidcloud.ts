@@ -17,6 +17,12 @@ class VidCloud {
       };
 
       const res = await getSources(videoUrl.href, referer);
+
+      const errRes = {
+        error: 'MegaCloud Changed Encryption',
+        data: null,
+      };
+      if (!res) return errRes;
       let sources = res.sources;
 
       sources = sources.map((s: any) => ({

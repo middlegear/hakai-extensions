@@ -40,7 +40,7 @@ interface Info extends searchData {
     summary: string;
     rating: number;
     airDate: string;
-  };
+  } | null;
   nextEpisode: {
     episodeId: number;
     title: string;
@@ -50,7 +50,7 @@ interface Info extends searchData {
     summary: string;
     rating: number;
     airDate: string;
-  };
+  } | null;
 }
 type seasons = {
   airDate: string;
@@ -66,8 +66,23 @@ type seasons = {
     original: string;
   };
 };
-
-export async function searchTVShows(query: string, page: number, apiKey: string) {
+interface successSearchRes {
+  data: searchData[];
+  currentPage: number;
+  hasNextPage: boolean;
+  totalPages: number;
+  totalResults: number;
+}
+interface errorSearchRes {
+  data: [];
+  error: string;
+  currentPage: number;
+  hasNextPage: boolean;
+  totalPages: number;
+  totalResults: number;
+}
+export type tmdbSearch = successSearchRes | errorSearchRes;
+export async function searchTVShows(query: string, page: number, apiKey: string): Promise<tmdbSearch> {
   if (!query) {
     return {
       data: [],
@@ -137,11 +152,21 @@ export async function searchTVShows(query: string, page: number, apiKey: string)
     };
   }
 }
-
-export async function getTvShowInfo(tmdbId: number, apiKey: string) {
+interface successShowInfo {
+  data: Info;
+  seasons: seasons;
+}
+interface errorShowInfo {
+  data: null;
+  seasons: [];
+  error: string;
+}
+export type ShowInfo = successShowInfo | errorShowInfo;
+export async function getTvShowInfo(tmdbId: number, apiKey: string): Promise<ShowInfo> {
   if (!tmdbId) {
     return {
       data: null,
+      seasons: [],
       error: 'Missing required parameter. Query',
     };
   }
@@ -218,18 +243,49 @@ export async function getTvShowInfo(tmdbId: number, apiKey: string) {
         original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
       },
     }));
-    return { data: data, seasons: seasons };
+    return { data: data as Info, seasons: seasons };
   } catch (error) {
-    return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
+    return { data: null, seasons: [], error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-export async function getTvEpisodes(tmdbId: number, season: number, apiKey: string) {
+type Episodes = {
+  airDate: string | null;
+  episodeNumber: number | null;
+  episodeType: string | null;
+  episodeId: number | null;
+  title: string | null;
+  summary: string | null;
+  rating: number | null;
+  seasonNumber: number | null;
+  tmdbId: number | null;
+  runtime: string | null;
+  images: {
+    small: string;
+    medium: string;
+    large: string;
+    original: string;
+  };
+};
+interface successEpisodesRes {
+  data: Episodes[];
+}
+interface errorEpisodesRes {
+  data: [];
+  error: string;
+}
+export type EpisodesRes = successEpisodesRes | errorEpisodesRes;
+export async function getTvEpisodes(tmdbId: number, season: number, apiKey: string): Promise<EpisodesRes> {
   if (!tmdbId) {
     return { data: [], error: 'Missing required params :tmdbId!' };
   }
   try {
     const response = await axios.get(`${tmdbUrl}/tv/${tmdbId}/season/${season}?api_key=${apiKey}`);
 
+    if (!response.data)
+      return {
+        data: [],
+        error: response.statusText,
+      };
     const episodes = response.data.episodes.map((item: any) => ({
       airDate: item.air_date || null,
       episodeNumber: item.episode_number || null,
@@ -253,7 +309,7 @@ export async function getTvEpisodes(tmdbId: number, season: number, apiKey: stri
     return { data: [], error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-export async function searchTmdbMovie(query: string, page: number, apiKey: string) {
+export async function searchTmdbMovie(query: string, page: number, apiKey: string): Promise<tmdbSearch> {
   if (!query) {
     return {
       data: [],
@@ -323,7 +379,55 @@ export async function searchTmdbMovie(query: string, page: number, apiKey: strin
     };
   }
 }
-export async function getMovieInfo(tmdbId: number, apiKey: string) {
+type Movie = {
+  tmdbId: number;
+  name: string | null;
+  posterImage: {
+    small: string | null;
+    medium: string | null;
+    large: string | null;
+    original: string | null;
+  };
+  coverImage: {
+    small: string | null;
+    medium: string | null;
+    large: string | null;
+    original: string | null;
+  };
+  status: string | null;
+  country: string | null;
+  language: string | null;
+  rating: number | null;
+  genres: string[] | null;
+  budget: number | null;
+  collection: {
+    id: number;
+    name: string;
+    posterImage: {
+      small: string;
+      medium: string;
+      large: string;
+      original: string;
+    };
+    coverImage: {
+      small: string;
+      medium: string;
+      large: string;
+      original: string;
+    };
+  } | null;
+  summary: string | null;
+  releaseDate: string | null;
+};
+interface SuccessMovieInfoRes {
+  data: Movie;
+}
+interface ErrorMovieInfoRes {
+  data: null;
+  error: string;
+}
+export type MovieInfoRes = SuccessMovieInfoRes | ErrorMovieInfoRes;
+export async function getMovieInfo(tmdbId: number, apiKey: string): Promise<MovieInfoRes> {
   if (!tmdbId) {
     return { data: null, error: 'Missing required params tmdbId!' };
   }
@@ -377,7 +481,7 @@ export async function getMovieInfo(tmdbId: number, apiKey: string) {
     return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-export async function getTrendingMovies(apiKey: string) {
+export async function getTrendingMovies(apiKey: string): Promise<tmdbSearch> {
   try {
     const response = await axios.get(`${tmdbUrl}/trending/movie/week?language=en-US&api_key=${apiKey}`);
 
@@ -436,7 +540,7 @@ export async function getTrendingMovies(apiKey: string) {
     };
   }
 }
-export async function getPopularMovies(apiKey: string) {
+export async function getPopularMovies(apiKey: string): Promise<tmdbSearch> {
   try {
     const response = await axios.get(`${tmdbUrl}/movie/popular?api_key=${apiKey}`);
     if (!response.data)
@@ -495,7 +599,7 @@ export async function getPopularMovies(apiKey: string) {
   }
 }
 
-export async function getTopRatedMovies(apiKey: string) {
+export async function getTopRatedMovies(apiKey: string): Promise<tmdbSearch> {
   try {
     const response = await axios.get(`${tmdbUrl}/movie/top_rated?api_key=${apiKey}`);
     if (!response.data)
@@ -554,7 +658,7 @@ export async function getTopRatedMovies(apiKey: string) {
   }
 }
 
-export async function getUpcomingMovies(apiKey: string) {
+export async function getUpcomingMovies(apiKey: string): Promise<tmdbSearch> {
   try {
     const response = await axios.get(`${tmdbUrl}/movie/upcoming?api_key=${apiKey}`);
 

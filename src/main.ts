@@ -12,7 +12,7 @@ import {
   searchTmdbMovie,
   searchTVShows,
 } from './provider/meta/tmdb/tmdb';
-import { _getInfo, _search } from './provider/movies/flixhq/flixhq';
+import { _getInfo, _getServers, _getsources, _search } from './provider/movies/flixhq/flixhq';
 
 import {
   AnimeKaiServers,
@@ -39,8 +39,10 @@ export {
   type HiAnimeServers,
   type AnimeProvider,
 };
-
-const data = await _getInfo('movie/bad-boys-18997');
-// const data = await anime.fetchSources('solo-leveling-18718-episode-119497', 'hd-2');
+const data = await getTvEpisodes(59941, 1, 'b29bfe548cc2a3e4225effbd54ef0fda');
+// const data = await _getServers('1167571', 'tv/watch-vincenzo-67955');
+// const data = await _getsources('147', 'movie/bad-company-147');
+// const data = await _getInfo('tv/watch-vincenzo-67955');
+// const data = await _search('bad boys');
 console.log(data);
 // export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };

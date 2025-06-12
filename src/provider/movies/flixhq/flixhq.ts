@@ -5,6 +5,7 @@ import { scrapeMediaInfo, scrapeSearch } from './scraper';
 import { providerClient } from '../../../config/clients';
 import { StreamingServers } from './types';
 import VidCloud from '../../../source-extractors/vidcloud';
+import MixDrop from '../../../source-extractors/mixdrop';
 
 export async function _search(query: string, page: number = 1) {
   if (!query) {
@@ -98,6 +99,7 @@ export async function _getServers(episodeId: string, mediaId: string) {
             !mediaId.includes('movie') ? '/watch-tv/' : '/watch-movie/',
           ),
         };
+
         return server;
       })
       .get();
@@ -106,15 +108,15 @@ export async function _getServers(episodeId: string, mediaId: string) {
     throw new Error((err as Error).message);
   }
 }
-export async function _getsources(episodeId: string, mediaId: string, server: StreamingServers = StreamingServers.VidCloud) {
+export async function _getsources(episodeId: string, mediaId: string, server: StreamingServers = StreamingServers.Upcloud) {
   if (episodeId.startsWith('http')) {
     const serverUrl = new URL(episodeId);
     switch (server) {
-      // case StreamingServers.Mixdrop:
-      //   return {
-      //     headers: { Referer: serverUrl.href },
-      //     sources: await new MixDrop(this.proxyConfig, this.adapter).extract(serverUrl),
-      //   };
+      case StreamingServers.Mixdrop:
+        return {
+          headers: { Referer: serverUrl.href },
+          sources: await new MixDrop().extract(serverUrl),
+        };
       case StreamingServers.VidCloud:
         return {
           headers: { Referer: serverUrl.href },
@@ -128,10 +130,27 @@ export async function _getsources(episodeId: string, mediaId: string, server: St
       default:
         return {
           headers: { Referer: serverUrl.href },
-          // sources: await new MixDrop(this.proxyConfig, this.adapter).extract(serverUrl),
+          sources: await new MixDrop().extract(serverUrl),
         };
     }
   }
   try {
-  } catch (error) {}
+    const servers = await _getServers(episodeId, mediaId);
+
+    const i = servers.findIndex(s => s.name === server);
+
+    if (i === -1) {
+      throw new Error(`Server ${server} not found`);
+    }
+
+    const { data } = await providerClient.get(
+      `${flixhqBaseUrl}/ajax/episode/sources/${servers[i].url.split('.').slice(-1).shift()}`,
+    );
+
+    const serverUrl: URL = new URL(data.link);
+
+    return await _getsources(serverUrl.href, mediaId, server);
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
 }
