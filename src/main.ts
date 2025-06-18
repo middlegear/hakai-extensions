@@ -54,12 +54,13 @@ export {
 // const data = await _getAiringTv(1, 'b29bfe548cc2a3e4225effbd54ef0fda');
 // const data = await _getReleasingMovies(1, 'b29bfe548cc2a3e4225effbd54ef0fda');
 
-// const zoro = new HiAnime();
-// const data = await zoro.fetchSources('solo-leveling-18718-episode-119497', 'hd-2', 'dub');
+const zoro = new HiAnime();
+// const data = await zoro.fetchEpisodeServers('solo-leveling-18718-episode-119497');
+const data = await zoro.fetchSources('solo-leveling-18718-episode-119497', 'hd-3', 'dub');
 // const data = await _getServers('1167571', 'tv/watch-vincenzo-67955');
-const data = await _getsources('147', 'movie/bad-company-147');
+// const data = await _getsources('147', 'movie/bad-company-147');
 // const data = await _getInfo('tv/watch-vincenzo-67955');
 // const data = await _search('bad boys');
-// console.log(JSON.stringify(data));
-console.log(data);
+console.log(JSON.stringify(data));
+// console.log(data);
 // export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai };

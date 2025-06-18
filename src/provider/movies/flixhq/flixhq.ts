@@ -112,11 +112,12 @@ export async function _getsources(episodeId: string, mediaId: string, server: St
   if (episodeId.startsWith('http')) {
     const serverUrl = new URL(episodeId);
     switch (server) {
-      case StreamingServers.Mixdrop:
-        return {
-          headers: { Referer: `${serverUrl.href}` },
-          sources: await new MixDrop().extract(serverUrl),
-        };
+      //  disabled temporarirly
+      // case StreamingServers.Mixdrop:
+      //   return {
+      //     headers: { Referer: `${serverUrl.href}` },
+      //     sources: await new MixDrop().extract(serverUrl),
+      //   };
       case StreamingServers.VidCloud:
         return {
           headers: { Referer: `${serverUrl.href}` },

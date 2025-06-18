@@ -25,7 +25,7 @@ export type MediaInfo = {
 
 export const StreamingServers = {
   Upcloud: 'upcloud',
-  Mixdrop: 'mixdrop',
+  // Mixdrop: 'mixdrop', disabled for now
   VidCloud: 'vidcloud',
 } as const;
 export type StreamingServers = (typeof StreamingServers)[keyof typeof StreamingServers];

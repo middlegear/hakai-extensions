@@ -221,6 +221,71 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
     };
   }
 }
+
+async function _getSource(episodeId: string, server: HiAnimeServers, category: SubOrDub) {
+  try {
+    const newId = episodeId.split('-').pop();
+    const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
+      },
+    });
+
+    if (!response.data)
+      return {
+        error: response.statusText,
+      };
+    const datares$: cheerio.CheerioAPI = cheerio.load(response.data.html);
+    let mediadataId: string | null = null;
+
+    switch (server) {
+      case HiAnimeServers.HD1: {
+        mediadataId = extractAnimeServerId(datares$, 4, category);
+        if (!mediadataId) throw new Error('HD1 not found');
+        break;
+      }
+      case HiAnimeServers.HD2: {
+        mediadataId = extractAnimeServerId(datares$, 1, category);
+        if (!mediadataId) throw new Error('HD2 not found');
+        break;
+      }
+      case HiAnimeServers.HD3: {
+        mediadataId = extractAnimeServerId(datares$, 6, category);
+        if (!mediadataId) throw new Error('HD3 not found');
+        break;
+      }
+    }
+    if (!mediadataId)
+      return {
+        error: 'Server returned no mediadataId',
+      };
+    const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
+      },
+    });
+    if (!dataLink.data)
+      return {
+        error: dataLink.statusText || 'Server returned an empty response',
+      };
+    // dataLink.data  is an object that contains something similar to this
+    //       {
+    //   type: 'iframe',
+    //   link: 'https://megacloud.blog/embed-2/v2/e-1/5kyDcuM3rrUq?k=1',
+    //   server: 1,
+    //   sources: [],
+    //   tracks: [],
+    //   htmlGuide: ''
+    // }
+    return dataLink.data.link;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Unknown Error',
+    };
+  }
+}
 export interface SuccessSourceRes {
   data: ASource;
   headers: {
@@ -256,6 +321,7 @@ export async function fetchEpisodeSources(
     switch (server) {
       case HiAnimeServers.HD1:
       case HiAnimeServers.HD2:
+      case HiAnimeServers.HD3:
         return {
           headers: { Referer: `${serverUrl.origin}/` },
           data: (await new MegaCloud().extract(serverUrl)) as ASource,
@@ -269,117 +335,21 @@ export async function fetchEpisodeSources(
     }
   }
   try {
-    const newId = episodeId.split('-').pop();
-    const response = await providerClient.get(`${zoroBaseUrl}/ajax/v2/episode/servers?episodeId=${newId}`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
-      },
-    });
-
-    if (!response.data)
-      return {
-        error: response.statusText || 'Server returned an empty response ',
-        data: null,
-        headers: {
-          Referer: null,
-        },
-      };
-    const datares$: cheerio.CheerioAPI = cheerio.load(response.data.html);
-    let mediadataId: string | null = null;
-
-    try {
-      switch (server) {
-        case HiAnimeServers.HD1: {
-          mediadataId = extractAnimeServerId(datares$, 4, category);
-          if (!mediadataId) throw new Error('HD1 not found');
-          break;
-        }
-        case HiAnimeServers.HD2: {
-          mediadataId = extractAnimeServerId(datares$, 1, category);
-          if (!mediadataId) throw new Error('HD2 not found');
-          break;
-        }
-      }
-      if (!mediadataId)
-        return {
-          error: 'Scraping error',
-
-          data: null,
-          headers: {
-            Referer: null,
-          },
-        };
-      const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
-        },
-      });
-      if (!dataLink.data)
-        return {
-          error: dataLink.statusText || 'Server returned an empty response',
-          data: null,
-          headers: {
-            Referer: null,
-          },
-        };
-    } catch (error) {
-      if (axios.isAxiosError(error))
-        return {
-          error: `Request failed ${error.message}` || 'Unknown axios error',
-          data: null,
-          headers: {
-            Referer: null,
-          },
-        };
-      return {
-        data: null,
-        headers: {
-          Referer: null,
-        },
-        error: error instanceof Error ? error.message : 'Unknown Error',
-      };
-    }
-    if (!mediadataId)
-      return {
-        error: 'Scraping error',
-
-        data: null,
-        headers: {
-          Referer: null,
-        },
-      };
-    const dataLink = await providerClient.get(`${zoroBaseUrl}//ajax/v2/episode/sources?id=${mediadataId}`, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        Referer: `${zoroBaseUrl}/watch/?ep=${newId}`,
-      },
-    });
-    if (!dataLink.data)
-      return {
-        error: dataLink.statusText || 'Server returned an empty response',
-
-        data: null,
-        headers: {
-          Referer: null,
-        },
-      };
     // console.log(link, mediadataId);
     // const id = link.split('/').at(-1);
     // console.log(id);
     // const sources = puppeteer(id);
     //
-    const link = dataLink.data.link;
-    // console.log(link);
-    return await fetchEpisodeSources(link, server, category);
+    const embedUrl = await _getSource(episodeId, server, category);
+    // console.log(embedUrl);
+    return await fetchEpisodeSources(embedUrl, server, category);
   } catch (error) {
     return {
       data: null,
       headers: {
         Referer: null,
       },
-      error: error instanceof Error ? error.message : 'Contact dev if you see this',
+      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
