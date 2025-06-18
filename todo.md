@@ -134,3 +134,13 @@ getTvShowDetails(999999999, 'YOUR_API_READ_ACCESS_TOKEN') // Non-existent ID
 
 
 https://vidjoy.wtf/watch/movie/715287/Stepmom-s-Desire
+
+
+
+
+
+
+
+0.0.0-development
+
+An API is available visit the  <strong> [Docs 🤷](https://github.com/middlegear/documentation) </strong>

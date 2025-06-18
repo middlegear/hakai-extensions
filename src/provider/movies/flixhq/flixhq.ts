@@ -4,7 +4,7 @@ import { flixhqBaseUrl } from '../../../utils/constants';
 import { scrapeMediaInfo, scrapeSearch } from './scraper';
 import { providerClient } from '../../../config/clients';
 import { StreamingServers } from './types';
-import VidCloud from '../../../source-extractors/vidcloud';
+import VidCloud, { ExtractedData } from '../../../source-extractors/vidcloud';
 import MixDrop from '../../../source-extractors/mixdrop';
 
 export async function _search(query: string, page: number = 1) {
@@ -114,22 +114,22 @@ export async function _getsources(episodeId: string, mediaId: string, server: St
     switch (server) {
       case StreamingServers.Mixdrop:
         return {
-          headers: { Referer: serverUrl.href },
+          headers: { Referer: `${serverUrl.href}` },
           sources: await new MixDrop().extract(serverUrl),
         };
       case StreamingServers.VidCloud:
         return {
-          headers: { Referer: serverUrl.href },
-          ...(await new VidCloud().extract(serverUrl, true, flixhqBaseUrl)),
+          headers: { Referer: `${serverUrl.href}` },
+          ...((await new VidCloud().extract(serverUrl, flixhqBaseUrl)) as ExtractedData),
         };
       case StreamingServers.Upcloud:
         return {
-          headers: { Referer: serverUrl.href },
-          ...(await new VidCloud().extract(serverUrl, undefined, flixhqBaseUrl)),
+          headers: { Referer: `${serverUrl.href}/` },
+          ...((await new VidCloud().extract(serverUrl, flixhqBaseUrl)) as ExtractedData),
         };
       default:
         return {
-          headers: { Referer: serverUrl.href },
+          headers: { Referer: `${serverUrl.origin}/` },
           sources: await new MixDrop().extract(serverUrl),
         };
     }

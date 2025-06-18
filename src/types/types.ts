@@ -80,3 +80,9 @@ export const AnimeProvider = {
   Animekai: 'animekai',
 } as const;
 export type AnimeProvider = (typeof AnimeProvider)[keyof typeof AnimeProvider];
+
+export const TimeWindow = {
+  Day: 'day',
+  Week: 'week',
+} as const;
+export type TimeWindow = (typeof TimeWindow)[keyof typeof TimeWindow];

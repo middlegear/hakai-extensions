@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { TimeWindow } from '../../../types/types';
 
 const tmdbUrl = 'https://api.themoviedb.org/3';
 interface searchData {
@@ -481,9 +482,11 @@ export async function getMovieInfo(tmdbId: number, apiKey: string): Promise<Movi
     return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-export async function getTrendingMovies(apiKey: string): Promise<tmdbSearch> {
+export async function _getTrendingMovies(timeWindow: TimeWindow, page: number, apiKey: string): Promise<tmdbSearch> {
   try {
-    const response = await axios.get(`${tmdbUrl}/trending/movie/week?language=en-US&api_key=${apiKey}`);
+    const response = await axios.get(
+      `${tmdbUrl}/trending/movie/${timeWindow}?language=en-US&api_key=${apiKey}&page=${page}`,
+    );
 
     if (!response.data)
       return {
@@ -540,9 +543,9 @@ export async function getTrendingMovies(apiKey: string): Promise<tmdbSearch> {
     };
   }
 }
-export async function getPopularMovies(apiKey: string): Promise<tmdbSearch> {
+export async function _getPopularMovies(page: number, apiKey: string): Promise<tmdbSearch> {
   try {
-    const response = await axios.get(`${tmdbUrl}/movie/popular?api_key=${apiKey}`);
+    const response = await axios.get(`${tmdbUrl}/movie/popular?api_key=${apiKey}&page=${page}`);
     if (!response.data)
       return {
         data: [],
@@ -599,9 +602,127 @@ export async function getPopularMovies(apiKey: string): Promise<tmdbSearch> {
   }
 }
 
-export async function getTopRatedMovies(apiKey: string): Promise<tmdbSearch> {
+export async function _getTopRatedMovies(page: number, apiKey: string): Promise<tmdbSearch> {
   try {
-    const response = await axios.get(`${tmdbUrl}/movie/top_rated?api_key=${apiKey}`);
+    const response = await axios.get(`${tmdbUrl}/movie/top_rated?api_key=${apiKey}&page=${page}`);
+    if (!response.data)
+      return {
+        data: [],
+        currentPage: 0,
+        hasNextPage: false,
+        totalPages: 0,
+        totalResults: 0,
+        error: response.statusText,
+      };
+    const pagination: pagination = {
+      currentPage: response.data.page,
+      hasNextPage: response.data.total_pages > 1 ? true : false,
+      totalPages: response.data.total_pages,
+      totalResults: response.data.total_results,
+    };
+    const data = response.data.results.map((item: any) => ({
+      tmdbId: item.id || null,
+      name: item.title || item.original_title || null,
+      posterImage: {
+        small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${item.poster_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
+      },
+      coverImage: {
+        small: `https://image.tmdb.org/t/p/w300${item.backdrop_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w780${item.backdrop_path}` || null,
+        large: `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.backdrop_path}` || null,
+      },
+
+      language: item.original_language || null,
+      releaseDate: item.release_date || null,
+      summary: item.overview || null,
+      genres: item.genre_ids || null,
+      rating: item.vote_average || null,
+    }));
+    return {
+      currentPage: pagination.currentPage,
+      hasNextPage: pagination.hasNextPage,
+      totalPages: pagination.totalPages,
+      totalResults: pagination.totalResults,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      currentPage: 0,
+      hasNextPage: false,
+      totalPages: 0,
+      totalResults: 0,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+export async function _getReleasingMovies(page: number, apiKey: string): Promise<tmdbSearch> {
+  try {
+    const response = await axios.get(`${tmdbUrl}/movie/now_playing?api_key=${apiKey}&page=${page}`);
+
+    if (!response.data)
+      return {
+        data: [],
+        currentPage: 0,
+        hasNextPage: false,
+        totalPages: 0,
+        totalResults: 0,
+        error: response.statusText,
+      };
+    const pagination: pagination = {
+      currentPage: response.data.page,
+      hasNextPage: response.data.total_pages > 1 ? true : false,
+      totalPages: response.data.total_pages,
+      totalResults: response.data.total_results,
+    };
+    const data = response.data.results.map((item: any) => ({
+      tmdbId: item.id || null,
+      name: item.title || item.original_title || null,
+      posterImage: {
+        small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${item.poster_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
+      },
+      coverImage: {
+        small: `https://image.tmdb.org/t/p/w300${item.backdrop_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w780${item.backdrop_path}` || null,
+        large: `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.backdrop_path}` || null,
+      },
+
+      language: item.original_language || null,
+      releaseDate: item.release_date || null,
+      summary: item.overview || null,
+      genres: item.genre_ids || null,
+      rating: item.vote_average || null,
+    }));
+    return {
+      currentPage: pagination.currentPage,
+      hasNextPage: pagination.hasNextPage,
+      totalPages: pagination.totalPages,
+      totalResults: pagination.totalResults,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      currentPage: 0,
+      hasNextPage: false,
+      totalPages: 0,
+      totalResults: 0,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+export async function _getUpcomingMovies(page: number, apiKey: string): Promise<tmdbSearch> {
+  try {
+    const response = await axios.get(`${tmdbUrl}/movie/upcoming?api_key=${apiKey}&page=${page}`);
+
     if (!response.data)
       return {
         data: [],
@@ -658,9 +779,9 @@ export async function getTopRatedMovies(apiKey: string): Promise<tmdbSearch> {
   }
 }
 
-export async function getUpcomingMovies(apiKey: string): Promise<tmdbSearch> {
+export async function _getTrendingTv(timeWindow: TimeWindow, page: number, apiKey: string) {
   try {
-    const response = await axios.get(`${tmdbUrl}/movie/upcoming?api_key=${apiKey}`);
+    const response = await axios.get(`${tmdbUrl}/trending/tv/${timeWindow}?language=en-US&api_key=${apiKey}&page=${page}`);
 
     if (!response.data)
       return {
@@ -679,7 +800,7 @@ export async function getUpcomingMovies(apiKey: string): Promise<tmdbSearch> {
     };
     const data = response.data.results.map((item: any) => ({
       tmdbId: item.id || null,
-      name: item.title || item.original_title || null,
+      name: item.name || item.original_name || null,
       posterImage: {
         small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
         medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
@@ -694,7 +815,7 @@ export async function getUpcomingMovies(apiKey: string): Promise<tmdbSearch> {
       },
 
       language: item.original_language || null,
-      releaseDate: item.release_date || null,
+      startDate: item.first_air_date || null,
       summary: item.overview || null,
       genres: item.genre_ids || null,
       rating: item.vote_average || null,
@@ -717,3 +838,182 @@ export async function getUpcomingMovies(apiKey: string): Promise<tmdbSearch> {
     };
   }
 }
+export async function _getPopularTv(page: number, apiKey: string) {
+  try {
+    const response = await axios.get(`${tmdbUrl}/tv/popular?language=en-US&api_key=${apiKey}&page=${page}`);
+
+    if (!response.data)
+      return {
+        data: [],
+        currentPage: 0,
+        hasNextPage: false,
+        totalPages: 0,
+        totalResults: 0,
+        error: response.statusText,
+      };
+    const pagination: pagination = {
+      currentPage: response.data.page,
+      hasNextPage: response.data.total_pages > 1 ? true : false,
+      totalPages: response.data.total_pages,
+      totalResults: response.data.total_results,
+    };
+    const data = response.data.results.map((item: any) => ({
+      tmdbId: item.id || null,
+      name: item.name || item.original_name || null,
+      posterImage: {
+        small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${item.poster_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
+      },
+      coverImage: {
+        small: `https://image.tmdb.org/t/p/w300${item.backdrop_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w780${item.backdrop_path}` || null,
+        large: `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.backdrop_path}` || null,
+      },
+
+      language: item.original_language || null,
+      startDate: item.first_air_date || null,
+      summary: item.overview || null,
+      genres: item.genre_ids || null,
+      rating: item.vote_average || null,
+    }));
+    return {
+      currentPage: pagination.currentPage,
+      hasNextPage: pagination.hasNextPage,
+      totalPages: pagination.totalPages,
+      totalResults: pagination.totalResults,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      currentPage: 0,
+      hasNextPage: false,
+      totalPages: 0,
+      totalResults: 0,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+export async function _getTopRatedTv(page: number, apiKey: string) {
+  try {
+    const response = await axios.get(`${tmdbUrl}/tv/top_rated?language=en-US&api_key=${apiKey}&page=${page}`);
+
+    if (!response.data)
+      return {
+        data: [],
+        currentPage: 0,
+        hasNextPage: false,
+        totalPages: 0,
+        totalResults: 0,
+        error: response.statusText,
+      };
+    const pagination: pagination = {
+      currentPage: response.data.page,
+      hasNextPage: response.data.total_pages > 1 ? true : false,
+      totalPages: response.data.total_pages,
+      totalResults: response.data.total_results,
+    };
+    const data = response.data.results.map((item: any) => ({
+      tmdbId: item.id || null,
+      name: item.name || item.original_name || null,
+      posterImage: {
+        small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${item.poster_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
+      },
+      coverImage: {
+        small: `https://image.tmdb.org/t/p/w300${item.backdrop_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w780${item.backdrop_path}` || null,
+        large: `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.backdrop_path}` || null,
+      },
+
+      language: item.original_language || null,
+      startDate: item.first_air_date || null,
+      summary: item.overview || null,
+      genres: item.genre_ids || null,
+      rating: item.vote_average || null,
+    }));
+    return {
+      currentPage: pagination.currentPage,
+      hasNextPage: pagination.hasNextPage,
+      totalPages: pagination.totalPages,
+      totalResults: pagination.totalResults,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      currentPage: 0,
+      hasNextPage: false,
+      totalPages: 0,
+      totalResults: 0,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+export async function _getAiringTv(page: number, apiKey: string) {
+  try {
+    const response = await axios.get(`${tmdbUrl}/tv/on_the_air?language=en-US&api_key=${apiKey}&page=${page}`);
+
+    if (!response.data)
+      return {
+        data: [],
+        currentPage: 0,
+        hasNextPage: false,
+        totalPages: 0,
+        totalResults: 0,
+        error: response.statusText,
+      };
+    const pagination: pagination = {
+      currentPage: response.data.page,
+      hasNextPage: response.data.total_pages > 1 ? true : false,
+      totalPages: response.data.total_pages,
+      totalResults: response.data.total_results,
+    };
+    const data = response.data.results.map((item: any) => ({
+      tmdbId: item.id || null,
+      name: item.name || item.original_name || null,
+      posterImage: {
+        small: `https://image.tmdb.org/t/p/w185${item.poster_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${item.poster_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${item.poster_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.poster_path}` || null,
+      },
+      coverImage: {
+        small: `https://image.tmdb.org/t/p/w300${item.backdrop_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w780${item.backdrop_path}` || null,
+        large: `https://image.tmdb.org/t/p/w1280${item.backdrop_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${item.backdrop_path}` || null,
+      },
+
+      language: item.original_language || null,
+      startDate: item.first_air_date || null,
+      summary: item.overview || null,
+      genres: item.genre_ids || null,
+      rating: item.vote_average || null,
+    }));
+    return {
+      currentPage: pagination.currentPage,
+      hasNextPage: pagination.hasNextPage,
+      totalPages: pagination.totalPages,
+      totalResults: pagination.totalResults,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      currentPage: 0,
+      hasNextPage: false,
+      totalPages: 0,
+      totalResults: 0,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+export async function _getProviderMapping(tmdbId: number) {}

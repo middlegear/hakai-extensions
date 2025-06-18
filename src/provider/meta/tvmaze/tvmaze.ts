@@ -388,3 +388,8 @@ export async function getExternal(tvMazeId: number) {
     };
   }
 }
+
+export async function getProviderIdMapping(tvmazeId: number) {
+  try {
+  } catch (error) {}
+}
