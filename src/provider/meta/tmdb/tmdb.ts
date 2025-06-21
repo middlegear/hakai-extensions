@@ -97,7 +97,14 @@ interface SuccessMovieRes {
   totalPages: number;
   totalResults: number;
 }
-
+interface ErrorMovieRes {
+  data: [];
+  error: string;
+  currentPage: number;
+  hasNextPage: boolean;
+  totalPages: number;
+  totalResults: number;
+}
 interface successSearchTvRes {
   data: searchTVData[];
   currentPage: number;
@@ -341,7 +348,7 @@ export async function getTvEpisodes(tmdbId: number, season: number, apiKey: stri
     return { data: [], error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-export type tmdbMovie = SuccessMovieRes | errorSearchRes;
+export type tmdbMovie = SuccessMovieRes | ErrorMovieRes;
 export async function searchTmdbMovie(query: string, page: number, apiKey: string): Promise<tmdbMovie> {
   if (!query) {
     return {
