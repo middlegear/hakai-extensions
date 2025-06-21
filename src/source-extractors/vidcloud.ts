@@ -1,15 +1,16 @@
 import axios from 'axios';
-import { USER_AGENT_HEADER } from '../provider'; // Assuming these are correctly imported
+import { USER_AGENT_HEADER } from '../provider';
 import CryptoJS from 'crypto-js';
 //https://megacloud.blog/js/player/a/v2/pro/embed-1.min.js?v=
 // https://cloudvidz.net/js/player/m/v2/pro/embed-1.min.js?v=
-type sources = {
+// https:///cdnstreame.net/js/player/m/v2/pro/embed-1.min.js?v=
+export type sources = {
   url: string;
   isM3U8: boolean;
   type: string;
 };
 
-type subtitles = {
+export type subtitles = {
   url: string;
   lang: string;
 };
@@ -36,7 +37,28 @@ class VidCloud {
         return null;
       }
     },
-
+    ///https://key.hi-anime.site
+    async (): Promise<string | null> => {
+      const url = 'https://key.hi-anime.site';
+      try {
+        const response = await axios.get(url);
+        const jsonData = response.data;
+        if (typeof jsonData === 'object' && jsonData !== null && 'rabbit' in jsonData) {
+          const key = (jsonData as any).rabbit;
+          if (typeof key === 'string' && key.length > 0) {
+            console.log(`Second attempt`);
+            return key;
+          }
+          console.warn(`'rabbit' field is empty or not a string from ${url}.`);
+          return null;
+        }
+        console.warn(`JSON from ${url} does not contain an expected  field or is invalid.`);
+        return null;
+      } catch (error) {
+        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        return null;
+      }
+    },
     async (): Promise<string | null> => {
       const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
       try {
@@ -79,6 +101,7 @@ class VidCloud {
 
     const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
     const sourceId = match?.[1];
+
     if (!sourceId) {
       return 'Could not extract source ID from video URL.';
     }
@@ -110,7 +133,7 @@ class VidCloud {
             break;
           } catch (jsonParseError) {
             console.warn(
-              `JSON parsing failed with key: "${currentKey}". This key might be outdated/incorrect. Trying next key. Error:`,
+              `JSON parsing failed with key. This key might be outdated/incorrect. Trying next key. Error:`,
               (jsonParseError as Error).message,
             );
 

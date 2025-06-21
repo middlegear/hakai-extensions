@@ -14,6 +14,22 @@ class MegaCloud {
         const response = await axios.get(url);
         if (typeof response.data === 'string' && response.data.length > 0) {
           console.log(`First attempt`);
+          return response.data.trim();
+        }
+        console.warn(`Empty or invalid data from ${url}.`);
+        return null;
+      } catch (error) {
+        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        return null;
+      }
+    },
+
+    async (): Promise<string | null> => {
+      const url = 'https://api.lunaranime.ru/static/key.txt'; /// not as accurate as the rest
+      try {
+        const response = await axios.get(url);
+        if (typeof response.data === 'string' && response.data.length > 0) {
+          console.log(`Second attempt`);
           return response.data;
         }
         console.warn(`Empty or invalid data from ${url}.`);
@@ -24,21 +40,27 @@ class MegaCloud {
       }
     },
 
-    // async (): Promise<string | null> => {
-    //   const url = 'https://raw.githubusercontent.com/SpencerDevs/megacloud-key-updater/master/key.txt';
-    //   try {
-    //     const response = await axios.get(url);
-    //     if (typeof response.data === 'string' && response.data.length > 0) {
-    //       console.log(`Second attempt`);
-    //       return response.data;
-    //     }
-    //     console.warn(`Empty or invalid data from ${url}.`);
-    //     return null;
-    //   } catch (error) {
-    //     console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
-    //     return null;
-    //   }
-    // },
+    async (): Promise<string | null> => {
+      const url = 'https://key.hi-anime.site';
+      try {
+        const response = await axios.get(url);
+        const jsonData = response.data;
+        if (typeof jsonData === 'object' && jsonData !== null && 'key' in jsonData) {
+          const key = (jsonData as any).key;
+          if (typeof key === 'string' && key.length > 0) {
+            console.log(`Third attempt`);
+            return key;
+          }
+          console.warn(`'rabbit' field is empty or not a string from ${url}.`);
+          return null;
+        }
+        console.warn(`JSON from ${url} does not contain an expected  field or is invalid.`);
+        return null;
+      } catch (error) {
+        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        return null;
+      }
+    },
 
     async (): Promise<string | null> => {
       const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
@@ -104,10 +126,9 @@ class MegaCloud {
             console.log(`Attempting decryption with current key...`);
             const decrypted = CryptoJS.AES.decrypt(encryptedSourcesToTry, currentKey).toString(CryptoJS.enc.Utf8);
 
-            let tempDecryptedSources;
+            let tempDecryptedSources: string;
             try {
               tempDecryptedSources = JSON.parse(decrypted);
-
               workingKey = currentKey;
               console.log('Success!');
               break;

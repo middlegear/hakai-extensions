@@ -115,13 +115,14 @@ export function extractServerData($: cheerio.CheerioAPI) {
   servers.episodeNumber = Number(episodeNo) || null;
   $(subSelector).each((_, element) => {
     servers.sub.push({
-      severId: Number($(element)?.attr('data-server-id') || null),
+      //dont delete will be needed in the future for reference when the servers change
+      // severId: Number($(element)?.attr('data-server-id') || null),
       serverName: $(element).find('.btn').text().trim().toLowerCase() || null,
     });
   });
   $(dubSelector).each((_, element) => {
     servers.dub.push({
-      severId: Number($(element)?.attr('data-server-id') || null),
+      // severId: Number($(element)?.attr('data-server-id') || null),
       serverName: $(element)?.find('.btn')?.text().trim().toLowerCase() || null,
     });
   });

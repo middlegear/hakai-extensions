@@ -22,10 +22,29 @@ export type MediaInfo = {
   duration: string | null;
   rating: number | null;
 };
+export type ServerRes = {
+  [x: string]: any;
+  name: string;
+  id: number; //should be a number will check and confirm later
+};
 
+export type FLixepisodes =
+  | {
+      id: string;
+      title: string;
+      number: number;
+      season: number;
+      url: string;
+    }[]
+  | {
+      id: string;
+      title: string | null;
+      url: string;
+    };
 export const StreamingServers = {
   Upcloud: 'upcloud',
   // Mixdrop: 'mixdrop', disabled for now
   VidCloud: 'vidcloud',
+  Akcloud: 'akcloud',
 } as const;
 export type StreamingServers = (typeof StreamingServers)[keyof typeof StreamingServers];

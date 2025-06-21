@@ -36,7 +36,7 @@ export type EpisodeInfo = {
 };
 
 export type SubServers = {
-  severId: number | null;
+  // severId: number | null;
   serverName: string | null;
 };
 export type DubServers = SubServers;
