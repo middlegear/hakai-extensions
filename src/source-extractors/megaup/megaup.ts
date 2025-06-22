@@ -1,7 +1,7 @@
 // animekai-decoder.ts
 
 import axios from 'axios';
-import { headers } from '../../provider/anime/animekai/animekai';
+import { headers } from '../../provider/anime/animekai/animekai.js';
 
 interface AutoKai {
   kai: string[][];

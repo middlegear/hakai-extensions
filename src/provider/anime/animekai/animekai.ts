@@ -2,14 +2,14 @@
 
 import * as cheerio from 'cheerio';
 import { gotScraping } from 'got-scraping';
-import { animekaiBaseUrl } from '../../../utils/constants';
-import { extractAnimeInfo, extractsearchresults } from './scraper';
+import { animekaiBaseUrl } from '../../../utils/constants.js';
+import { extractAnimeInfo, extractsearchresults } from './scraper.js';
 import axios from 'axios';
 // import { MegaUp } from '../../../source-extractors/megaup/megaup';
-import { ASource, SubOrDub } from '../../../types/types';
-import { Info, searchRes, AnimeKaiServers } from './types';
-import { providerClient } from '../..';
-import { AnimekaiDecoder } from '../../../source-extractors/megaup/megaup';
+import { type ASource, SubOrDub } from '../../../types/types.js';
+import { type Info, type searchRes, AnimeKaiServers } from './types.js';
+import { AnimekaiDecoder } from '../../../source-extractors/megaup/megaup.js';
+import { providerClient } from '../../../config/clients.js';
 
 export const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',

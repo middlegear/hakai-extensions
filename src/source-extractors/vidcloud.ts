@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { USER_AGENT_HEADER } from '../provider';
+
 import CryptoJS from 'crypto-js';
+import { USER_AGENT_HEADER } from '../provider/index.js';
 //https://megacloud.blog/js/player/a/v2/pro/embed-1.min.js?v=
 // https://cloudvidz.net/js/player/m/v2/pro/embed-1.min.js?v=
 // https:///cdnstreame.net/js/player/m/v2/pro/embed-1.min.js?v=
@@ -52,10 +53,10 @@ class VidCloud {
           console.warn(`'rabbit' field is empty or not a string from ${url}.`);
           return null;
         }
-        console.warn(`JSON from ${url} does not contain an expected  field or is invalid.`);
+        console.warn(`JSON  does not contain an expected  field or is invalid.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key :`, (error as Error).message);
         return null;
       }
     },
@@ -73,10 +74,10 @@ class VidCloud {
           console.warn(`'rabbit' field is empty or not a string from ${url}.`);
           return null;
         }
-        console.warn(`JSON from ${url} does not contain an expected  field or is invalid.`);
+        console.warn(`JSON from  does not contain an expected  field or is invalid.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key from :`, (error as Error).message);
         return null;
       }
     },
@@ -141,7 +142,7 @@ class VidCloud {
           }
         } catch (decryptionError) {
           console.warn(
-            `Decryption failed with key: "${currentKey}". This key might be outdated/incorrect. Trying next key. Error:`,
+            `Decryption failed with key. This key might be outdated/incorrect. Trying next key. Error:`,
             (decryptionError as Error).message,
           );
 

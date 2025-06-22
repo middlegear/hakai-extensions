@@ -2,6 +2,8 @@ export type searchTypes = {
   id: string | null;
   quality: string | null;
   title: string | null;
+  releaseDate: string | null;
+  seasons: number | null;
   url: string | null;
   image: string | null;
   type: string;

@@ -1,4 +1,4 @@
-import { Format, Seasons } from '../types/types';
+import { Format, Seasons } from '../types/types.js';
 
 /**
  * Converts any season string to a valid Seasons value for jikan

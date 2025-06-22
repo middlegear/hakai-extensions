@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { Info } from './types';
+import type { Info } from './types.js';
 
 export function extractsearchresults($: cheerio.CheerioAPI) {
   const searchresults: {

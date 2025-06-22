@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ASource } from '../../types/types.js';
+import type { ASource } from '../../types/types.js';
 import { zoroBaseUrl } from '../../utils/constants.js';
 
 import CryptoJS from 'crypto-js';
@@ -16,10 +16,10 @@ class MegaCloud {
           console.log(`First attempt`);
           return response.data.trim();
         }
-        console.warn(`Empty or invalid data from ${url}.`);
+        console.warn(`Empty or invalid data.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key:`, (error as Error).message);
         return null;
       }
     },
@@ -32,10 +32,10 @@ class MegaCloud {
           console.log(`Second attempt`);
           return response.data;
         }
-        console.warn(`Empty or invalid data from ${url}.`);
+        console.warn(`Empty or invalid data.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key :`, (error as Error).message);
         return null;
       }
     },
@@ -54,10 +54,10 @@ class MegaCloud {
           console.warn(`'rabbit' field is empty or not a string from ${url}.`);
           return null;
         }
-        console.warn(`JSON from ${url} does not contain an expected  field or is invalid.`);
+        console.warn(`JSON  does not contain an expected  field or is invalid.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key:`, (error as Error).message);
         return null;
       }
     },
@@ -76,10 +76,10 @@ class MegaCloud {
           console.warn(`'mega' field is empty or not a string from ${url}.`);
           return null;
         }
-        console.warn(`JSON from ${url} does not contain an expected key field or is invalid.`);
+        console.warn(`JSON  does not contain an expected key field or is invalid.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
+        console.warn(`Failed to fetch key:`, (error as Error).message);
         return null;
       }
     },

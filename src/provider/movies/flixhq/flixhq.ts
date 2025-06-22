@@ -1,11 +1,10 @@
 import * as cheerio from 'cheerio';
-import { flixhqBaseUrl } from '../../../utils/constants';
-import { scrapeMediaInfo, scrapeSearch } from './scraper';
-import { providerClient } from '../../../config/clients';
-import { FLixepisodes, MediaInfo, type searchTypes, ServerRes, StreamingServers } from './types';
-import VidCloud, { sources, subtitles, type ExtractedData } from '../../../source-extractors/vidcloud';
-import MixDrop from '../../../source-extractors/mixdrop';
-
+import { flixhqBaseUrl } from '../../../utils/constants.js';
+import { scrapeMediaInfo, scrapeSearch } from './scraper.js';
+import { providerClient } from '../../../config/clients.js';
+import { type FLixepisodes, type MediaInfo, type searchTypes, type ServerRes, StreamingServers } from './types.js';
+import VidCloud, { type sources, type subtitles, type ExtractedData } from '../../../source-extractors/vidcloud.js';
+import MixDrop from '../../../source-extractors/mixdrop.js';
 interface FlixSucessSearchRes {
   data: searchTypes[];
   hasNextPage: boolean;
@@ -27,7 +26,7 @@ export async function _search(query: string, page: number): Promise<FlixSearchRe
     const data$ = cheerio.load(reponse.data);
     const res = scrapeSearch(data$);
 
-    return { data: res.results, currentPage: page, hasNextPage: res.hasNextPage };
+    return { currentPage: page, hasNextPage: res.hasNextPage, data: res.results };
   } catch (error) {
     return { data: [], currentPage: 0, hasNextPage: false, error: error instanceof Error ? error.message : 'Unknown err' };
   }

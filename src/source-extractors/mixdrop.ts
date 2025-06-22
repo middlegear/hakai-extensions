@@ -1,4 +1,4 @@
-import { providerClient } from '../provider';
+import { providerClient } from '../provider/index.js';
 
 class MixDrop {
   extract = async (videoUrl: URL) => {

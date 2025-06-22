@@ -1,6 +1,6 @@
-import { searchanime, getAnimeInfo, getEpisodeServers, getEpisodeSources } from './animekai';
-import type { SearchResponse, AnimeInfoKai, ServerInfoResponse, SourceResponse } from './animekai';
-import { SubOrDub } from '../../../types/types';
+import { searchanime, getAnimeInfo, getEpisodeServers, getEpisodeSources } from './animekai.js';
+import type { SearchResponse, AnimeInfoKai, ServerInfoResponse, SourceResponse } from './animekai.js';
+import { SubOrDub } from '../../../types/types.js';
 
 /**
  * A class for interacting with the AnimeKai Provider.
@@ -41,7 +41,7 @@ class AnimeKai {
   }
 
   /**
-   * Fetches available streaming source (video URLs) information for a specific episode.
+   * Fetches available streaming sources information for a specific episode.
    * @param {string} episodeId - The unique identifier for the episode (required).
    * @param {SubOrDub} [category=SubOrDub.SUB] - The audio category (Subtitled or Dubbed) (optional, defaults to SubOrDub.SUB).
    * @returns {Promise<SourceResponse>} A promise that resolves to an object containing streaming source (video URL) information for the episode.

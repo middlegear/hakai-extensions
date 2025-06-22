@@ -1,5 +1,5 @@
-import { AnimeKai } from './animekai';
-import { HiAnime } from './hianime';
+import { AnimeKai } from './animekai/index.js';
+import { HiAnime } from './hianime/index.js';
 
 class Anime {
   static HiAnime = HiAnime;

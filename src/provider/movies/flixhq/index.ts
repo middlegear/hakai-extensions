@@ -1,6 +1,6 @@
-import { _getInfo, _getServers, _search, _getsources } from './flixhq';
-import type { FlixServerRes, FLixInfoRes, FlixSearchRes, FLixSourcesRes } from './flixhq';
-import { StreamingServers } from './types';
+import { _getInfo, _getServers, _search, _getsources } from './flixhq.js';
+import type { FlixServerRes, FLixInfoRes, FlixSearchRes, FLixSourcesRes } from './flixhq.js';
+import { StreamingServers } from './types.js';
 
 /**
  * A class for interacting with  FlixHQ to search for media, fetch detailed media information,

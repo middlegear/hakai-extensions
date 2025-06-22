@@ -4,10 +4,10 @@ import { HiAnimeServers } from './types.js';
 import { SubOrDub } from '../../index.js';
 
 /**
- * A class for interacting with the HiAnime (formerly Zoro) API to search for anime, fetch detailed information,
+ * A class for interacting with the HiAnime provider to search for anime, fetch detailed information,
  * retrieve episode lists, get available streaming servers, and obtain direct streaming sources.
  */
-class HiAnime {
+export class HiAnime {
   /**
    * Searches for anime based on the provided query string.
    * @param {string} query - The search query string (required).
@@ -46,7 +46,7 @@ class HiAnime {
   }
 
   /**
-   * Fetches streaming sources (video URLs) for a given anime episode from a specified server and category (sub/dub).
+   * Fetches streaming sources  for a given anime episode from a specified server and category (sub/dub).
    * @param {string} episodeId - The unique identifier for the episode on HiAnime (required).
    * @param {HiAnimeServers} [server=HiAnimeServers.HD2] - The streaming server to use (optional, defaults to HiAnimeServers.HD2). Note: HD1 is CORS protected (Error 403). Use a proxy or switch to HD-2 or HD-3.
    * @param {SubOrDub} [category=SubOrDub.SUB] - The audio category (Subtitled or Dubbed) (optional, defaults to SubOrDub.SUB).
@@ -60,5 +60,3 @@ class HiAnime {
     return fetchEpisodeSources(episodeId, server, category);
   }
 }
-
-export { HiAnime };

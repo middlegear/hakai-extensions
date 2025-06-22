@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
-import { flixhqBaseUrl } from '../../../utils/constants';
-import { MediaInfo, searchTypes } from './types';
+import { flixhqBaseUrl } from '../../../utils/constants.js';
+import type { MediaInfo, searchTypes } from './types.js';
 
 export function scrapeSearch($: cheerio.CheerioAPI) {
   const searchRes: searchTypes[] = [];
@@ -15,6 +15,8 @@ export function scrapeSearch($: cheerio.CheerioAPI) {
       title: $(el).find('div.film-detail > h2 > a').attr('title') || null,
       quality: $(el).find('div.film-poster > div.film-poster-quality').text() || null,
       url: `${flixhqBaseUrl}${$(el).find('div.film-poster > a').attr('href')}`,
+      releaseDate: isNaN(parseInt(releaseDate)) ? null : releaseDate,
+      seasons: releaseDate.includes('SS') ? parseInt(releaseDate.split('SS')[1]) : null,
       image: $(el).find('div.film-poster > img').attr('data-src') || null,
       type: $(el).find('div.film-detail > div.fd-infor > span.float-right').text() === 'Movie' ? 'Movie' : 'TV',
     });

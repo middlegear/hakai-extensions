@@ -1,67 +1,55 @@
-import { getExternal, getInfo, getInfoDetailed, searchImdb, searchShows, searchTvdb } from './tvmaze';
+import { getExternal, getInfoDetailed, searchImdb, searchShows, searchTvdb } from './tvmaze.js';
+import type { ExternalDbRes, ExternalIdPromise, ShowInfo, TvMazeRes } from './tvmaze.js';
 
+/**
+ * A class for interacting with the TVMaze API to search for TV shows and fetch
+ * detailed information using various identifiers (query, IMDb ID, TVDb ID, TVMaze ID).
+ */
 class TvMaze {
   /**
-   * Searches for tv shows based on the provided query.
-   *
+   * Searches for TV shows based on the provided query string.
    * @param {string} query - The search query string (required).
-   *
-   * @returns Array of related tv shows
+   * @returns {Promise<TvMazeRes>} A promise that resolves to an object containing an array of TV shows related to the search query.
    */
-
-  async search(query: string) {
+  async search(query: string): Promise<TvMazeRes> {
     return searchShows(query);
   }
+
   /**
-   * Look up tv shows using an IMDB Id
-   * @param {string} imdbId - The imdb show Id (required)
-   *
-   * @returns An object containing tvshow metadata
+   * Looks up TV shows on TVMaze using an IMDb ID.
+   * @param {string} imdbId - The IMDb show ID (required).
+   * @returns {Promise<ExternalDbRes>} A promise that resolves to an object containing TV show metadata.
    */
-  async searchbyImDbId(imdbId: string) {
+  async searchbyImDbId(imdbId: string): Promise<ExternalDbRes> {
     return searchImdb(imdbId);
   }
 
   /**
-   * Look up shows on tvMaze using tvdbId
-   *
-   * @param  {number} tvdbId - The tvdb id of the show(required)
-   * @returns An object containing tvshow metadata
+   * Looks up TV shows on TVMaze using a TVDb ID.
+   * @param {number} tvdbId - The TVDb ID of the show (required).
+   * @returns {Promise<ExternalDbRes>} A promise that resolves to an object containing TV show metadata.
    */
-
-  async searchbyTvDbId(tvdbId: number) {
+  async searchbyTvDbId(tvdbId: number): Promise<ExternalDbRes> {
     return searchTvdb(tvdbId);
   }
 
   /**
-   * Look up infomation about a show using tvmazeId
-   *
-   * @param {number} tvMazeId - The tvMazeId of the show
-   *
-   * @returns An object containing show metadata
+   * Looks up detailed information about a show using its TVMaze ID.
+   * @param {number} tvMazeId - The TVMaze ID of the show (required).
+   * @returns {Promise<ShowInfo>} A promise that resolves to an object containing comprehensive show metadata, including cast and episodes.
    */
-  async fetchShowInfo(tvMazeId: number) {
-    return getInfo(tvMazeId);
+  async fetchInfo(tvMazeId: number): Promise<ShowInfo> {
+    return getInfoDetailed(tvMazeId);
   }
 
   /**
-   * Look up detailed infomation about a show using tvmazeId
-   *
-   * @param {number} tvMazeId - The tvMazeId of the show
-   *
-   * @returns An object containing show metadata including cast and episodes
+   * Looks up external TV show IDs linked to other databases (e.g., IMDb, TVDb, TheTVDB) using a TVMaze ID.
+   * @param {number} tvMazeId - The TVMaze ID of the show (required).
+   * @returns {Promise<ExternalIdPromise>} A promise that resolves to an object containing external IDs for other databases.
    */
-  async fetchDetailedInfo(tvMazeId: number) {
-    return getInfoDetailed(tvMazeId);
-  }
-  /**
-   * Look up external tvshow id to other databases
-   * @param {number} tvMazeId The tvMazeId of the show
-   *
-   * @returns object containing id to other databases
-   */
-  async fetchExternal(tvMazeId: number) {
+  async fetchExternal(tvMazeId: number): Promise<ExternalIdPromise> {
     return getExternal(tvMazeId);
   }
 }
+
 export { TvMaze };

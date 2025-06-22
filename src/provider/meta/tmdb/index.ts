@@ -1,28 +1,29 @@
+import type { TvEpisodes, ShowInfo, tmdbTV, tmdbMovie, MovieInfoRes } from './tmdb.js';
+import { TimeWindow } from '../../../types/types.js';
+import { _getMovieProviderId, _getTvProviderId, type TvProviderId, type MovieProviderId } from './mapping.js'; // Added _getMovieProviderId and MovieProviderId imports
 import {
-  _getTrendingTv,
-  getTvEpisodes,
-  getTvShowInfo,
-  searchTmdbMovie,
   searchTVShows,
+  getTvShowInfo,
+  getTvEpisodes,
+  _getTrendingTv,
   _getPopularTv,
   _getTopRatedTv,
   _getAiringTv,
+  searchTmdbMovie,
   getMovieInfo,
   _getTrendingMovies,
   _getPopularMovies,
   _getTopRatedMovies,
   _getReleasingMovies,
   _getUpcomingMovies,
-} from './tmdb';
-import type { TvEpisodes, ShowInfo, tmdbTV, tmdbMovie, MovieInfoRes } from './tmdb';
-import { TimeWindow } from '../../../types/types';
+} from './tmdb.js';
 
 /**
  * A class for interacting with The Movie Database (TMDb) API to search for and retrieve
- * information about TV shows and movies, including trending, popular, top-rated, and seasonal data.
+ * information about TV shows and movies, including trending, popular, top-rated, seasonal data.
  */
-class TheMovieDb {
-  private apiKey: string = 'b29bfe548cc2a3e4225effbd54ef0fda';
+class TheMovieDatabase {
+  private readonly apiKey: string = 'b29bfe548cc2a3e4225effbd54ef0fda';
 
   /**
    * Searches for TV shows based on the provided query string.
@@ -91,6 +92,16 @@ class TheMovieDb {
   }
 
   /**
+   * Fetches TV show information along with a provider-specific show ID.
+   * This is useful for linking TMDb TV show entries to external streaming site IDs, such as FlixHQ.
+   * @param {number} tmdbId - The unique TMDb ID for the TV show (required).
+   * @returns {Promise<TvProviderId>} A promise that resolves to an object containing the provider-specific TV show ID and related information.
+   */
+  async fetchTvProviderId(tmdbId: number): Promise<TvProviderId> {
+    return _getTvProviderId(tmdbId);
+  }
+
+  /**
    * Searches for movies based on the provided query string.
    * @param {string} query - The search query string (required).
    * @param {number} [page=1] - The page number for pagination (optional, defaults to 1).
@@ -154,6 +165,16 @@ class TheMovieDb {
   async fetchUpcomingMovies(page: number = 1): Promise<tmdbMovie> {
     return _getUpcomingMovies(page, this.apiKey);
   }
+
+  /**
+   * Fetches movie information along with a provider-specific movie ID.
+   * This is useful for linking TMDb TV show entries to external streaming site IDs, such as FlixHQ.
+   * @param {number} tmdbId - The unique TMDb ID for the movie (required).
+   * @returns {Promise<MovieProviderId>} A promise that resolves to an object containing the provider-specific movie ID and related information.
+   */
+  async fetchMovieProviderId(tmdbId: number): Promise<MovieProviderId> {
+    return _getMovieProviderId(tmdbId);
+  }
 }
 
-export { TheMovieDb };
+export { TheMovieDatabase };

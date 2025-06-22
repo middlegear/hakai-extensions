@@ -1,22 +1,29 @@
-import type { Seasons } from './types';
-import type { SubOrDub } from './types';
-import type { Sort } from './types';
-import type { JikanStatus } from './types';
-import type { AnilistStatus } from './types';
-import type { Format } from './types';
-import type { Charactersort } from './types';
-import type { AnimeProvider } from './types';
-import type { AnimeKaiServers } from '../provider/anime/animekai/types';
-import type { HiAnimeServers } from '../provider/anime/hianime/types';
+import { AnimeKaiServers } from '../provider/anime/animekai/types.js';
+import { HiAnimeServers } from '../provider/anime/hianime/types.js';
+import { StreamingServers } from '../provider/movies/flixhq/types.js';
+import {
+  Seasons,
+  SubOrDub,
+  Sort,
+  JikanStatus,
+  AnilistStatus,
+  Format,
+  Charactersort,
+  AnimeProvider,
+  TimeWindow,
+} from './types.js';
+
 export {
-  type Seasons,
-  type SubOrDub,
-  type Sort,
-  type JikanStatus,
-  type AnilistStatus,
-  type Format,
-  type Charactersort,
-  type AnimeKaiServers,
-  type HiAnimeServers,
-  type AnimeProvider,
+  Seasons,
+  SubOrDub,
+  Sort,
+  JikanStatus,
+  AnilistStatus,
+  Format,
+  Charactersort,
+  AnimeKaiServers,
+  HiAnimeServers,
+  AnimeProvider,
+  StreamingServers,
+  TimeWindow,
 };

@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { HiAnimeServers, Anime, EpisodeInfo, AnimeInfo, ServerInfo } from './types.js';
+import { HiAnimeServers, type Anime, type EpisodeInfo, type AnimeInfo, type ServerInfo } from './types.js';
 import {
   extractSearchResults,
   extractAnimeInfo,
@@ -8,8 +8,7 @@ import {
   extractAnimeServerId,
 } from './scraper.js';
 import { providerClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
-import axios from 'axios';
-import { ASource, SubOrDub } from '../../../types/types.js';
+import { type ASource, SubOrDub } from '../../../types/types.js';
 
 export interface SuccessSearchResponse {
   data: Anime[];

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { TimeWindow } from '../../../types/types';
+import { TimeWindow } from '../../../types/types.js';
 
 const tmdbUrl = 'https://api.themoviedb.org/3';
-interface searchTVData {
+export interface searchTVData {
   tmdbId: number;
   name: string;
   posterImage: {
@@ -53,8 +53,9 @@ type pagination = {
   totalPages: number;
   totalResults: number;
 };
-interface Info extends searchTVData {
+export interface Info extends searchTVData {
   lastAired: string;
+  seasons: number;
   latestEpisode: {
     episodeId: string;
     title: string;
@@ -76,7 +77,7 @@ interface Info extends searchTVData {
     airDate: string;
   } | null;
 }
-type seasons = {
+export type seasons = {
   airDate: string;
   id: string;
   name: string;
@@ -136,6 +137,7 @@ export async function searchTVShows(query: string, page: number, apiKey: string)
     const response = await axios.get(
       `${tmdbUrl}/search/tv?include_adult=false&language=en-US&page=${page}&api_key=${apiKey}&query=${query}`,
     );
+
     if (!response.data)
       return {
         data: [],
@@ -419,7 +421,7 @@ export async function searchTmdbMovie(query: string, page: number, apiKey: strin
     };
   }
 }
-type Movie = {
+export type Movie = {
   tmdbId: number;
   name: string | null;
   posterImage: {
@@ -1055,4 +1057,3 @@ export async function _getAiringTv(page: number, apiKey: string): Promise<tmdbTV
     };
   }
 }
-export async function _getProviderMapping(tmdbId: number) {}

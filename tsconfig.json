@@ -2,21 +2,28 @@
   "include": ["src"],
   "exclude": ["**/*.test.ts","node_modules"],
   "compilerOptions": {
-    "target": "ESNext" ,
-    "module": "ESNext" ,
-    "moduleResolution": "node", 
-    "noEmit": true,
-    "emitDeclarationOnly": false,
-    "isolatedModules":false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    // "noUncheckedIndexedAccess": true, 
-    "declaration": true,
-    "skipLibCheck": true ,
-    "lib": ["ESNext"],
+     "strict": true,
+        "noImplicitAny": true,
+        "esModuleInterop": true,
+        "strictNullChecks": true,
+        "target": "esnext",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+
+        "noEmit": true,
+        "allowJs": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "verbatimModuleSyntax": true,
+      
+        "outDir": "dist",
+        "rootDir": "./",
+        "sourceMap": false,
+        // "removeComments": true,
+        "strictFunctionTypes": true,
+        "forceConsistentCasingInFileNames": true
     
   }
 }

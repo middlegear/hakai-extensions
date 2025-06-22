@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { TheMovieDb } from '../tmdb';
-import { bestTVTitle } from '../../../utils/mapper';
+import { tmdbTitle } from '../../../utils/mapper.js';
+import { TheMovieDatabase } from '../tmdb/index.js';
 
 const tvMazeApiUrl = 'https://api.tvmaze.com' as const;
 type searchData = {
@@ -60,7 +60,16 @@ type episodeData = {
   };
   summary: string;
 };
-export async function searchShows(query: string) {
+
+interface SuccessSearcRes {
+  data: searchData[];
+}
+interface ErrorSearchRes {
+  data: [];
+  error: string;
+}
+export type TvMazeRes = SuccessSearcRes | ErrorSearchRes;
+export async function searchShows(query: string): Promise<TvMazeRes> {
   if (!query) {
     return {
       data: [],
@@ -101,13 +110,20 @@ export async function searchShows(query: string) {
     };
   } catch (error) {
     return {
-      data: null,
+      data: [],
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
-
-export async function searchTvdb(tvdbId: number) {
+interface SuccessExternalRes {
+  data: searchData;
+}
+interface ErrorExternalRes {
+  data: null;
+  error: string;
+}
+export type ExternalDbRes = SuccessExternalRes | ErrorExternalRes;
+export async function searchTvdb(tvdbId: number): Promise<ExternalDbRes> {
   if (!tvdbId) {
     return { data: null, error: 'Missing required params tvdb Id' };
   }
@@ -150,7 +166,7 @@ export async function searchTvdb(tvdbId: number) {
     };
   }
 }
-export async function searchImdb(imdbId: string) {
+export async function searchImdb(imdbId: string): Promise<ExternalDbRes> {
   if (!imdbId) {
     return { data: null, error: 'Missing required params imdb Id' };
   }
@@ -193,53 +209,21 @@ export async function searchImdb(imdbId: string) {
     };
   }
 }
-
-export async function getInfo(tvmazeId: number) {
-  if (!tvmazeId) {
-    return { data: null, error: 'Missing required params tvmaze Id' };
-  }
-  try {
-    const response = await axios.get(`${tvMazeApiUrl}/shows/${tvmazeId}`);
-    const data: searchData = {
-      tvMazeId: response.data.id || null,
-      url: response.data.url || null,
-      name: response.data.name || null,
-      type: response.data.type || null,
-      language: response.data.language || null,
-      status: response.data.status || null,
-      genres: response.data.genres || [],
-      startDate: response.data.premiered || null,
-      endDate: response.data.ended || null,
-      officialSite: response.data.officialSite || null,
-      airSchedule: response.data.schedule || null,
-      rating: response.data.rating.average || null,
-      image: response.data.image || null,
-      network: response.data.network || null,
-      summary: response.data.summary || null,
-      previousEpisode: response.data._links.previousepisode || null,
-      searchScore: response.data.score || null,
-      weight: response.data.weight || null,
-      external: response.data.externals || null,
-    };
-
-    if (!response.data)
-      return {
-        data: null,
-        error: response.statusText,
-      };
-    return {
-      data: data as searchData,
-    };
-  } catch (error) {
-    return {
-      data: null,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
+interface SuccessInfo {
+  data: searchData;
+  episodes: episodeData[];
+  cast: castData[];
 }
-export async function getInfoDetailed(tvmazeId: number) {
+interface ErrorInfo {
+  data: null;
+  episodes: [];
+  cast: [];
+  error: string;
+}
+export type ShowInfo = SuccessInfo | ErrorInfo;
+export async function getInfoDetailed(tvmazeId: number): Promise<ShowInfo> {
   if (!tvmazeId) {
-    return { data: null, error: 'Missing required params tvmaze Id' };
+    return { data: null, episodes: [], cast: [], error: 'Missing required params tvmaze Id' };
   }
   try {
     const response = await axios.get(`${tvMazeApiUrl}/shows/${tvmazeId}?embed[]=episodes&embed[]=cast`);
@@ -263,63 +247,76 @@ export async function getInfoDetailed(tvmazeId: number) {
       searchScore: response.data.score || null,
       weight: response.data.weight || null,
       external: response.data.externals || null,
-      episodes: response.data._embedded.episodes.map((item: any) => ({
-        tvMazeEpisodeId: item.id || null,
-        url: item.url || null,
-        title: item.name || null,
-        season: item.season || null,
-        episodeNumber: item.number || null,
-        type: item.type || null,
-        rating: item.rating.average || null,
-        runtime: item.runtime || null,
-        airdate: item.airdate || null,
-        airstamp: item.airstamp || null,
-        image: {
-          medium: item.image.medium || null,
-          original: item.image.original || null,
-        },
-        summary: item.summary || null,
-      })),
-      cast: response.data._embedded.cast.map((item: any) => ({
-        castId: item.person.id || null,
-        name: item.person.name || null,
-        url: item.person.url || null,
-        country: item.person.name || item.person.code || null,
-        birthDate: item.person.birthday || null,
-        gender: item.person.gender || null,
-        image: item.person.image || null,
-        character: {
-          characterId: item.character.id || null,
-          name: item.character.name || null,
-          url: item.character.url || null,
-          image: item.character.image || null,
-        },
-      })),
     };
+    const episodes = response.data._embedded.episodes.map((item: any) => ({
+      tvMazeEpisodeId: item.id || null,
+      url: item.url || null,
+      title: item.name || null,
+      season: item.season || null,
+      episodeNumber: item.number || null,
+      type: item.type || null,
+      rating: item.rating.average || null,
+      runtime: item.runtime || null,
+      airdate: item.airdate || null,
+      airstamp: item.airstamp || null,
+      image: {
+        medium: item.image.medium || null,
+        original: item.image.original || null,
+      },
+      summary: item.summary || null,
+    }));
+    const cast = response.data._embedded.cast.map((item: any) => ({
+      castId: item.person.id || null,
+      name: item.person.name || null,
+      url: item.person.url || null,
+      country: item.person.name || item.person.code || null,
+      birthDate: item.person.birthday || null,
+      gender: item.person.gender || null,
+      image: item.person.image || null,
+      character: {
+        characterId: item.character.id || null,
+        name: item.character.name || null,
+        url: item.character.url || null,
+        image: item.character.image || null,
+      },
+    }));
 
     if (!response.data)
       return {
         data: null,
+        episodes: [],
+        cast: [],
         error: response.statusText,
       };
     return {
-      data: data,
+      data: data as searchData,
+      episodes: episodes as episodeData[],
+      cast: cast as castData[],
     };
   } catch (error) {
     return {
       data: null,
+      episodes: [],
+      cast: [],
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
-
-export async function getShowEpisodes(tvmazeId: number) {
+interface SuccessEpisodesRes {
+  data: episodeData[];
+}
+interface ErrorEpisodesRes {
+  data: [];
+  error: string;
+}
+export type ShowEpisodes = SuccessEpisodesRes | ErrorEpisodesRes;
+export async function getShowEpisodes(tvmazeId: number): Promise<ShowEpisodes> {
   if (!tvmazeId) {
-    return { data: null, error: 'Missing required params tvmaze Id' };
+    return { data: [], error: 'Missing required params tvmaze Id' };
   }
   try {
     const response = await axios.get(`${tvMazeApiUrl}/shows/${tvmazeId}/episodes`);
-    const data = response.data.map((item: any) => ({
+    const data: episodeData[] = response.data.map((item: any) => ({
       tvMazeEpisodeId: item.id || null,
       url: item.url || null,
       title: item.name || null,
@@ -339,21 +336,36 @@ export async function getShowEpisodes(tvmazeId: number) {
 
     if (!response.data)
       return {
-        data: null,
+        data: [],
         error: response.statusText,
       };
     return {
-      data: data,
+      data: data as episodeData[],
     };
   } catch (error) {
     return {
-      data: null,
+      data: [],
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
 
-export async function getExternal(tvMazeId: number) {
+type ExternalId = {
+  tvMazeId: number;
+  name: string;
+  tvRageId: number;
+  imdb: string;
+  tmdb: number;
+};
+interface SuccessExternalId {
+  data: ExternalId;
+}
+interface ErrorExternalIdRes {
+  data: null;
+  error: string;
+}
+export type ExternalIdPromise = SuccessExternalId | ErrorExternalIdRes;
+export async function getExternal(tvMazeId: number): Promise<ExternalIdPromise> {
   if (!tvMazeId) {
     return { data: null, error: 'Missing required params tvmaze Id' };
   }
@@ -373,13 +385,13 @@ export async function getExternal(tvMazeId: number) {
         error: response.statusText,
       };
     //search tmdb
-    const tmdb = new TheMovieDb();
+    const tmdb = new TheMovieDatabase();
     const res = await tmdb.searchShows(data.name);
-    const title = bestTVTitle(data.name, res.data);
+    const title = tmdbTitle(data.name, res.data);
 
-    const resp = { TheMovieDb: title?.tmdbId, ...data };
+    const resp = { tmdb: title?.tmdbId, ...data };
     return {
-      data: resp,
+      data: resp as ExternalId,
     };
   } catch (error) {
     return {
@@ -387,9 +399,4 @@ export async function getExternal(tvMazeId: number) {
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
-}
-
-export async function getProviderIdMapping(tvmazeId: number) {
-  try {
-  } catch (error) {}
 }
