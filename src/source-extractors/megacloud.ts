@@ -1,8 +1,8 @@
 import axios from 'axios';
-import type { ASource } from '../../types/types.js';
-import { zoroBaseUrl } from '../../utils/constants.js';
 
 import CryptoJS from 'crypto-js';
+import { zoroBaseUrl } from '../provider/index.js';
+import type { ASource } from '../types/types.js';
 
 class MegaCloud {
   readonly referer: string = zoroBaseUrl;
@@ -24,21 +24,21 @@ class MegaCloud {
       }
     },
 
-    async (): Promise<string | null> => {
-      const url = 'https://api.lunaranime.ru/static/key.txt'; /// not as accurate as the rest
-      try {
-        const response = await axios.get(url);
-        if (typeof response.data === 'string' && response.data.length > 0) {
-          console.log(`Second attempt`);
-          return response.data;
-        }
-        console.warn(`Empty or invalid data.`);
-        return null;
-      } catch (error) {
-        console.warn(`Failed to fetch key :`, (error as Error).message);
-        return null;
-      }
-    },
+    // async (): Promise<string | null> => {
+    //   const url = 'https://api.lunaranime.ru/static/key.txt'; /// not as accurate as the rest
+    //   try {
+    //     const response = await axios.get(url);
+    //     if (typeof response.data === 'string' && response.data.length > 0) {
+    //       console.log(`Second attempt`);
+    //       return response.data;
+    //     }
+    //     console.warn(`Empty or invalid data.`);
+    //     return null;
+    //   } catch (error) {
+    //     console.warn(`Failed to fetch key :`, (error as Error).message);
+    //     return null;
+    //   }
+    // },
 
     async (): Promise<string | null> => {
       const url = 'https://key.hi-anime.site';
@@ -48,7 +48,7 @@ class MegaCloud {
         if (typeof jsonData === 'object' && jsonData !== null && 'key' in jsonData) {
           const key = (jsonData as any).key;
           if (typeof key === 'string' && key.length > 0) {
-            console.log(`Third attempt`);
+            console.log(`Second attempt`);
             return key;
           }
           console.warn(`'rabbit' field is empty or not a string from ${url}.`);

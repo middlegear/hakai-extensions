@@ -1,6 +1,6 @@
 import { providerClient } from '../config/clients.js';
 import { USER_AGENT_HEADER, ACCEPT_ENCODING, ACCEPT_HEADER } from '../config/headers.js';
-import MegaCloud from '../source-extractors/megacloud/megacloud.js';
+
 import { animekaiBaseUrl, zoroBaseUrl, zoroSearch } from '../utils/constants.js';
 import { AnimeKai } from './anime/animekai/index.js';
 import { HiAnime } from './anime/hianime/index.js';
@@ -12,6 +12,7 @@ import { TvMaze } from './meta/tvmaze/index.js';
 import { FlixHQ } from './movies/flixhq/index.js';
 import { SubOrDub } from '../types/types.js';
 import { Anime } from './anime/anime.js';
+import MegaCloud from '../source-extractors/megacloud.js';
 export {
   USER_AGENT_HEADER,
   ACCEPT_ENCODING,

@@ -55,7 +55,7 @@ The `Meta` class is your go-to for retrieving **metadata** across various media 
 ```typescript
 const anilist = new Meta.Anilist();
 const data = await anilist.search('akame ga kill');
-console.log(data); // View search results
+console.log(data); 
 ```
 
 ### `Anime` Class

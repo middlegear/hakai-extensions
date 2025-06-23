@@ -8,8 +8,9 @@ import axios from 'axios';
 // import { MegaUp } from '../../../source-extractors/megaup/megaup';
 import { type ASource, SubOrDub } from '../../../types/types.js';
 import { type Info, type searchRes, AnimeKaiServers } from './types.js';
-import { AnimekaiDecoder } from '../../../source-extractors/megaup/megaup.js';
+
 import { providerClient } from '../../../config/clients.js';
+import { AnimekaiDecoder } from '../../../source-extractors/megaup.js';
 
 export const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',

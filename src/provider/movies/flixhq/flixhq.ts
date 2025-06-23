@@ -4,7 +4,6 @@ import { scrapeMediaInfo, scrapeSearch } from './scraper.js';
 import { providerClient } from '../../../config/clients.js';
 import { type FLixepisodes, type MediaInfo, type searchTypes, type ServerRes, StreamingServers } from './types.js';
 import VidCloud, { type sources, type subtitles, type ExtractedData } from '../../../source-extractors/vidcloud.js';
-import MixDrop from '../../../source-extractors/mixdrop.js';
 interface FlixSucessSearchRes {
   data: searchTypes[];
   hasNextPage: boolean;
@@ -158,12 +157,6 @@ export async function _getsources(episodeId: string, server: StreamingServers): 
     const serverUrl = new URL(episodeId);
 
     switch (server) {
-      //  disabled temporarirly cause its missing
-      // case StreamingServers.Mixdrop:
-      //   return {
-      //     headers: { Referer: `${serverUrl.href}` },
-      //     sources: await new MixDrop().extract(serverUrl),
-      //   };
       case StreamingServers.VidCloud:
         return {
           headers: { Referer: `${serverUrl.href}` },
