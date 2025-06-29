@@ -168,7 +168,7 @@ class TheMovieDatabase {
 
   /**
    * Fetches movie information along with a provider-specific movie ID.
-   * This is useful for linking TMDb TV show entries to external streaming site IDs, such as FlixHQ.
+   * This is useful for linking TMDb movie entries to external streaming site IDs, such as FlixHQ.
    * @param {number} tmdbId - The unique TMDb ID for the movie (required).
    * @returns {Promise<MovieProviderId>} A promise that resolves to an object containing the provider-specific movie ID and related information.
    */

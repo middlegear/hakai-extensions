@@ -57,9 +57,8 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
     const uid = data$('.watch_block').attr('data-id')!;
     const ajaxReqUrl = (id: string, type: string, isSeasons: boolean = false) =>
       `${flixhqBaseUrl}/ajax/${type === 'movie' ? type : `v2/${type}`}/${isSeasons ? 'seasons' : 'episodes'}/${id}`;
-    let episodes:
-      | { id: string; title: string; number: number; season: number; url: string }[]
-      | { id: string; title: string | null; url: string }[] = [];
+    let episodes: { id: string; title: string; number: number; season: number }[] | { id: string; title: string | null }[] =
+      [];
     if (res.type === 'TV') {
       const { data } = await providerClient.get(ajaxReqUrl(uid, 'tv', true));
       const $$ = cheerio.load(data);
@@ -75,23 +74,23 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
         $$$('.nav > li')
           .map((i, el) => {
             const episode = {
-              id: $$$(el).find('a').attr('id')!.split('-')[1],
+              id: `episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`,
               title: $$$(el).find('a').attr('title')!,
               number: parseInt($$$(el).find('a').attr('title')!.split(':')[0].slice(3).trim()),
               season: season,
-              url: `${flixhqBaseUrl}/ajax/v2/episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`,
             };
             episodes?.push(episode);
           })
           .get();
         season++;
       }
+      //  url: `${flixhqBaseUrl}/ajax/v2/episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`, for episodes
+      //  url: `${flixhqBaseUrl}/ajax/movie/episodes/${uid} for movies
     } else {
       episodes = [
         {
-          id: uid,
+          id: `movie/episodes/${uid}`,
           title: res.title,
-          url: `${flixhqBaseUrl}/ajax/movie/episodes/${uid}`,
         },
       ];
     }
@@ -113,8 +112,8 @@ export async function _getServers(episodeId: string): Promise<FlixServerRes> {
     return { data: null, error: 'Missing required params episodeId!' };
   }
 
-  if (!episodeId.startsWith(flixhqBaseUrl + '/ajax')) episodeId = `${flixhqBaseUrl}/ajax/v2/episode/servers/${episodeId}`;
-  else episodeId = `${flixhqBaseUrl}/ajax/movie/episodes/${episodeId}`;
+  if (episodeId.includes('movie')) episodeId = `${flixhqBaseUrl}/ajax/${episodeId}`;
+  else episodeId = `${flixhqBaseUrl}/ajax/v2/${episodeId}`;
 
   try {
     const { data } = await providerClient.get(episodeId);
@@ -123,9 +122,9 @@ export async function _getServers(episodeId: string): Promise<FlixServerRes> {
     const servers = data$('.nav > li')
       .map((i, el) => {
         const server = {
-          name:
-            data$(el).find('a').attr('title')!.toLowerCase().split('server').at(1)?.trim() ||
-            data$(el).find('a').attr('title')!.slice(6).trim().toLowerCase().split('server').at(1)?.trim(),
+          name: episodeId.includes('movie')
+            ? data$(el).find('a').attr('title')!.toLowerCase().trim()
+            : data$(el).find('a').attr('title')!.slice(6).toLowerCase().trim(),
 
           id: Number(data$(el).find('a').attr('data-id') || data$(el).find('a').attr('data-linkid')),
         };
@@ -153,7 +152,7 @@ interface ErrorFlixSourcesRes {
 
 export type FLixSourcesRes = SuccessFlixSourceRes | ErrorFlixSourcesRes;
 export async function _getsources(episodeId: string, server: StreamingServers): Promise<FLixSourcesRes> {
-  if (episodeId.startsWith('http')) {
+  if (episodeId.includes('embed')) {
     const serverUrl = new URL(episodeId);
 
     switch (server) {

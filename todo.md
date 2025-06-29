@@ -110,7 +110,10 @@ getTvShowDetails(999999999, 'YOUR_API_READ_ACCESS_TOKEN') // Non-existent ID
 https://vidjoy.wtf/watch/movie/715287/Stepmom-s-Desire
 
 
-
+///const flixhq = new FlixHQ();
+const data = await flixhq.fetchMediaInfo('movie/watch-final-destination-bloodlines-124888');
+// const data = await flixhq.fetchMediaServers('124888');
+// const animekai = new HiAnime()
 
 
 

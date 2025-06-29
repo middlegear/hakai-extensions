@@ -36,12 +36,12 @@ export type FLixepisodes =
       title: string;
       number: number;
       season: number;
-      url: string;
+      // url: string;
     }[]
   | {
       id: string;
       title: string | null;
-      url: string;
+      // url: string;
     };
 export const StreamingServers = {
   Upcloud: 'upcloud',

@@ -28,7 +28,7 @@ class FlixHQ {
 
   /**
    * Fetches available server information for a specific media episode.
-   * @param {string} episodeId - The unique identifier for the episode (required).
+   * @param {string} episodeId - The unique identifier for the episode/movie (required). Found in the episodes array.
    * @returns {Promise<FlixServerRes>} A promise that resolves to an object containing server information for the episode.
    */
   async fetchMediaServers(episodeId: string): Promise<FlixServerRes> {
@@ -37,11 +37,11 @@ class FlixHQ {
 
   /**
    * Fetches streaming sources for a selected media episode from a specified server.
-   * @param {string} episodeId - The unique identifier for the episode (required).
-   * @param {StreamingServers} [server=StreamingServers.Akcloud] - The server to use (optional, defaults to StreamingServers.Akcloud). Note: Upcloud is CORS protected (Error 403). Use a proxy or switch to Akcloud or Vidcloud.
+   * @param {string} episodeId - The unique identifier for the episode/movie (required). Found in the episodes array
+   * @param {StreamingServers} [server=StreamingServers.VidCloud] - The server to use (optional, defaults to StreamingServers.Vidcloud). Note: Upcloud is CORS protected (Error 403). Use a proxy or switch to Akcloud or Vidcloud.
    * @returns {Promise<FLixSourcesRes>} A promise that resolves to an object containing streaming sources for the media.
    */
-  async fetchSources(episodeId: string, server: StreamingServers = StreamingServers.Akcloud): Promise<FLixSourcesRes> {
+  async fetchSources(episodeId: string, server: StreamingServers = StreamingServers.VidCloud): Promise<FLixSourcesRes> {
     return _getsources(episodeId, server);
   }
 }

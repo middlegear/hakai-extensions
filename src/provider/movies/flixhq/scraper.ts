@@ -63,7 +63,7 @@ export function scrapeMediaInfo($: cheerio.CheerioAPI) {
   mediaInfo.production = $('div.row-line:nth-child(4) > a:nth-child(2)').text();
   mediaInfo.country = $('div.row-line:nth-child(1) > a:nth-child(2)').text();
   mediaInfo.duration = $('span.item:nth-child(3)').text();
-  mediaInfo.rating = parseFloat($('span.item:nth-child(2)').text());
+  mediaInfo.rating = Number($('span.item:nth-child(2)').text());
 
   return mediaInfo;
 }
