@@ -25,27 +25,16 @@ export type MediaInfo = {
   rating: number | null;
 };
 export type ServerRes = {
-  [x: string]: any;
   name: string;
-  id: number; //should be a number will check and confirm later
+  id: number;
 };
 
 export type FLixepisodes =
-  | {
-      id: string;
-      title: string;
-      number: number;
-      season: number;
-      // url: string;
-    }[]
-  | {
-      id: string;
-      title: string | null;
-      // url: string;
-    };
+  | { episodeId: string; title: string; number: number; season: number }[]
+  | { iepisodeId: string; title: string | null }[];
 export const StreamingServers = {
   Upcloud: 'upcloud',
-  // Mixdrop: 'mixdrop', disabled for now
+
   VidCloud: 'vidcloud',
   Akcloud: 'akcloud',
 } as const;

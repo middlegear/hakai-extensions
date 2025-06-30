@@ -5,38 +5,41 @@ import { HiAnimeServers } from '../src/provider/anime/hianime/types.js';
 
 const zoro = new Anime.HiAnime();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-test('perfrom search based on query', async () => {
+
+test('perform search based on query', async () => {
   const data = await zoro.search('bleach', 1);
 
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
   await wait(1000);
 });
 
-test('Fetch Info ', async () => {
+test('fetch media info', async () => {
   const data = await zoro.fetchInfo('demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-18056');
 
-  expect(data.data).not.toEqual(null);
-  expect(data).not.toEqual([]);
+  expect(data.data).not.toBeNull();
+
   await wait(1000);
 });
 
-test('Fetch episode data ', async () => {
-  const data = await zoro.fetchInfo('demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-18056');
+test('fetch episode data (redundant with info)', async () => {
+  const data = await zoro.fetchEpisodes('demon-slayer-kimetsu-no-yaiba-swordsmith-village-arc-18056');
 
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
   await wait(1000);
 });
-test('fetch servers', async () => {
+
+test('fetch episode servers', async () => {
   const data = await zoro.fetchEpisodeServers('solo-leveling-18718-episode-119497');
 
-  expect(data.data).not.toEqual(null);
+  expect(data.data).not.toBeNull();
   await wait(1000);
 });
 
-test('Fetch sources ', async () => {
+test('fetch streaming sources', async () => {
   const data = await zoro.fetchSources('solo-leveling-18718-episode-119497', HiAnimeServers.HD2, SubOrDub.DUB);
 
-  expect(data.data).not.toEqual(null);
-
+  expect(data.data).not.toBeNull();
   await wait(1000);
 });

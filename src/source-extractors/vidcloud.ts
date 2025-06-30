@@ -93,7 +93,7 @@ class VidCloud {
         console.warn(`JSON from  does not contain an expected  field or is invalid.`);
         return null;
       } catch (error) {
-        console.warn(`Failed to fetch key from :`, (error as Error).message);
+        console.warn(`Failed to fetch key :`, (error as Error).message);
         return null;
       }
     },

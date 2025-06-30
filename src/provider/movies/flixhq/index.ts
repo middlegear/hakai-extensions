@@ -38,7 +38,7 @@ class FlixHQ {
   /**
    * Fetches streaming sources for a selected media episode from a specified server.
    * @param {string} episodeId - The unique identifier for the episode/movie (required). Found in the episodes array
-   * @param {StreamingServers} [server=StreamingServers.VidCloud] - The server to use (optional, defaults to StreamingServers.Vidcloud). Note: Upcloud is CORS protected (Error 403). Use a proxy or switch to Akcloud or Vidcloud.
+   * @param {StreamingServers} [server=StreamingServers.VidCloud] - The server to use (optional, defaults to StreamingServers.Vidcloud). Note: Upcloud is CORS protected (Error 403). Use a proxy or switch to  Vidcloud or Akcloud(🤷) .
    * @returns {Promise<FLixSourcesRes>} A promise that resolves to an object containing streaming sources for the media.
    */
   async fetchSources(episodeId: string, server: StreamingServers = StreamingServers.VidCloud): Promise<FLixSourcesRes> {

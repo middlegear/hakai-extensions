@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { AnimeKai, SubOrDub } from '../src/provider';
+import { AnimeKai, SubOrDub } from '../src/provider/index.js';
 
 const animekai = new AnimeKai();
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

@@ -37,13 +37,13 @@ interface SuccessFlixInfo {
 }
 interface ErrorFlixInfo {
   data: null;
-  episodes: null;
+  episodes: [];
   error: string;
 }
 export type FLixInfoRes = SuccessFlixInfo | ErrorFlixInfo;
 export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
   if (!mediaId) {
-    return { data: null, episodes: null, error: 'Missing required parameter mediaId!' };
+    return { data: null, episodes: [], error: 'Missing required parameter mediaId!' };
   }
   if (!mediaId.startsWith(flixhqBaseUrl)) {
     mediaId = `${flixhqBaseUrl}/${mediaId}`;
@@ -57,8 +57,9 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
     const uid = data$('.watch_block').attr('data-id')!;
     const ajaxReqUrl = (id: string, type: string, isSeasons: boolean = false) =>
       `${flixhqBaseUrl}/ajax/${type === 'movie' ? type : `v2/${type}`}/${isSeasons ? 'seasons' : 'episodes'}/${id}`;
-    let episodes: { id: string; title: string; number: number; season: number }[] | { id: string; title: string | null }[] =
-      [];
+    let episodes:
+      | { episodeId: string; title: string; number: number; season: number }[]
+      | { episodeId: string; title: string | null }[] = [];
     if (res.type === 'TV') {
       const { data } = await providerClient.get(ajaxReqUrl(uid, 'tv', true));
       const $$ = cheerio.load(data);
@@ -74,7 +75,7 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
         $$$('.nav > li')
           .map((i, el) => {
             const episode = {
-              id: `episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`,
+              episodeId: `episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`,
               title: $$$(el).find('a').attr('title')!,
               number: parseInt($$$(el).find('a').attr('title')!.split(':')[0].slice(3).trim()),
               season: season,
@@ -89,27 +90,27 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
     } else {
       episodes = [
         {
-          id: `movie/episodes/${uid}`,
+          episodeId: `movie/episodes/${uid}`,
           title: res.title,
         },
       ];
     }
     return { data: res, episodes: episodes as FLixepisodes };
   } catch (error) {
-    return { data: null, episodes: null, error: error instanceof Error ? error.message : 'Unknown err' };
+    return { data: null, episodes: [], error: error instanceof Error ? error.message : 'Unknown err' };
   }
 }
 interface SuccessFlixServerRes {
-  data: ServerRes;
+  data: ServerRes[];
 }
 interface ErrorFlixSeverRes {
-  data: null;
+  data: [];
   error: string;
 }
 export type FlixServerRes = SuccessFlixServerRes | ErrorFlixSeverRes;
 export async function _getServers(episodeId: string): Promise<FlixServerRes> {
   if (!episodeId) {
-    return { data: null, error: 'Missing required params episodeId!' };
+    return { data: [], error: 'Missing required params episodeId!' };
   }
 
   if (episodeId.includes('movie')) episodeId = `${flixhqBaseUrl}/ajax/${episodeId}`;
@@ -132,9 +133,9 @@ export async function _getServers(episodeId: string): Promise<FlixServerRes> {
         return server;
       })
       .get();
-    return { data: servers as unknown as ServerRes };
+    return { data: servers as ServerRes[] };
   } catch (error) {
-    return { data: null, error: error instanceof Error ? error.message : 'Unknown Error' };
+    return { data: [], error: error instanceof Error ? error.message : 'Unknown Error' };
   }
 }
 
@@ -180,19 +181,23 @@ export async function _getsources(episodeId: string, server: StreamingServers): 
   }
   try {
     const servers = await _getServers(episodeId);
-    let i;
-    if (servers.data) i = servers.data.findIndex((s: { name: string }) => s.name === server);
-    if (i === -1) {
-      throw new Error(`Server ${server} not found`);
-    }
-    let serverId;
-    if (servers.data) {
-      serverId = servers.data[i].id;
-    }
-    const { data } = await providerClient.get(`${flixhqBaseUrl}/ajax/episode/sources/${serverId}`);
-    const serverUrl: URL = new URL(data.link);
 
-    return await _getsources(serverUrl.href, server);
+    if ('error' in servers) {
+      throw new Error(servers.error).message;
+    }
+
+    if (Array.isArray(servers.data) && servers.data.length > 0) {
+      const index = servers.data.findIndex(s => s.name === server);
+      if (index === -1) {
+        throw new Error(`Server ${server} not found`);
+      }
+      const serverId = servers.data[index].id;
+      const { data } = await providerClient.get(`${flixhqBaseUrl}/ajax/episode/sources/${serverId}`);
+      const serverUrl: URL = new URL(data.link);
+      return await _getsources(serverUrl.href, server);
+    } else {
+      throw new Error(`Server ${server} not found or data invalid`).message;
+    }
   } catch (error) {
     return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
   }

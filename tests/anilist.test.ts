@@ -5,67 +5,73 @@ import { Anilist } from '../src/provider/index.js';
 
 const anilist = new Anilist();
 
-test('Searches for anime ', async () => {
+test('searches for anime', async () => {
   const data = await anilist.search('bleach', 1, 20);
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('fetch airing anime', async () => {
   const data = await anilist.fetchAiring(1, 25);
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
-test('fetch animeInfo', async () => {
+test('fetch anime info', async () => {
   const data = await anilist.fetchInfo(21);
-  expect(data.data).not.toEqual(null);
+  expect(data.data).not.toBeNull();
 });
 
 test('fetch related anime', async () => {
   const data = await anilist.fetchRelatedAnime(115230);
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('fetch trending anime', async () => {
   const data = await anilist.fetchTrending();
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
-test('fetch animeProviderId with info', async () => {
+test('fetch anime provider ID with info', async () => {
   const data = await anilist.fetchProviderAnimeId(169755, AnimeProvider.HiAnime);
-  expect(data.animeProvider).not.toEqual(null);
-  expect(data.data).not.toEqual(null);
+  expect(data.animeProvider).not.toBeNull();
+  expect(data.data).not.toBeNull();
 });
 
 test('fetch characters', async () => {
   const data = await anilist.fetchCharacters(116674);
-  expect(data.data).not.toEqual(null);
+  expect(data.data).not.toBeNull();
 });
 
-test('fetch popular anime', async () => {
+test('fetch most popular anime', async () => {
   const data = await anilist.fetchMostPopular(1, 25, 'ONA');
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('fetch top rated anime', async () => {
   const data = await anilist.fetchTopRatedAnime(1, 3, 'MUSIC');
-
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('fetch seasonal anime', async () => {
   const data = await anilist.fetchSeasonalAnime(Seasons.WINTER, 2025, 'ONA', 1, 10);
-
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('fetch upcoming anime', async () => {
   const data = await anilist.fetchTopUpcoming(1, 10);
-
-  expect(data.data).not.toEqual([]);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data.length).toBeGreaterThan(0);
 });
 
-test('fetch animeprovider episodes with info', async () => {
+test('fetch anime provider episodes with info', async () => {
   const data = await anilist.fetchAnimeProviderEpisodes(159322, AnimeProvider.HiAnime);
-  expect(data.providerEpisodes).not.toBe([]);
-  expect(data.data).not.toEqual(null);
+  expect(Array.isArray(data.providerEpisodes)).toBe(true);
+  expect(data.providerEpisodes.length).toBeGreaterThan(0);
+  expect(data.data).not.toBeNull();
 });
