@@ -37,26 +37,7 @@ class VidCloud {
         return null;
       }
     },
-    // async (): Promise<string | null> => {
-    //   const url = 'https://keys.hs.vc';  most probably uses vidstreaming platform
-    //   try {
-    //     const response = await axios.get(url);
-    //     const jsonData = response.data;
-    //     if (typeof jsonData === 'object' && jsonData !== null && 'rabbitstream' in jsonData) {
-    //       const key = (jsonData as any).rabbitstream.key;
-    //       if (typeof key === 'string' && key.length > 0) {
-    //         return key;
-    //       }
-    //       console.warn(`'rabbitstream' field is empty or not a string from ${url}.`);
-    //       return null;
-    //     }
-    //     console.warn(`JSON  does not contain an expected key field or is invalid.`);
-    //     return null;
-    //   } catch (error) {
-    //     console.warn(`Failed to fetch key:`, (error as Error).message);
-    //     return null;
-    //   }
-    // },
+
     async (): Promise<string | null> => {
       const url = 'https://key.hi-anime.site';
       try {
@@ -117,15 +98,22 @@ class VidCloud {
     };
 
     const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
+    console.log(videoUrl.href);
+
     const sourceId = match?.[1];
 
     if (!sourceId) {
       return 'Could not extract source ID from video URL.';
     }
-    const sourcesUrl = `${videoUrl.origin}/embed-1/v2/e-1/getSources?id=${sourceId}`;
+    const fullPathname = videoUrl.pathname;
+    const lastSlashIndex = fullPathname.lastIndexOf('/');
+    const basePathname = fullPathname.substring(0, lastSlashIndex);
 
-    for (const fetchKeyFunc of this.keyFetchers) {
-      const currentKey = await fetchKeyFunc();
+    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}`;
+
+    console.log(sourcesUrl);
+    for (const fetchKeyFunction of this.keyFetchers) {
+      const currentKey = await fetchKeyFunction();
 
       if (currentKey) {
         try {
@@ -135,6 +123,7 @@ class VidCloud {
           }
 
           const encrypted = rawSourceData?.sources;
+
           if (!encrypted) {
             console.warn(`No encrypted source found in raw data with key from previous source.`);
             continue;

@@ -75,7 +75,7 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
         $$$('.nav > li')
           .map((i, el) => {
             const episode = {
-              episodeId: `episode/servers/${$$$(el).find('a').attr('id')!.split('-')[1]}`,
+              episodeId: `episode-${$$$(el).find('a').attr('id')!.split('-')[1]}`,
               title: $$$(el).find('a').attr('title')!,
               number: parseInt($$$(el).find('a').attr('title')!.split(':')[0].slice(3).trim()),
               season: season,
@@ -90,7 +90,7 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
     } else {
       episodes = [
         {
-          episodeId: `movie/episodes/${uid}`,
+          episodeId: `movie-${uid}`,
           title: res.title,
         },
       ];
@@ -113,8 +113,8 @@ export async function _getServers(episodeId: string): Promise<FlixServerRes> {
     return { data: [], error: 'Missing required params episodeId!' };
   }
 
-  if (episodeId.includes('movie')) episodeId = `${flixhqBaseUrl}/ajax/${episodeId}`;
-  else episodeId = `${flixhqBaseUrl}/ajax/v2/${episodeId}`;
+  if (episodeId.includes('movie')) episodeId = `${flixhqBaseUrl}/ajax/movie/episodes/${episodeId.split('-').at(1)}`;
+  else episodeId = `${flixhqBaseUrl}/ajax/v2/episode/servers/${episodeId.split('-').at(1)}`;
 
   try {
     const { data } = await providerClient.get(episodeId);
@@ -148,6 +148,7 @@ interface SuccessFlixSourceRes {
 }
 interface ErrorFlixSourcesRes {
   data: null;
+  headers: { Referer: null };
   error: string;
 }
 
@@ -159,22 +160,23 @@ export async function _getsources(episodeId: string, server: StreamingServers): 
     switch (server) {
       case StreamingServers.VidCloud:
         return {
-          headers: { Referer: `${serverUrl.href}` },
+          headers: { Referer: `${serverUrl.origin}/` },
           data: (await new VidCloud().extract(serverUrl)) as ExtractedData,
         };
       case StreamingServers.Upcloud:
         return {
-          headers: { Referer: `${serverUrl.href}/` },
+          headers: { Referer: `${serverUrl.origin}/` },
           data: (await new VidCloud().extract(serverUrl)) as ExtractedData,
         };
       case StreamingServers.Akcloud:
         return {
-          headers: { Referer: `${serverUrl.href}/` },
+          headers: { Referer: `${serverUrl.origin}/` },
           data: (await new VidCloud().extract(serverUrl)) as ExtractedData,
         };
       default:
+        StreamingServers.VidCloud;
         return {
-          headers: { Referer: `${serverUrl.href}/` },
+          headers: { Referer: `${serverUrl.origin}/` },
           data: (await new VidCloud().extract(serverUrl)) as ExtractedData,
         };
     }
@@ -193,12 +195,13 @@ export async function _getsources(episodeId: string, server: StreamingServers): 
       }
       const serverId = servers.data[index].id;
       const { data } = await providerClient.get(`${flixhqBaseUrl}/ajax/episode/sources/${serverId}`);
+
       const serverUrl: URL = new URL(data.link);
       return await _getsources(serverUrl.href, server);
     } else {
       throw new Error(`Server ${server} not found or data invalid`).message;
     }
   } catch (error) {
-    return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
+    return { data: null, headers: { Referer: null }, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

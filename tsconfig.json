@@ -7,8 +7,8 @@
         "esModuleInterop": true,
         "strictNullChecks": true,
         "target": "esnext",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "nodeNext",
+        "moduleResolution": "nodeNext",
 
         "noEmit": true,
         "allowJs": true,
@@ -21,7 +21,7 @@
         "outDir": "dist",
         "rootDir": "./",
         "sourceMap": false,
-        // "removeComments": true,
+        "removeComments": true,
         "strictFunctionTypes": true,
         "forceConsistentCasingInFileNames": true
     

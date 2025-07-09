@@ -9,6 +9,7 @@ class MegaCloud {
 
   private keyFetchers = [
     async (): Promise<string | null> => {
+      //credit to https://github.com/itzzzme
       const url = 'https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt';
       try {
         const response = await axios.get(url);
@@ -87,7 +88,7 @@ class MegaCloud {
     },
   ];
 
-  async extract(embedIframeURL: URL): Promise<ASource | string> {
+  async extract(videoUrl: URL): Promise<ASource | string> {
     const extractedData: ASource = {
       intro: {
         start: 0,
@@ -105,14 +106,18 @@ class MegaCloud {
     let rawSourceData: any = null;
 
     try {
-      const match = /\/([^\/\?]+)\?/.exec(embedIframeURL.href);
+      const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
       const sourceId = match?.[1];
 
       if (!sourceId) throw new Error('Unable to extract sourceId from embed URL');
 
-      const megacloudUrl = `https://megacloud.blog/embed-2/v2/e-1/getSources?id=${sourceId}`;
+      const fullPathname = videoUrl.pathname;
+      const lastSlashIndex = fullPathname.lastIndexOf('/');
+      const basePathname = fullPathname.substring(0, lastSlashIndex);
 
-      const { data: initialRawSourceData } = await axios.get(megacloudUrl);
+      const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}`;
+
+      const { data: initialRawSourceData } = await axios.get(sourcesUrl);
       rawSourceData = initialRawSourceData;
 
       const encryptedSourcesToTry: string = rawSourceData?.sources;
@@ -120,8 +125,8 @@ class MegaCloud {
         throw new Error('Encrypted source missing in initial response from MegaCloud.');
       }
 
-      for (const fetchKeyFunc of this.keyFetchers) {
-        const currentKey = await fetchKeyFunc();
+      for (const fetchKeyFunction of this.keyFetchers) {
+        const currentKey = await fetchKeyFunction();
 
         if (currentKey) {
           try {
