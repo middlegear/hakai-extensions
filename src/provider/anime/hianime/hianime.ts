@@ -183,7 +183,7 @@ export async function fetchServers(episodeId: string): Promise<ServerInfoRespons
   if (!episodeId)
     return {
       data: null,
-      error: 'Missing required params :episodeId!',
+      error: 'Missing required params: episodeId!',
     };
 
   try {
@@ -314,7 +314,15 @@ export async function fetchEpisodeSources(
       error: 'Missing required params episodeId',
     };
   }
-
+  if (!episodeId.includes('-')) {
+    return {
+      data: null,
+      headers: {
+        Referer: null,
+      },
+      error: 'Missing required params: Valid episodeId',
+    };
+  }
   if (episodeId.startsWith('http')) {
     const serverUrl = new URL(episodeId);
     switch (server) {

@@ -2,6 +2,8 @@ import axios from 'axios';
 
 import CryptoJS from 'crypto-js';
 import { USER_AGENT_HEADER } from '../provider/index.js';
+import { getClientKey } from './getClientKey.js';
+
 //https://megacloud.blog/js/player/a/v2/pro/embed-1.min.js?v=
 // https://cloudvidz.net/js/player/m/v2/pro/embed-1.min.js?v=
 // https:///cdnstreame.net/js/player/m/v2/pro/embed-1.min.js?v=
@@ -85,6 +87,7 @@ class VidCloud {
       subtitles: [],
       sources: [],
     };
+    const clientKey = (await getClientKey(videoUrl.href)) as string;
 
     let workingKey: string | null = null;
     let rawSourceData: any = null;
@@ -109,72 +112,44 @@ class VidCloud {
     const lastSlashIndex = fullPathname.lastIndexOf('/');
     const basePathname = fullPathname.substring(0, lastSlashIndex);
 
-    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}`;
+    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientKey}`;
 
-    console.log(sourcesUrl);
-    for (const fetchKeyFunction of this.keyFetchers) {
-      const currentKey = await fetchKeyFunction();
+    console.log(clientKey);
+    try {
+      const response = await axios.get(sourcesUrl, Options);
+      rawSourceData = response.data;
 
-      if (currentKey) {
+      if (!rawSourceData) {
+        throw new Error('Expected source response missing.').message;
+      }
+      console.log(rawSourceData);
+      if (rawSourceData.encrypted) {
+        // attempt decryption
         try {
-          if (!rawSourceData) {
-            const response = await axios.get(sourcesUrl, Options);
-            rawSourceData = response.data;
-          }
-
           const encrypted = rawSourceData?.sources;
 
-          if (!encrypted) {
-            console.warn(`No encrypted source found in raw data with key from previous source.`);
-            continue;
-          }
-          const decrypted = CryptoJS.AES.decrypt(encrypted, currentKey).toString(CryptoJS.enc.Utf8);
-
-          let tempDecryptedSources;
-          try {
-            tempDecryptedSources = JSON.parse(decrypted);
-            workingKey = currentKey;
-            break;
-          } catch (jsonParseError) {
-            console.warn(
-              `JSON parsing failed with key. This key might be outdated/incorrect. Trying next key. Error:`,
-              (jsonParseError as Error).message,
-            );
-
-            continue;
-          }
-        } catch (decryptionError) {
-          console.warn(
-            `Decryption failed with key. This key might be outdated/incorrect. Trying next key. Error:`,
-            (decryptionError as Error).message,
-          );
-
-          continue;
+          // const decrypted = CryptoJS.AES.decrypt(encrypted, workingKey).toString(CryptoJS.enc.Utf8);
+          // const finalDecryptedSources = JSON.parse(decrypted);
+          // extractedData.sources = finalDecryptedSources.map((s: any) => ({
+          //   url: s.file,
+          //   isM3U8: s.type === 'hls',
+          //   type: s.type,
+          // }));
+        } catch (error) {
+          return error instanceof Error ? error.message : 'Unknown Error';
         }
+      } else {
+        extractedData.sources = rawSourceData.sources.map((s: any) => ({
+          url: s.file,
+          isM3U8: s.type === 'hls',
+          type: s.type,
+        }));
       }
-    }
-
-    if (!workingKey) {
-      throw new Error(
-        'Failed to retrieve a working decryption key and decrypt source data from all available endpoints.Try again later mate',
-      );
-    }
-
-    try {
-      const encrypted = rawSourceData?.sources;
-      const decrypted = CryptoJS.AES.decrypt(encrypted, workingKey).toString(CryptoJS.enc.Utf8);
-      const finalDecryptedSources = JSON.parse(decrypted);
-
       extractedData.subtitles =
         rawSourceData.tracks?.map((track: any) => ({
           url: track.file,
           lang: track.label ? track.label : track.kind,
         })) || [];
-      extractedData.sources = finalDecryptedSources.map((s: any) => ({
-        url: s.file,
-        isM3U8: s.type === 'hls',
-        type: s.type,
-      }));
 
       return extractedData;
     } catch (error) {

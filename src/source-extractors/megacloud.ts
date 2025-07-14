@@ -9,14 +9,13 @@ class MegaCloud {
 
   private keyFetchers = [
     async (): Promise<string | null> => {
-      //credit to https://github.com/itzzzme
       const url = 'https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt';
       try {
         const response = await axios.get(url);
         if (typeof response.data === 'string' && response.data.length > 0) {
           return response.data.trim();
         }
-        console.warn(`Empty or invalid data.`);
+
         return null;
       } catch (error) {
         console.warn(`Failed to fetch key:`, (error as Error).message);
@@ -34,10 +33,8 @@ class MegaCloud {
           if (typeof key === 'string' && key.length > 0) {
             return key;
           }
-          console.warn(`'megacloud' field is empty or not a string from ${url}.`);
           return null;
         }
-        console.warn(`JSON  does not contain an expected key field or is invalid.`);
         return null;
       } catch (error) {
         console.warn(`Failed to fetch key:`, (error as Error).message);
@@ -55,7 +52,7 @@ class MegaCloud {
           if (typeof key === 'string' && key.length > 0) {
             return key;
           }
-          console.warn(`'rabbit' field is empty or not a string from ${url}.`);
+
           return null;
         }
         console.warn(`JSON  does not contain an expected  field or is invalid.`);
@@ -76,7 +73,7 @@ class MegaCloud {
           if (typeof key === 'string' && key.length > 0) {
             return key;
           }
-          console.warn(`'mega' field is empty or not a string from ${url}.`);
+
           return null;
         }
         console.warn(`JSON  does not contain an expected key field or is invalid.`);
@@ -104,6 +101,7 @@ class MegaCloud {
 
     let workingKey: string | null = null;
     let rawSourceData: any = null;
+    let finalDecryptedSources;
 
     try {
       const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
@@ -122,47 +120,52 @@ class MegaCloud {
 
       const encryptedSourcesToTry: string = rawSourceData?.sources;
       if (!encryptedSourcesToTry) {
-        throw new Error('Encrypted source missing in initial response from MegaCloud.');
+        throw new Error('Expected source response missing.');
       }
+      if (rawSourceData.encrypted) {
+        for (const fetchKeyFunction of this.keyFetchers) {
+          const currentKey = await fetchKeyFunction();
 
-      for (const fetchKeyFunction of this.keyFetchers) {
-        const currentKey = await fetchKeyFunction();
-
-        if (currentKey) {
-          try {
-            const decrypted = CryptoJS.AES.decrypt(encryptedSourcesToTry, currentKey).toString(CryptoJS.enc.Utf8);
-
-            let tempDecryptedSources: string;
+          if (currentKey) {
             try {
-              tempDecryptedSources = JSON.parse(decrypted);
-              workingKey = currentKey;
-              break;
-            } catch (jsonParseError) {
-              console.warn(
-                `Decryption failed with this key. This key might be outdated/incorrect. Trying next key. Error:`,
-                (jsonParseError as Error).message,
-              );
+              const decrypted = CryptoJS.AES.decrypt(encryptedSourcesToTry, currentKey).toString(CryptoJS.enc.Utf8);
+
+              let tempDecryptedSources: string;
+              try {
+                tempDecryptedSources = JSON.parse(decrypted);
+                workingKey = currentKey;
+                break;
+              } catch (error) {
+                console.warn(` Error:`, (error as Error).message);
+
+                continue;
+              }
+            } catch (error) {
+              console.warn(`Error:`, (error as Error).message);
 
               continue;
             }
-          } catch (decryptionError) {
-            console.warn(
-              `Decryption failed with this key. This key might be outdated/incorrect. Trying next key. Error:`,
-              (decryptionError as Error).message,
-            );
-
-            continue;
           }
         }
+
+        if (!workingKey) {
+          throw new Error('Try later');
+        }
+
+        const finalDecryptedContent = CryptoJS.AES.decrypt(encryptedSourcesToTry, workingKey).toString(CryptoJS.enc.Utf8);
+        finalDecryptedSources = JSON.parse(finalDecryptedContent);
+        extractedData.sources = finalDecryptedSources.map((s: any) => ({
+          url: s.file,
+          isM3U8: s.type === 'hls',
+          type: s.type,
+        }));
+      } else {
+        extractedData.sources = initialRawSourceData.map((s: any) => ({
+          url: s.file,
+          isM3U8: s.type === 'hls',
+          type: s.type,
+        }));
       }
-
-      if (!workingKey) {
-        throw new Error('Failed to retrieve working keys. Try again later');
-      }
-
-      const finalDecryptedContent = CryptoJS.AES.decrypt(encryptedSourcesToTry, workingKey).toString(CryptoJS.enc.Utf8);
-      const finalDecryptedSources = JSON.parse(finalDecryptedContent);
-
       extractedData.intro = rawSourceData.intro ? rawSourceData.intro : extractedData.intro;
       extractedData.outro = rawSourceData.outro ? rawSourceData.outro : extractedData.outro;
 
@@ -171,15 +174,9 @@ class MegaCloud {
           url: track.file,
           lang: track.label ? track.label : track.kind,
         })) || [];
-      extractedData.sources = finalDecryptedSources.map((s: any) => ({
-        url: s.file,
-        isM3U8: s.type === 'hls',
-        type: s.type,
-      }));
 
       return extractedData;
     } catch (error) {
-      console.error('Error in MegaCloud extraction:', error);
       return error instanceof Error ? error.message : 'Unknown Error';
     }
   }
