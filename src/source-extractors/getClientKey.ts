@@ -2,22 +2,25 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { USER_AGENT_HEADER } from '../provider/index.js';
 
-export async function getClientKey(embedUrl: string): Promise<string | null> {
+export async function getClientKey(embedUrl: string, Referer: string): Promise<string | null> {
   for (let i = 0; i < 5; i++) {
     try {
       const response = await axios.get(embedUrl, {
         headers: {
-          Referer: 'https://flixhq.to/',
+          Referer: Referer,
           'User-Agent': USER_AGENT_HEADER,
           'X-Requested-With': 'XMLHttpRequest',
         },
       });
+      // console.log(response.data);
 
       const $ = cheerio.load(response.data);
 
       // 1. Check <meta name="_gg_fb" content="...">
       const metaContent = $('meta[name="_gg_fb"]').attr('content');
       if (metaContent) {
+        console.log('key found in meta content');
+
         return metaContent;
       }
 
@@ -34,6 +37,8 @@ export async function getClientKey(embedUrl: string): Promise<string | null> {
       if (commentMatch) {
         const matchKey = commentMatch.match(/^_is_th:([^\n\r]+)$/);
         if (matchKey?.[1]) {
+          console.log('key found in  _is_th:somekey');
+
           return matchKey[1].trim();
         }
       }
@@ -41,6 +46,7 @@ export async function getClientKey(embedUrl: string): Promise<string | null> {
       // 3. Check <div data-dpi="...">
       const dpiContent = $('[data-dpi]').attr('data-dpi');
       if (dpiContent) {
+        console.log('key found in data-dpi=');
         return dpiContent;
       }
 
@@ -59,9 +65,11 @@ export async function getClientKey(embedUrl: string): Promise<string | null> {
           /window\._lk_db\s*=\s*{x:\s*["']([^"']+)["'],\s*y:\s*["']([^"']+)["'],\s*z:\s*["']([^"']+)["']}/,
         );
         if (lkMatch?.[1] && lkMatch[2] && lkMatch[3]) {
+          console.log('key found in window._xy_ws or window._lk_db');
           return lkMatch[1] + lkMatch[2] + lkMatch[3];
         }
       }
+      ////its missing the script nonce
 
       console.log(`🔁 Attempt ${i + 1} finished. Key not found.`);
     } catch (err: unknown) {

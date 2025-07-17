@@ -3,6 +3,7 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import { USER_AGENT_HEADER } from '../provider/index.js';
 import { getClientKey } from './getClientKey.js';
+// import { generateSeed } from './decryptVidcloud.js';
 
 //https://megacloud.blog/js/player/a/v2/pro/embed-1.min.js?v=
 // https://cloudvidz.net/js/player/m/v2/pro/embed-1.min.js?v=
@@ -87,9 +88,8 @@ class VidCloud {
       subtitles: [],
       sources: [],
     };
-    const clientKey = (await getClientKey(videoUrl.href)) as string;
+    const clientKey = (await getClientKey(videoUrl.href, referer)) as string;
 
-    let workingKey: string | null = null;
     let rawSourceData: any = null;
 
     const Options = {
@@ -113,8 +113,11 @@ class VidCloud {
     const basePathname = fullPathname.substring(0, lastSlashIndex);
 
     const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientKey}`;
+    // console.log(sourcesUrl);
+    // console.log(clientKey);
+    // const key = clientKey + generateSeed();
+    // console.log(key);
 
-    console.log(clientKey);
     try {
       const response = await axios.get(sourcesUrl, Options);
       rawSourceData = response.data;

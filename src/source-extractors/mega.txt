@@ -1,0 +1,30 @@
+Main Differences in Decryption Logic
+Excluding the secret key generation, the primary differences between your Decrypter class and the JavaScript’s T function are:
+
+Shuffling Robustness:
+JavaScript: The shuffling in Y and the earlier mapping in d0 are broken due to NaN (0 / 0) in index calculations (H6 and E_). This suggests either a bug or an intentional obfuscation that relies on a runtime fix (e.g., using q$ from the LCG).
+TypeScript: Your shuffleArray method correctly implements Fisher-Yates shuffling using the same LCG parameters, ensuring a proper shuffle of the character set.
+Impact: Your code is more reliable, as the JavaScript’s shuffling fails unless corrected. If the JavaScript’s runtime environment fixes the NaN issue to use the LCG properly, your shuffling matches the intended logic.
+Substitution Mapping:
+JavaScript: The substitution step relies on the broken shuffle from Y, which would fail to produce a valid mapping unless fixed. The earlier mapping attempt in d0 (X6 = X6.split("").map(...)) is also broken due to S[H6].
+TypeScript: Your substituteString method uses a correctly shuffled character set, creating a valid mapping from shuffled to original characters.
+Impact: Your substitution is correct and robust, while the JavaScript’s is likely ineffective unless the shuffle is fixed in the runtime environment.
+Unused Parsing in JavaScript:
+JavaScript: Parses the first 4 characters as an integer (parseInt(X6.slice(0, 4), 10)), but this value (d1) is unused in the provided code.
+TypeScript: No equivalent parsing; you directly slice from index 4.
+Impact: This is a minor difference, as the parsing doesn’t affect the output. It may be used for validation or metadata in the JavaScript but isn’t replicated in your code.
+Additional Notes
+Character Set: Both use the same default character set (ASCII 32–126), so there’s no difference here. Your TypeScript allows a custom characterSet, but since you’re likely using the default, it aligns with the JavaScript.
+Key Usage: The JavaScript uses c1 = u() + B() as the key, while your Decrypter takes a provided key. Since we’re excluding key generation, we assume your key matches u() + B(). No differences arise from key handling in the decryption steps.
+Obfuscation Overhead: The JavaScript includes anti-tampering checks (e.g., window[64266].M$30T3p(), window.f9.r_reQLm()) that don’t affect the decryption logic but add complexity. Your TypeScript is cleaner, avoiding these checks, which doesn’t introduce functional differences but improves readability and reliability.
+Conclusion
+The main differences in the decryption logic (excluding secret key generation) are in the shuffling and substitution steps:
+
+Shuffling: Your shuffleArray method correctly implements Fisher-Yates shuffling with a proper LCG, while the JavaScript’s Y function and earlier mapping in d0 are broken due to NaN values. Your implementation is more robust and likely corrects an error in the JavaScript, assuming the JavaScript intends to use the LCG properly.
+Substitution: Your substituteString method correctly maps characters using the shuffled and original character sets. The JavaScript’s substitution is broken due to the faulty shuffle, rendering it ineffective unless fixed in the runtime environment.
+Minor Parsing: The JavaScript’s unused parseInt(X6.slice(0, 4), 10) is not replicated in your code, but this doesn’t affect the output.
+Your Decrypter class is a faithful and improved implementation of the JavaScript’s T function, 
+fixing apparent bugs in the shuffling and substitution steps. To ensure compatibility, 
+verify that the JavaScript’s runtime environment doesn’t apply additional fixes to the NaN issues in Y or d0. 
+If it does (e.g., by using q$ for indices), your code matches the intended logic perfectly. 
+Otherwise, your code is a corrected version of the JavaScript’s flawed implementation.
