@@ -1,0 +1,365 @@
+import axios from 'axios';
+import { getClientKey } from './getClientKey.js';
+import { USER_AGENT_HEADER } from '../provider/index.js';
+
+export class Decrypter {
+  private nonce: string;
+  private secret: string;
+  private characterSet: string[];
+
+  constructor(
+    nonce: string = '',
+    secret: string = '',
+    characterSet: string[] = Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)),
+  ) {
+    this.nonce = nonce;
+    this.secret = secret;
+    this.characterSet = [...characterSet];
+    console.log('Decrypter initialized with nonce:', nonce, 'secret:', secret);
+    console.log('Character set size:', this.characterSet.length);
+  }
+
+  // Seed generation, matching Apps Script
+  private generateSeed(keyphrase: string): number {
+    return [...keyphrase].reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) & 0xffffffff, 0);
+  }
+
+  // PRNG, matching Apps Script
+  private random(seed: number): (limit: number) => number {
+    let currentSeed = seed;
+    return (limit: number) => {
+      currentSeed = (1103515245 * currentSeed + 12345) & 0x7fffffff;
+      return currentSeed % limit;
+    };
+  }
+
+  // Deterministic shuffle, matching Apps Script
+  private deterministicShuffle(array: string[], keyphrase: string): string[] {
+    const seed = this.generateSeed(keyphrase);
+    const random = this.random(seed);
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = random(i + 1);
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    return result;
+  }
+
+  // Columnar transposition cipher, matching Apps Script
+  private columnarTranspositionCipher(text: string, keyphrase: string): string {
+    const cols = keyphrase.length;
+    const rows = Math.ceil(text.length / cols);
+    const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+
+    const columnOrder = keyphrase
+      .split('')
+      .map((char, idx) => ({ char, idx }))
+      .sort((a, b) => a.char.localeCompare(b.char));
+
+    let i = 0;
+    for (const { idx } of columnOrder) {
+      for (let row = 0; row < rows; row++) {
+        grid[row][idx] = text[i++] || '';
+      }
+    }
+
+    let result = '';
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        result += grid[row][col];
+      }
+    }
+
+    return result;
+  }
+
+  // Main decryption function, adapted from Apps Script
+  public decrypt(encrypted: string, iterations: number = 3): string {
+    console.log('--- Decryption Process Started ---');
+    console.log('Initial encrypted string (base64):', encrypted);
+
+    let result: string;
+    try {
+      result = atob(encrypted);
+    } catch (error) {
+      console.error('Base64 decoding failed:', error instanceof Error ? error.message : 'Unknown error');
+      throw new Error('Invalid base64 encoded string');
+    }
+    console.log('After base64 decoding (atob):', result);
+
+    const keyphrase = this.secret + this.nonce;
+
+    for (let p_ = iterations; p_ >= 1; p_--) {
+      const passphrase = keyphrase + p_;
+      console.log(`\n--- Iteration ${p_} of ${iterations} ---`);
+      console.log('Passphrase for this iteration:', passphrase);
+
+      const seed = this.generateSeed(passphrase);
+      console.log('Calculated seed:', seed);
+
+      const random = this.random(seed);
+
+      console.log('Applying reverse per-character substitution...');
+      result = result
+        .split('')
+        .map(char => {
+          const idx = this.characterSet.indexOf(char);
+          if (idx === -1) return char;
+          const offset = random(95);
+          return this.characterSet[(idx - offset + 95) % 95];
+        })
+        .join('');
+      console.log('After reverse per-character substitution:', result);
+
+      console.log('Applying columnar transposition cipher...');
+      result = this.columnarTranspositionCipher(result, passphrase);
+      console.log('After columnar transposition cipher:', result);
+
+      console.log('Applying deterministic substitution...');
+      const shuffled = this.deterministicShuffle(this.characterSet, passphrase);
+      const mapping: { [key: string]: string } = {};
+      shuffled.forEach((char, idx) => {
+        mapping[char] = this.characterSet[idx];
+      });
+      result = result
+        .split('')
+        .map(c => mapping[c] || c)
+        .join('');
+      console.log('After deterministic substitution:', result + '...');
+    }
+
+    console.log('\n--- Finalizing Decryption ---');
+    const lengthStr = result.slice(0, 4);
+    console.log('Extracted length string:', lengthStr);
+
+    let length = parseInt(lengthStr, 10);
+    if (isNaN(length) || length <= 0) {
+      length = parseInt(lengthStr, 16); // Try hexadecimal
+    }
+    console.log('Parsed length:', length);
+
+    if (isNaN(length) || length > result.length - 4) {
+      console.error('Error: Invalid length in decrypted string.');
+      throw new Error('Invalid length in decrypted string');
+    }
+
+    const finalResult = result.slice(4, 4 + length);
+    console.log('Extracted final result:', finalResult);
+    console.log('--- Decryption Process Completed ---');
+    return finalResult;
+  }
+
+  // Fetch and decrypt sources, returning sources and tracks
+  public async fetchAndDecryptSources(
+    embedUrl: string,
+    referer: string,
+    sourceId: string,
+  ): Promise<{ sources: any[]; tracks: any[] }> {
+    console.log('\n--- fetchAndDecryptSources Called ---');
+    console.log('Embed URL:', embedUrl, 'Source ID:', sourceId);
+
+    // Fetch salts (assuming getClientKey returns a single key or multiple keys)
+    let salts: string[] = this.nonce && this.secret ? [this.nonce + this.secret] : [];
+    try {
+      const fetchedSalts = await getClientKey(embedUrl, referer);
+      salts = [...new Set([...salts, ...fetchedSalts])]; // Combine constructor salt with fetched salts
+      console.log('Fetched salts:', salts.join(' , '));
+    } catch (error) {
+      console.error('Error fetching salts from getClientKey:', error instanceof Error ? error.message : 'Unknown error');
+    }
+
+    if (!salts.length) {
+      console.error('No salts available for decryption.');
+      throw new Error('No salts available for decryption');
+    }
+
+    const basePathname = embedUrl.split('?')[0].substring(0, embedUrl.split('?')[0].lastIndexOf('/'));
+    const options = {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: embedUrl,
+        'User-Agent': USER_AGENT_HEADER,
+      },
+      timeout: 10000, // Add timeout to prevent hanging
+    };
+
+    // Try each salt
+    for (const salt of salts) {
+      const sourcesUrl = `${basePathname}/getSources?id=${sourceId}&_k=${salt}`;
+      console.log('Fetching sources from:', sourcesUrl);
+
+      try {
+        const response = await axios.get(sourcesUrl, options);
+        const rawSourceData = response.data;
+        console.log('Raw source data:', rawSourceData);
+
+        if (!rawSourceData) {
+          console.error('Empty source response for salt:', salt);
+          continue;
+        }
+
+        // Split salt into nonce and secret (assuming salt is nonce + secret or just nonce)
+        this.nonce = salt; // Use entire salt as nonce if no secret separation is needed
+        this.secret = 'mZwVH9rh5yHaZxreL4W4esSHsx7BKTsmyLZpmx2AXX3zU7';
+        const sources = rawSourceData.encrypted
+          ? await this.setupPlayerSources(rawSourceData.sources)
+          : rawSourceData.sources;
+        if (!Array.isArray(sources)) {
+          console.error('Sources is not an array for salt:', salt);
+          continue;
+        }
+
+        console.log('--- fetchAndDecryptSources Completed Successfully with salt:', salt);
+        return { sources, tracks: rawSourceData.tracks || [] };
+      } catch (error) {
+        console.error(
+          'Error fetching or processing sources with salt',
+          salt,
+          ':',
+          error instanceof Error ? error.message : 'Unknown error',
+        );
+        continue;
+      }
+    }
+
+    console.error('--- fetchAndDecryptSources Failed: No valid salt found ---');
+    throw new Error('Could not fetch or decrypt sources with any salt');
+  }
+
+  // Decrypt sources (used internally by fetchAndDecryptSources)
+  private async setupPlayerSources(encryptedSources: string): Promise<any[]> {
+    console.log('\n--- setupPlayerSources Called ---');
+    console.log('Encrypted sources input:', encryptedSources);
+
+    // Check if sources are unencrypted
+    try {
+      const parsed = JSON.parse(encryptedSources);
+      if (Array.isArray(parsed)) {
+        console.log('Sources are unencrypted, returning directly:', parsed);
+        return parsed;
+      }
+    } catch (e) {
+      console.log('Sources are encrypted, proceeding with decryption...');
+    }
+
+    try {
+      const decrypted = this.decrypt(encryptedSources);
+      console.log('Decrypted string before JSON parsing:', decrypted);
+      const sources = JSON.parse(decrypted);
+      console.log('Parsed sources object:', sources);
+      if (!Array.isArray(sources)) {
+        console.error('Error: Decrypted sources is not an array.');
+        throw new Error('Decrypted sources is not an array');
+      }
+      console.log('--- setupPlayerSources Completed Successfully with nonce:', this.nonce, 'secret:', this.secret);
+      return sources;
+    } catch (error) {
+      console.error('Decryption or parsing error:', error instanceof Error ? error.message : 'Unknown error');
+      throw error;
+    }
+  }
+}
+Extracting data from video URL: https://megacloud.blog/embed-2/v3/e-1/vpG67AVzYpiZ?k=1
+Extracted source ID: vpG67AVzYpiZ
+Decrypter initialized with nonce:  secret:
+Character set size: 95
+
+--- fetchAndDecryptSources Called ---
+Embed URL: https://megacloud.blog/embed-2/v3/e-1/vpG67AVzYpiZ?k=1 Source ID: vpG67AVzYpiZ
+🔍 Attempt 1 to fetch client key from https://megacloud.blog/embed-2/v3/e-1/vpG67AVzYpiZ?k=1
+✅ Key found in _is_th comment: XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD
+✅ Found 1 unique salts: XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD
+Fetched salts: XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD
+Fetching sources from: https://megacloud.blog/embed-2/v3/e-1/getSources?id=vpG67AVzYpiZ&_k=XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD
+Raw source data: {
+  sources: 'VTc8PHt6Sy9BMV0mZyFzTTJIOUxvfS5VfSA6OVk1PmF4OVQ4SyAvKXI0WSdGSnUuN0ltNTtCWHhuMFRkbyVzRnlqYnQ1SDw+W0pKY1oydDQ8PSpkQnVAY1d1W2k2dng4a1daOVNfVXB2SHJqKCleKWdKKikiIkp5YjVVJy54ZFRCe1o2aXtdRmVCKENSMXQ4YldUcXN5Oi50cywxZkNUIzMkIHUrITx1OTc8IjNeQF9mMTpFWSEpTT56Kk8ueHFFSyh1RXE6QlpNJHBgTnd4eFA4I1dNVkZ8aGpWMHk/Skl8S2MiX3AmbSNPWlgwW0hBY2ZuYyluNmxaMT1ffjdSS01YXkE9e3tqa3dhInsoYHk+PHp7YnliYmY6LUFWfD5fIjtgdj1hKl1NQEpkd3lSZUIjeVBob11bfGMydF0xc1cxbkktTy1yOj1SJ0M1J1BdUSszanYxO10/LDMncWQ7Vk1lOTV4aXIiZV9AWDY6Jio3PGl6dkdBX1A0Qjs=',
+  tracks: [
+    {
+      file: 'https://megacloudforest.xyz/thumbnails/6d7af605e80bf7950848322809e4cf33/thumbnails.vtt',
+      kind: 'thumbnails'
+    }
+  ],
+  encrypted: true,
+  intro: { start: 94, end: 183 },
+  outro: { start: 1325, end: 1414 },
+  server: 4
+}
+
+--- setupPlayerSources Called ---
+Encrypted sources input: VTc8PHt6Sy9BMV0mZyFzTTJIOUxvfS5VfSA6OVk1PmF4OVQ4SyAvKXI0WSdGSnUuN0ltNTtCWHhuMFRkbyVzRnlqYnQ1SDw+W0pKY1oydDQ8PSpkQnVAY1d1W2k2dng4a1daOVNfVXB2SHJqKCleKWdKKikiIkp5YjVVJy54ZFRCe1o2aXtdRmVCKENSMXQ4YldUcXN5Oi50cywxZkNUIzMkIHUrITx1OTc8IjNeQF9mMTpFWSEpTT56Kk8ueHFFSyh1RXE6QlpNJHBgTnd4eFA4I1dNVkZ8aGpWMHk/Skl8S2MiX3AmbSNPWlgwW0hBY2ZuYyluNmxaMT1ffjdSS01YXkE9e3tqa3dhInsoYHk+PHp7YnliYmY6LUFWfD5fIjtgdj1hKl1NQEpkd3lSZUIjeVBob11bfGMydF0xc1cxbkktTy1yOj1SJ0M1J1BdUSszanYxO10/LDMncWQ7Vk1lOTV4aXIiZV9AWDY6Jio3PGl6dkdBX1A0Qjs=
+Sources are encrypted, proceeding with decryption...
+--- Decryption Process Started ---
+Initial encrypted string (base64): VTc8PHt6Sy9BMV0mZyFzTTJIOUxvfS5VfSA6OVk1PmF4OVQ4SyAvKXI0WSdGSnUuN0ltNTtCWHhuMFRkbyVzRnlqYnQ1SDw+W0pKY1oydDQ8PSpkQnVAY1d1W2k2dng4a1daOVNfVXB2SHJqKCleKWdKKikiIkp5YjVVJy54ZFRCe1o2aXtdRmVCKENSMXQ4YldUcXN5Oi50cywxZkNUIzMkIHUrITx1OTc8IjNeQF9mMTpFWSEpTT56Kk8ueHFFSyh1RXE6QlpNJHBgTnd4eFA4I1dNVkZ8aGpWMHk/Skl8S2MiX3AmbSNPWlgwW0hBY2ZuYyluNmxaMT1ffjdSS01YXkE9e3tqa3dhInsoYHk+PHp7YnliYmY6LUFWfD5fIjtgdj1hKl1NQEpkd3lSZUIjeVBob11bfGMydF0xc1cxbkktTy1yOj1SJ0M1J1BdUSszanYxO10/LDMncWQ7Vk1lOTV4aXIiZV9AWDY6Jio3PGl6dkdBX1A0Qjs=
+After base64 decoding (atob): U7<<{zK/A1]&g!sM2H9Lo}.U} :9Y5>ax9T8K /)r4Y'FJu.7Im5;BXxn0Tdo%sFyjbt5H<>[JJcZ2t4<=*dBu@cWu[i6vx8kWZ9S_UpvHrj()^)gJ*)""Jyb5U'.xdTB{Z6i{]FeB(CR1t8bWTqsy:.ts,1fCT#3$ u+!<u97<"3^@_f1:EY!)M>z*O.xqEK(uEq:BZM$p`NwxxP8#WMVF|hjV0y?JI|Kc"_p&m#OZX0[HAcfnc)n6lZ1=_~7RKMX^A={{jkwa"{(`y><z{bybbf:-AV|>_";`v=a*]M@JdwyReB#yPho][|c2t]1sW1nI-O-r:=R'C5'P]Q+3jv1;]?,3'qd;VMe95xir"e_@X6:&*7<izvGA_P4B;
+
+--- Iteration 3 of 3 ---
+Passphrase for this iteration: mZwVH9rh5yHaZxreL4W4esSHsx7BKTsmyLZpmx2AXX3zU7XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD3
+Calculated seed: 1937378794
+Applying reverse per-character substitution...
+After reverse per-character substitution: ]d]&W"k6'xxq]n#v-0{_EK,Ct6c %*+]B)e1;n75BVkPBEb?wW|v4}j6@@>mObwV7_/Cb~;:G1V]?'Q\:XLVD)K)LRx%MIv7;%2ZHD1~+\Ygd(4\5D&O'n)3^Ejhk>sK*_,]xx+M.=E6;B1Eg=~>9io$5uTEE%6R1GP'pAhvf"g>J_sNfil_W>)Ok&W)c\u$}WS,=3gH^RT->d1O]_ObEA4$ekzoDGwz,J["qY'r2q1U&d%UD):Mo\y1ZhSmBUTJy(#1v`Cy>jw||fZ[?-'n2\TE,SzepG,.H-tlT&o{;NF+O.,=*Z<NUu*(|W47$c\MC''B,-t!b7lhEJCA[$73=tDmg\hRc~Fax!/.>F:dsv"A/c)ya5T/Y$L5A6=,
+Applying columnar transposition cipher...
+After columnar transposition cipher: cs;Tx@2^%g.7/U&LWEOtMo>;Z|B?f2B}ckae=$WbbE]>,w[xCy;]HDJ]Bv5dG5;:9EYH=,1A*f4^kq',OgED'Bp|+p?>*D-\vN&x@qE*\=_cudR>K.6I\jBhWE'"\UW~&5k3c"~7JnFSW$!'(%dDG__)`u(1DnXiA$-tJG6Zi}R>Yn-b=%)xVGf\A-d_)0u"Fo+>1j+hE/)*%x),,cvyw1S4bQgTTSFWTzg\k;lC#:z|7/'#2]1wsOeCT4V&7Lo4LtD[P=<ljTs')tw~6:xk,ZYh'1,K{$A+{MmUh]R6Cy(U%OC= 71|Em7?\>EJ,a)/oHM6:hAvdev3.B1Z&~zNb1yE\]O5V$$5lm"',N_6-Kr3!V>RMqP.[gvnO])_
+Applying deterministic substitution...
+After deterministic substitution: xdjraqD](InH|Q}SO>Cc69XjyFY<VDYAx_5hT%O``>+Xs~3a?.j+gKM+Y,8e=8j"J>RgTs 0UV;]_lNsCI>KNY'Fp'<XUKz7,B}aql>U7TWxZeiXfnEP7vYuO>N-7QOo}8_)x-oHMb^@O%$N\(eK=WW:wZ\ KbL#0%zcM=Ey#AiXRbz`T(:a1=V70zeW:GZ-^9pX vpu>|:U(a:ssx,.~ @;`*Irr@^Or&I7_j4?!"&FH|N!D+ ~dCh?r;1}HS9;ScK3mTt4vrdN:c~oE"a_syRuN sfk%0pk62Qu+iE?.\Q(C?T{H F>2H<7X>Ms5:|9g6E"u0,eh,)nY y}o&B` .>7+C81%%842-NsBWEzf[)$1Xi6lmn3I,bC+:W...
+
+--- Iteration 2 of 3 ---
+Passphrase for this iteration: mZwVH9rh5yHaZxreL4W4esSHsx7BKTsmyLZpmx2AXX3zU7XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD2
+Calculated seed: 1937378793
+Applying reverse per-character substitution...
+After reverse per-character substitution: M!Na:N>3TckAzNfff{F4ij=O*jJ~IdU%OMY^)OMi/269LC+4c>dTez2ZfAB^GHmub,ed.Ci3{<^(@%v]~ )0L'Ey(Fiu=X8^M9D %@<d-c~]O5Irw/3oNJsvVNB)vY%cVQLa$h'R|y$"T]?.XV[(L/w&Am1Zp=IF=*q2 C'U|$V%XE>lZN'[z-sp=wAI8@ALg\mQ<?'0k~xVblS&m>hTEcDpn1/t7kVwF-pb>qzh~rtcR0rcEGfjq}.miE?C R=B}&HtmvkT1UNB!0x>sb^k+I|0NN$cH>OoR#%z]0sB<u*O$uiCJDcW`_ZP7{AF&!bzSElz_J#jzZ!ly\5/AKxHd29$Ykf9$MCml+k)AUsU1Ibc^-MigTwv1X8syEoA
+Applying columnar transposition cipher...
+After columnar transposition cipher: 81<]$f~VIY|b^`R(zi$*=q1Ti7L@|+ g$=gn<&:.zyfANcAlS}MM%7XmOmAO{w)~LE1RdF=yJZekv>N_GXpET/H!- sbVLz@Iu0hArNdky,-_0F-jujX}U]E{C%$IR\MwT1?!NCZ\{UN>K+E&9!@kE>Mvm5</O /cX#2-*EDNz~YqJJHV=Gc2>0cCblQ'NAb*s'BtBUf$eMZris=iJ8.N??A+vV|=mCAw/'b>i!5Fs$dxklHDN<V>hYk1I^3M)wD8%9pqoc'2x%zs#m[Ifk6Ox~'^SLEfLcOBR^c)%9"diPcupOC~^mB.CF4]%0BQmIvt0z33l/4UcTH)zt adwlT^TZr(oi0&psz$b2AW[ZVchvju(FjA9o>]Uk&ayf
+Applying deterministic substitution...
+After deterministic substitution: /8xIh2A'CE:GSjyaNihM4l8Oi5e6:\_vh4v?x@9mNd2;7F;qb&||>5wQBQ;BK"`Ae<8ypD4d-}Y]1Z7T=wn<O)g*t_PG'eN6Cco{;(7p]dutToDtVcVw&^I<Kf>hCyr|"O8H*7f}rK^7Z~\<@0*6]<Z|1QXx)B_)Fw!JtM<s7NAEl--g'4=FJZoFfGq $7;GMP$R,R^2hY|}(iP4i-/m7HH;\1':4Qf;")$GZi*XDPhpk]qgs7x'Z{E]8CS#|`"s/>0nlzF$Jk>NP!Q3C2].BkA$Sbe<2eFBRySF`>0%piLFcnBfASQRmfD[I>oR QC1,oN##q)[^FOg`N,_Wp"qOSO}(azio@nPNhGJ;U3}'F{1VcaDV;0zZI^]@Wd2...
+
+--- Iteration 1 of 3 ---
+Passphrase for this iteration: mZwVH9rh5yHaZxreL4W4esSHsx7BKTsmyLZpmx2AXX3zU7XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD1
+Calculated seed: 1937378792
+Applying reverse per-character substitution...
+After reverse per-character substitution: P\\ g_k ~_r1ppN N<gQ#sGOZ\370sN_3pk k_D O33 )3G~tgGlG<\ @P3Dp<< 1_3PQ3GZgOk A%NRgN3 =gr )kGr7_\RPOO NPO PGP ggg rg3 N=N <\s\<gP N%P Xs%NNg_r0D=)P<% Nkr Dkr \gO P_< G=g 0NPOD33 3Pk )PGNgPP1kPP%<<\1OgD#%pN \Op _\_ 3p\ 5<Nfs%P D%3 k%r 1rD<5%_pOGp 7_rg8\PN8prDsp= G_k QO=Tp_% r_< Ap<.crN1rOs rrp D<k_pGkrTNkg<kD 1DGr5gPosgGNO3D gks 0<_1tON5=\s,%_P QrGOQDp}7Gp 7\=TO\g=ZG_<T%N)DDO s3p
+Applying columnar transposition cipher...
+After columnar transposition cipher: kOpDX@1<0QN1Z15))#TZ77Q085)A0A8<QgT5Os~Q0tN7ct=7OsPPNsD_3GDggrkgN3Dr%DPs<3G%<kNgpP\OpOrpPGr\N=gP\G<sPr\srg_GD%kPsN\__OD\g3%Npp<DP%<gg_3<O<\rg\G3pO\P%3\p_kgOg_NkpDr_%_3kP<pg%=k<<gGp3O_G=_O%g_Pgkk%3DsNG_3_G_GGGk3\r==PPGNP<r\pPNNDGrG_Ng=NGspD=O\OP3_kkrgk3D3r\OpP3<pDk\NPrNs<%OpN3s%Pg<pPrk%=r_ND<\_OrP<rprNOg7RgT)No~RO.D1}1)f#N1Z15QT1l,
+Applying deterministic substitution...
+After deterministic substitution: 0328[{"file":"https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8","type":"hls"}]zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz...
+
+--- Finalizing Decryption ---
+Extracted length string: 0328
+Parsed length: 328
+Extracted final result: [{"file":"https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8","type":"hls"}]
+--- Decryption Process Completed ---
+Decrypted string before JSON parsing: [{"file":"https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8","type":"hls"}]
+Parsed sources object: [
+  {
+    file: 'https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8',
+    type: 'hls'
+  }
+]
+--- setupPlayerSources Completed Successfully with nonce: XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD secret: mZwVH9rh5yHaZxreL4W4esSHsx7BKTsmyLZpmx2AXX3zU7
+--- fetchAndDecryptSources Completed Successfully with salt: XYxse0EpKn5sjFbF5BIOZvXPJZWl8Mhqgx9ijR25USEJtMhD
+Fetched and decrypted sources: [
+  {
+    file: 'https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8',
+    type: 'hls'
+  }
+]
+Extraction completed successfully: {
+  subtitles: [
+    {
+      url: 'https://megacloudforest.xyz/thumbnails/6d7af605e80bf7950848322809e4cf33/thumbnails.vtt',
+      lang: 'thumbnails'
+    }
+  ],
+  sources: [
+    {
+      url: 'https://lightningflash39.live/_v7/3955e98d168aac0ae18cb859f16bf0ea254323c256c4e7a546f95c49cad68b059e4dd384a1be22f85bfaad1f3f4ca4612345b142d0a3ade028cdbd105f2ab70ffa6213d67d3bad5a00b189e6d1d6d666014c77556e5fc425ee86c6dea7e6928734351d00ca0181c43251f2804e5ce9fb32e19b5af25c0b7cde8f4d3c5fc2ce3a/master.m3u8',
+      isM3U8: true,
+      type: 'hls'
+    }
+  ]
+}
+{
+  headers: { Referer: 'https://megacloud.blog/' },
+  data: { subtitles: [ [Object] ], sources: [ [Object] ] }
+}

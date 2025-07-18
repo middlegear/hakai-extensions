@@ -1,13 +1,8 @@
-import axios from 'axios';
-
-import CryptoJS from 'crypto-js';
+import { providerClient } from '../config/clients.js';
 import { USER_AGENT_HEADER } from '../provider/index.js';
-import { getClientKey } from './getClientKey.js';
-// import { generateSeed } from './decryptVidcloud.js';
+import { Decrypter } from '../utils/decrypt.js';
+import { getClientKey } from '../utils/getClientKey.js';
 
-//https://megacloud.blog/js/player/a/v2/pro/embed-1.min.js?v=
-// https://cloudvidz.net/js/player/m/v2/pro/embed-1.min.js?v=
-// https:///cdnstreame.net/js/player/m/v2/pro/embed-1.min.js?v=
 export type sources = {
   url: string;
   isM3U8: boolean;
@@ -17,6 +12,7 @@ export type sources = {
 export type subtitles = {
   url: string;
   lang: string;
+  default?: boolean;
 };
 
 export type ExtractedData = {
@@ -25,73 +21,8 @@ export type ExtractedData = {
 };
 
 class VidCloud {
-  private keyFetchers = [
-    async (): Promise<string | null> => {
-      const url = 'https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/rabbit.txt';
-      try {
-        const response = await axios.get(url);
-        if (typeof response.data === 'string' && response.data.length > 0) {
-          return response.data.trim();
-        }
-        console.warn(`Empty or invalid data from ${url}.`);
-        return null;
-      } catch (error) {
-        console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
-        return null;
-      }
-    },
-
-    async (): Promise<string | null> => {
-      const url = 'https://key.hi-anime.site';
-      try {
-        const response = await axios.get(url);
-        const jsonData = response.data;
-        if (typeof jsonData === 'object' && jsonData !== null && 'rabbit' in jsonData) {
-          const key = (jsonData as any).rabbit;
-          if (typeof key === 'string' && key.length > 0) {
-            return key;
-          }
-          console.warn(`'rabbit' field is empty or not a string from ${url}.`);
-          return null;
-        }
-        console.warn(`JSON  does not contain an expected  field or is invalid.`);
-        return null;
-      } catch (error) {
-        console.warn(`Failed to fetch key :`, (error as Error).message);
-        return null;
-      }
-    },
-    async (): Promise<string | null> => {
-      const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
-      try {
-        const response = await axios.get(url);
-        const jsonData = response.data;
-        if (typeof jsonData === 'object' && jsonData !== null && 'rabbit' in jsonData) {
-          const key = (jsonData as any).rabbit;
-          if (typeof key === 'string' && key.length > 0) {
-            return key;
-          }
-          console.warn(`'rabbit' field is empty or not a string from ${url}.`);
-          return null;
-        }
-        console.warn(`JSON from  does not contain an expected  field or is invalid.`);
-        return null;
-      } catch (error) {
-        console.warn(`Failed to fetch key :`, (error as Error).message);
-        return null;
-      }
-    },
-  ];
-
-  extract = async (videoUrl: URL, referer: string = 'https://flixhq.to/'): Promise<ExtractedData | string> => {
-    const extractedData: ExtractedData = {
-      subtitles: [],
-      sources: [],
-    };
-    const clientKey = (await getClientKey(videoUrl.href, referer)) as string;
-
-    let rawSourceData: any = null;
-
+  ///ill have to define the keyfetcher functions here
+  extract = async (videoUrl: URL, referer: string = 'https://flixhq.to/') => {
     const Options = {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -99,64 +30,77 @@ class VidCloud {
         'User-Agent': USER_AGENT_HEADER,
       },
     };
+    const extractedData: ExtractedData = {
+      subtitles: [],
+      sources: [],
+    };
 
-    const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
-    console.log(videoUrl.href);
-
+    // Extract source ID from video URL
+    const match = /\/([^\/\?]+)(?:\?|$)/.exec(videoUrl.href);
     const sourceId = match?.[1];
-
     if (!sourceId) {
-      return 'Could not extract source ID from video URL.';
+      console.error('Failed to extract source ID from:', videoUrl.href);
+      return { error: 'Could not extract source ID from video URL.' };
     }
+
     const fullPathname = videoUrl.pathname;
     const lastSlashIndex = fullPathname.lastIndexOf('/');
     const basePathname = fullPathname.substring(0, lastSlashIndex);
+    const clientkey = await getClientKey(videoUrl.href, referer);
+    if (!clientkey) {
+      return { error: 'Could not obtain client key.' };
+    }
+    console.log(clientkey);
 
-    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientKey}`;
-    // console.log(sourcesUrl);
-    // console.log(clientKey);
-    // const key = clientKey + generateSeed();
-    // console.log(key);
+    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientkey}`;
 
     try {
-      const response = await axios.get(sourcesUrl, Options);
-      rawSourceData = response.data;
+      const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
+      console.log('API Response:', initialResponse);
 
-      if (!rawSourceData) {
-        throw new Error('Expected source response missing.').message;
-      }
-      console.log(rawSourceData);
-      if (rawSourceData.encrypted) {
-        // attempt decryption
-        try {
-          const encrypted = rawSourceData?.sources;
+      if (initialResponse.encrypted) {
+        // implement keyfetching algorithms
+        const secret = 'PeLEW04UckjTFKg0x5xKO1WdhtDxvHBTxwiUWrztwWs3O7dc8cd9w';
+        const decryptor = new Decrypter(clientkey, secret);
+        const decrypted = decryptor.decrypt(initialResponse.sources);
+        const sources = JSON.parse(decrypted);
 
-          // const decrypted = CryptoJS.AES.decrypt(encrypted, workingKey).toString(CryptoJS.enc.Utf8);
-          // const finalDecryptedSources = JSON.parse(decrypted);
-          // extractedData.sources = finalDecryptedSources.map((s: any) => ({
-          //   url: s.file,
-          //   isM3U8: s.type === 'hls',
-          //   type: s.type,
-          // }));
-        } catch (error) {
-          return error instanceof Error ? error.message : 'Unknown Error';
+        if (!Array.isArray(sources)) {
+          console.error('Decrypted sources is not an array:', sources);
+          throw new Error('Decrypted sources is not an array');
         }
-      } else {
-        extractedData.sources = rawSourceData.sources.map((s: any) => ({
+        extractedData.sources = sources.map((s: any) => ({
           url: s.file,
           isM3U8: s.type === 'hls',
           type: s.type,
         }));
+      } else {
+        if (initialResponse.sources && Array.isArray(initialResponse.sources)) {
+          extractedData.sources = initialResponse.sources.map((s: any) => ({
+            url: s.file,
+            isM3U8: s.type === 'hls',
+            type: s.type,
+          }));
+        } else {
+          console.warn('No sources found or sources is not an array:', initialResponse.sources);
+        }
       }
-      extractedData.subtitles =
-        rawSourceData.tracks?.map((track: any) => ({
+
+      // Handle subtitles (never encrypted, process in both states)
+      if (initialResponse.tracks && Array.isArray(initialResponse.tracks) && initialResponse.tracks.length > 0) {
+        extractedData.subtitles = initialResponse.tracks.map((track: any) => ({
           url: track.file,
-          lang: track.label ? track.label : track.kind,
-        })) || [];
+          lang: track.label || track.kind || 'Unknown',
+          default: track.default || false,
+        }));
+      } else {
+        console.warn('No subtitles found or tracks is invalid:', initialResponse.tracks);
+      }
 
       return extractedData;
     } catch (error) {
-      return error instanceof Error ? error.message : 'Unknown Error';
+      console.error('Extraction error:', error);
+      return error instanceof Error ? error.message : 'Could not fetch or decrypt sources';
     }
   };
 }

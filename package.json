@@ -42,19 +42,19 @@
   "homepage": "https://github.com/middlegear/hakai-extensions#readme",
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.15.31",
+    "@types/node": "^22.16.4",
     "cz-conventional-changelog": "^3.3.0",
-    "prettier": "^3.5.3",
-    "semantic-release": "^24.2.5",
+    "prettier": "^3.6.2",
+    "semantic-release": "^24.2.7",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "cheerio": "^1.1.0",
     "crypto-js": "^4.2.0",
-    "got-scraping": "^4.1.1"
+    "got-scraping": "^4.1.2"
   },
   "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6",
   "config": {

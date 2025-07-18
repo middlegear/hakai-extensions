@@ -9,6 +9,7 @@ import {
 } from './scraper.js';
 import { providerClient, zoroSearch, zoroBaseUrl, MegaCloud } from '../../index.js';
 import { type ASource, SubOrDub } from '../../../types/types.js';
+import VidCloud from '../../../source-extractors/vidcloud.js';
 
 export interface SuccessSearchResponse {
   data: Anime[];
@@ -331,7 +332,7 @@ export async function fetchEpisodeSources(
       case HiAnimeServers.HD3:
         return {
           headers: { Referer: `${serverUrl.origin}/` },
-          data: (await new MegaCloud().extract(serverUrl)) as ASource,
+          data: (await new VidCloud().extract(serverUrl)) as ASource,
         };
 
       default:
