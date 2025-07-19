@@ -19,6 +19,7 @@
     "lint": "tsc",
     "ci": "tsc && pnpm test && pnpm run build",
     "format": "prettier --write .",
+    "prepare": "pnpm run build",
     "semantic-release": "semantic-release --branches main"
   },
   "files": [
