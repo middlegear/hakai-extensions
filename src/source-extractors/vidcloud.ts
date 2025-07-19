@@ -35,7 +35,6 @@ class VidCloud {
       sources: [],
     };
 
-    // Extract source ID from video URL
     const match = /\/([^\/\?]+)(?:\?|$)/.exec(videoUrl.href);
     const sourceId = match?.[1];
     if (!sourceId) {
@@ -59,7 +58,7 @@ class VidCloud {
       console.log('API Response:', initialResponse);
 
       if (initialResponse.encrypted) {
-        // implement keyfetching algorithms
+        // implement keyfetching avoid static stuff
         const secret = 'PeLEW04UckjTFKg0x5xKO1WdhtDxvHBTxwiUWrztwWs3O7dc8cd9w';
         const decryptor = new Decrypter(clientkey, secret);
         const decrypted = decryptor.decrypt(initialResponse.sources);

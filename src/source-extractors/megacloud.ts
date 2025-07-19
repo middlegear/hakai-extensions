@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-import { zoroBaseUrl } from '../provider/index.js';
+import { providerClient, USER_AGENT_HEADER, zoroBaseUrl } from '../provider/index.js';
 import type { ASource } from '../types/types.js';
 import { getClientKey } from '../utils/getClientKey.js';
 import { Decrypter } from '../utils/decrypt.js';
@@ -8,7 +6,14 @@ import { Decrypter } from '../utils/decrypt.js';
 class MegaCloud {
   readonly referer: string = `${zoroBaseUrl}/`;
 
-  async extract(videoUrl: URL): Promise<ASource | string> {
+  async extract(videoUrl: URL) {
+    const Options = {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: videoUrl.href,
+        'User-Agent': USER_AGENT_HEADER,
+      },
+    };
     const extractedData: ASource = {
       intro: {
         start: 0,
@@ -22,58 +27,74 @@ class MegaCloud {
       sources: [],
     };
 
+    const match = /\/([^\/\?]+)(?:\?|$)/.exec(videoUrl.href);
+    const sourceId = match?.[1];
+    if (!sourceId) {
+      console.error('Failed to extract source ID from:', videoUrl.href);
+      // return { error: 'Could not extract source ID from video URL.' };
+    }
+
+    const fullPathname = videoUrl.pathname;
+    const lastSlashIndex = fullPathname.lastIndexOf('/');
+    const basePathname = fullPathname.substring(0, lastSlashIndex);
+    const clientkey = await getClientKey(videoUrl.href, this.referer);
+    if (!clientkey) {
+      return { error: 'Could not obtain client key.' };
+    }
+    console.log(clientkey);
+
+    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientkey}`;
+
     try {
-      const match = /\/([^\/\?]+)\?/.exec(videoUrl.href);
-      const sourceId = match?.[1];
+      const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
+      console.log('API Response:', initialResponse);
 
-      if (!sourceId) throw new Error('Unable to extract sourceId from embed URL').message;
+      if (initialResponse.encrypted) {
+        const secret = '';
+        ///broken again fk this shit
+        const decryptor = new Decrypter(clientkey, secret);
+        const decrypted = decryptor.decrypt(initialResponse.sources);
+        console.log(decrypted);
 
-      const fullPathname = videoUrl.pathname;
-      const lastSlashIndex = fullPathname.lastIndexOf('/');
-      const basePathname = fullPathname.substring(0, lastSlashIndex);
+        const sources = JSON.parse(decrypted);
 
-      const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientKey}`;
-
-      const { data: initialRawSourceData } = await axios.get(sourcesUrl);
-      rawSourceData = initialRawSourceData;
-      console.log(initialRawSourceData);
-
-      console.log(clientKey);
-      const StaticKey = 'AaND3XizK1QoixkfwyJfztls3yx5LALK1XBbOgxiyolzVhE' + clientKey;
-      const encryptedSourcesToTry: string = rawSourceData?.sources;
-      if (!encryptedSourcesToTry) {
-        throw new Error('Expected source response missing.').message;
-      }
-      if (rawSourceData.encrypted) {
-        const decrypter = new Decrypter(StaticKey);
-        const sources = decrypter.setupPlayerSources(encryptedSourcesToTry);
-        console.log(sources);
-        // extractedData.sources = finalDecryptedSources.map((s: any) => ({
-        //   url: s.file,
-        //   isM3U8: s.type === 'hls',
-        //   type: s.type,
-        // }));
-      } else {
-        extractedData.sources = initialRawSourceData.map((s: any) => ({
+        if (!Array.isArray(sources)) {
+          console.error('Decrypted sources is not an array:', sources);
+          throw new Error('Decrypted sources is not an array');
+        }
+        extractedData.sources = sources.map((s: any) => ({
           url: s.file,
           isM3U8: s.type === 'hls',
           type: s.type,
         }));
+      } else {
+        if (initialResponse.sources && Array.isArray(initialResponse.sources)) {
+          extractedData.sources = initialResponse.sources.map((s: any) => ({
+            url: s.file,
+            isM3U8: s.type === 'hls',
+            type: s.type,
+          }));
+        } else {
+          console.warn('No sources found or sources is not an array:', initialResponse.sources);
+        }
       }
-      extractedData.intro = rawSourceData.intro ? rawSourceData.intro : extractedData.intro;
-      extractedData.outro = rawSourceData.outro ? rawSourceData.outro : extractedData.outro;
 
-      extractedData.subtitles =
-        rawSourceData.tracks?.map((track: any) => ({
+      // Handle subtitles (never encrypted, process in both states)
+      if (initialResponse.tracks && Array.isArray(initialResponse.tracks) && initialResponse.tracks.length > 0) {
+        extractedData.subtitles = initialResponse.tracks.map((track: any) => ({
           url: track.file,
-          lang: track.label ? track.label : track.kind,
-        })) || [];
+          lang: track.label || track.kind || 'Unknown',
+          default: track.default || false,
+        }));
+      } else {
+        console.warn('No subtitles found or tracks is invalid:', initialResponse.tracks);
+      }
 
       return extractedData;
     } catch (error) {
-      return error instanceof Error ? error.message : 'Unknown Error';
+      console.error('Extraction error:', error);
+      return error instanceof Error ? error.message : 'Could not fetch or decrypt sources';
     }
   }
 }
-
 export default MegaCloud;
