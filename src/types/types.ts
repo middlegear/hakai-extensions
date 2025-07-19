@@ -77,7 +77,7 @@ export type Charactersort = (typeof Charactersort)[keyof typeof Charactersort];
 
 export const AnimeProvider = {
   HiAnime: 'hianime',
-  // Animekai: 'animekai',
+  Animekai: 'animekai',
 } as const;
 export type AnimeProvider = (typeof AnimeProvider)[keyof typeof AnimeProvider];
 
