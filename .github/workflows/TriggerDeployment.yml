@@ -49,7 +49,7 @@ jobs:
     - name: Trigger API Deployment Workflow
       uses: peter-evans/repository-dispatch@v3 
       with:
-        token: ${{ secrets.PAT_FOR_API_DISPATCH }} 
+        token: ${{ secrets.REPO_TOKEN}} 
         repository: middlegear/hakai-api 
         event-type: dependency-updated 
         client-payload: '{"sha": "${{ github.sha }}", "message": "${{ github.event.head_commit.message }}"}' # Pass scraper commit info
