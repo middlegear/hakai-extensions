@@ -1,9 +1,7 @@
 name: Build, Test & Trigger API Deploy
 
 on:
-  push:
-    branches:
-      - main
+   workflow_dispatch:
 
 jobs:
   build-and-dispatch:
