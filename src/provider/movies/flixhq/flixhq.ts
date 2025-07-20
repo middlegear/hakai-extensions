@@ -42,11 +42,13 @@ interface ErrorFlixInfo {
 }
 export type FLixInfoRes = SuccessFlixInfo | ErrorFlixInfo;
 export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
+  const newId = mediaId.replace('-', '/');
+
   if (!mediaId) {
     return { data: null, episodes: [], error: 'Missing required parameter mediaId!' };
   }
   if (!mediaId.startsWith(flixhqBaseUrl)) {
-    mediaId = `${flixhqBaseUrl}/${mediaId}`;
+    mediaId = `${flixhqBaseUrl}/${newId}`;
   }
 
   try {

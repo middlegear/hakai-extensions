@@ -22,8 +22,10 @@ export type ExtractedData = {
 };
 
 class VidCloud {
-  async fetchKey(): Promise<string | null> {
-    const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
+  private primaryKeyUrl = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
+  private secondaryKeyUrl = 'https://raw.githubusercontent.com/middlegear/keys/refs/heads/main/keys.json';
+
+  async fetchKey(url: string): Promise<string | null> {
     try {
       const response = await axios.get(url);
       const jsonData = response.data;
@@ -38,10 +40,11 @@ class VidCloud {
       console.warn(`JSON from ${url} does not contain an expected 'rabbit' field or is invalid.`);
       return null;
     } catch (error) {
-      console.warn(`Failed to fetch key:`, (error as Error).message);
+      console.warn(`Failed to fetch key from ${url}:`, (error as Error).message);
       return null;
     }
   }
+
   async extract(videoUrl: URL, referer: string = 'https://flixhq.to/'): Promise<ExtractedData | string> {
     const Options = {
       headers: {
@@ -76,19 +79,54 @@ class VidCloud {
       const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
 
       if (initialResponse.encrypted) {
-        const secret = await this.fetchKey();
-        const decryptor = new Decrypter(clientkey, secret as string);
-        const decrypted = decryptor.decrypt(initialResponse.sources);
-        const sources = JSON.parse(decrypted);
+        let sources;
+        let key = await this.fetchKey(this.primaryKeyUrl);
+        if (key) {
+          const decryptor = new Decrypter(clientkey, key as string);
+          const decrypted = decryptor.decrypt(initialResponse.sources);
+          try {
+            sources = JSON.parse(decrypted);
+            if (Array.isArray(sources)) {
+              extractedData.sources = sources.map((s: any) => ({
+                url: s.file,
+                isM3U8: s.type === 'hls',
+                type: s.type,
+              }));
+            } else {
+              throw new Error('sources is not an array').message;
+            }
+          } catch (error) {
+            key = await this.fetchKey(this.secondaryKeyUrl);
+            if (!key) {
+              throw new Error('Failed to fetch decryption key from both sources').message;
+            }
+            const decryptor = new Decrypter(clientkey, key as string);
+            const decryptedSecondary = decryptor.decrypt(initialResponse.sources);
+            sources = JSON.parse(decryptedSecondary);
+            if (!Array.isArray(sources)) {
+              throw new Error('Decrypted sources is not an array').message;
+            }
+            extractedData.sources = sources.map((s: any) => ({
+              url: s.file,
+              isM3U8: s.type === 'hls',
+              type: s.type,
+            }));
+          }
+        } else {
+          const secret = await this.fetchKey(this.secondaryKeyUrl);
 
-        if (!Array.isArray(sources)) {
-          throw new Error('Decrypted sources is not an array').message;
+          const decryptor = new Decrypter(clientkey, secret as string);
+          const decrypted = decryptor.decrypt(initialResponse.sources);
+          sources = JSON.parse(decrypted);
+          if (!Array.isArray(sources)) {
+            throw new Error('sources is not an array:').message;
+          }
+          extractedData.sources = sources.map((s: any) => ({
+            url: s.file,
+            isM3U8: s.type === 'hls',
+            type: s.type,
+          }));
         }
-        extractedData.sources = sources.map((s: any) => ({
-          url: s.file,
-          isM3U8: s.type === 'hls',
-          type: s.type,
-        }));
       } else {
         if (initialResponse.sources && Array.isArray(initialResponse.sources)) {
           extractedData.sources = initialResponse.sources.map((s: any) => ({

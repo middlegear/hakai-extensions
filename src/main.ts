@@ -1,7 +1,6 @@
 import { HiAnime } from './provider/anime/hianime/index.js';
 import { Meta, Anilist, Jikan, AnimeKai, FlixHQ, TvMaze, TheMovieDatabase } from './provider/index.js';
 import { Anime } from './provider/anime/anime.js';
-// import { _getsources } from './provider/movies/flixhq/flixhq.js';
 
 import {
   AnimeKaiServers,

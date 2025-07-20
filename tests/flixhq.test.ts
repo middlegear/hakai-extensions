@@ -11,7 +11,7 @@ test('returns search results for movie and TV shows', async () => {
 });
 
 test('returns media information on movie / TV show', async () => {
-  const data = await flixhq.fetchMediaInfo('tv/watch-the-boys-33895');
+  const data = await flixhq.fetchMediaInfo('tv-watch-the-boys-33895');
 
   expect(data.data).not.toBeNull();
   expect(Array.isArray(data.episodes)).toBe(true);

@@ -11,7 +11,7 @@ export function scrapeSearch($: cheerio.CheerioAPI) {
   $(selector).each((i, el) => {
     const releaseDate = $(el).find('div.film-detail > div.fd-infor > span:nth-child(1)').text();
     searchRes.push({
-      id: $(el).find('div.film-poster > a').attr('href')?.slice(1) || null,
+      id: $(el).find('div.film-poster > a').attr('href')?.slice(1).replace('/', '-') || null,
       title: $(el).find('div.film-detail > h2 > a').attr('title') || null,
       quality: $(el).find('div.film-poster > div.film-poster-quality').text() || null,
       url: `${flixhqBaseUrl}${$(el).find('div.film-poster > a').attr('href')}`,
