@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { providerClient } from '../config/clients.js';
 import { USER_AGENT_HEADER } from '../provider/index.js';
 import { Decrypter } from '../utils/decrypt.js';
@@ -21,8 +22,27 @@ export type ExtractedData = {
 };
 
 class VidCloud {
-  ///ill have to define the keyfetcher functions here
-  extract = async (videoUrl: URL, referer: string = 'https://flixhq.to/') => {
+  async fetchKey(): Promise<string | null> {
+    const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
+    try {
+      const response = await axios.get(url);
+      const jsonData = response.data;
+      if (typeof jsonData === 'object' && jsonData !== null && 'rabbit' in jsonData) {
+        const key = jsonData.rabbit;
+        if (typeof key === 'string' && key.length > 0) {
+          return key;
+        }
+        console.warn(`'rabbit' field is empty or not a string from ${url}.`);
+        return null;
+      }
+      console.warn(`JSON from ${url} does not contain an expected 'rabbit' field or is invalid.`);
+      return null;
+    } catch (error) {
+      console.warn(`Failed to fetch key:`, (error as Error).message);
+      return null;
+    }
+  }
+  async extract(videoUrl: URL, referer: string = 'https://flixhq.to/'): Promise<ExtractedData | string> {
     const Options = {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -37,9 +57,9 @@ class VidCloud {
 
     const match = /\/([^\/\?]+)(?:\?|$)/.exec(videoUrl.href);
     const sourceId = match?.[1];
+
     if (!sourceId) {
-      console.error('Failed to extract source ID from:', videoUrl.href);
-      return { error: 'Could not extract source ID from video URL.' };
+      throw new Error('Failed to fetch sourceId').message;
     }
 
     const fullPathname = videoUrl.pathname;
@@ -47,27 +67,22 @@ class VidCloud {
     const basePathname = fullPathname.substring(0, lastSlashIndex);
     const clientkey = await getClientKey(videoUrl.href, referer);
     if (!clientkey) {
-      return { error: 'Could not obtain client key.' };
+      throw new Error('Failed to fetch ClientKey').message;
     }
-    console.log(videoUrl.href);
+
     const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientkey}`;
-    console.log(sourcesUrl);
 
     try {
       const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
 
       if (initialResponse.encrypted) {
-        // implement keyfetching avoid static stuff
-        console.log(initialResponse);
-
-        const secret = 'GA579EK2q4zAOldiOEmd5ytsgmeLj6mDlJkr5mvhSHZjpk4dAc5rCJE';
-        const decryptor = new Decrypter(clientkey, secret);
+        const secret = await this.fetchKey();
+        const decryptor = new Decrypter(clientkey, secret as string);
         const decrypted = decryptor.decrypt(initialResponse.sources);
         const sources = JSON.parse(decrypted);
 
         if (!Array.isArray(sources)) {
-          console.error('Decrypted sources is not an array:', sources);
-          throw new Error('Decrypted sources is not an array');
+          throw new Error('Decrypted sources is not an array').message;
         }
         extractedData.sources = sources.map((s: any) => ({
           url: s.file,
@@ -81,28 +96,22 @@ class VidCloud {
             isM3U8: s.type === 'hls',
             type: s.type,
           }));
-        } else {
-          console.warn('No sources found or sources is not an array:', initialResponse.sources);
         }
       }
 
-      // Handle subtitles (never encrypted, process in both states)
       if (initialResponse.tracks && Array.isArray(initialResponse.tracks) && initialResponse.tracks.length > 0) {
         extractedData.subtitles = initialResponse.tracks.map((track: any) => ({
           url: track.file,
           lang: track.label || track.kind || 'Unknown',
           default: track.default || false,
         }));
-      } else {
-        console.warn('No subtitles found or tracks is invalid:', initialResponse.tracks);
       }
 
       return extractedData;
     } catch (error) {
-      console.error('Extraction error:', error);
-      return error instanceof Error ? error.message : 'Could not fetch or decrypt sources';
+      return error instanceof Error ? error.message : 'Fatal Error';
     }
-  };
+  }
 }
 
 export default VidCloud;

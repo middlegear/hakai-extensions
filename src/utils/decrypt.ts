@@ -92,10 +92,8 @@ export class Decrypter {
         })
         .join('');
 
-      // Apply columnar transposition cipher
       result = this.columnarTranspositionCipher(result, passphrase);
 
-      // Apply deterministic substitution
       const shuffled = this.deterministicShuffle(this.characterSet, passphrase);
       const mapping: { [key: string]: string } = {};
       shuffled.forEach((char, idx) => {

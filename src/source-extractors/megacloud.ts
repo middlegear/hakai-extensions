@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { providerClient, USER_AGENT_HEADER, zoroBaseUrl } from '../provider/index.js';
 import type { ASource } from '../types/types.js';
 import { getClientKey } from '../utils/getClientKey.js';
@@ -6,14 +7,28 @@ import { MegacloudDecryptor } from '../utils/megaclouddecrypt.js';
 class MegaCloud {
   readonly referer: string = `${zoroBaseUrl}/`;
 
-  async extract(videoUrl: URL) {
-    const Options = {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        Referer: videoUrl.href,
-        'User-Agent': USER_AGENT_HEADER,
-      },
-    };
+  async fetchKey(): Promise<string | null> {
+    const url = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
+    try {
+      const response = await axios.get(url);
+      const jsonData = response.data;
+      if (typeof jsonData === 'object' && jsonData !== null && 'mega' in jsonData) {
+        const key = jsonData.mega;
+        if (typeof key === 'string' && key.length > 0) {
+          return key;
+        }
+        console.warn(`'rabbit' field is empty or not a string from ${url}.`);
+        return null;
+      }
+      console.warn(`JSON from ${url} does not contain an expected 'rabbit' field or is invalid.`);
+      return null;
+    } catch (error) {
+      console.warn(`Failed to fetch key:`, (error as Error).message);
+      return null;
+    }
+  }
+
+  async extract(videoUrl: URL): Promise<ASource | string> {
     const extractedData: ASource = {
       intro: {
         start: 0,
@@ -27,41 +42,45 @@ class MegaCloud {
       sources: [],
     };
 
+    const options = {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: videoUrl.href,
+        'User-Agent': USER_AGENT_HEADER,
+      },
+    };
+
     const match = /\/([^\/\?]+)(?:\?|$)/.exec(videoUrl.href);
     const sourceId = match?.[1];
     if (!sourceId) {
-      console.error('Failed to extract source ID from:', videoUrl.href);
-      return { error: 'Could not extract source ID from video URL.' };
+      return 'Failed to extract source ID';
     }
 
     const fullPathname = videoUrl.pathname;
     const lastSlashIndex = fullPathname.lastIndexOf('/');
     const basePathname = fullPathname.substring(0, lastSlashIndex);
-    const clientkey = await getClientKey(videoUrl.href, this.referer);
-    if (!clientkey) {
-      return { error: 'Could not obtain client key.' };
+    const clientKey = await getClientKey(videoUrl.href, this.referer);
+    if (!clientKey) {
+      throw new Error('Failed to fetch ClientKey').message;
     }
-    console.log(clientkey);
 
-    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientkey}`;
+    const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientKey}`;
 
     try {
-      const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
-      console.log('API Response:', initialResponse);
+      const { data: initialResponse } = await providerClient.get(sourcesUrl, options);
 
       if (initialResponse.encrypted) {
-        const decode = new MegacloudDecryptor();
-        const secret = ''; /// idk this shit
-        const nonce = ''; ///
-        const keyphrase = secret + nonce;
-        const decoded = decode.decrypt(initialResponse.sources, keyphrase);
+        const decryptor = new MegacloudDecryptor();
+
+        const secret = await this.fetchKey();
+        const decoded = decryptor.decrypt(secret as string, clientKey, initialResponse.sources);
 
         const sources = JSON.parse(decoded);
-
         if (!Array.isArray(sources)) {
           console.error('Decrypted sources is not an array:', sources);
-          throw new Error('Decrypted sources is not an array');
+          return 'Decrypted sources is not an array';
         }
+
         extractedData.sources = sources.map((s: any) => ({
           url: s.file,
           isM3U8: s.type === 'hls',
@@ -74,20 +93,18 @@ class MegaCloud {
             isM3U8: s.type === 'hls',
             type: s.type,
           }));
-        } else {
-          console.warn('No sources found or sources is not an array:', initialResponse.sources);
         }
       }
 
-      // Handle subtitles (never encrypted, process in both states)
+      extractedData.intro = initialResponse.intro ?? { start: 0, end: 0 };
+      extractedData.outro = initialResponse.outro ?? { start: 0, end: 0 };
+
       if (initialResponse.tracks && Array.isArray(initialResponse.tracks) && initialResponse.tracks.length > 0) {
         extractedData.subtitles = initialResponse.tracks.map((track: any) => ({
           url: track.file,
           lang: track.label || track.kind || 'Unknown',
           default: track.default || false,
         }));
-      } else {
-        console.warn('No subtitles found or tracks is invalid:', initialResponse.tracks);
       }
 
       return extractedData;
@@ -97,4 +114,5 @@ class MegaCloud {
     }
   }
 }
+
 export default MegaCloud;

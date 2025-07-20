@@ -4,7 +4,7 @@
 
 ## Overview
 
-**Hakai Extensions** is a  **TypeScript** package that simplifies fetching detailed **media data** from popular APIs like **Anilist**, **Jikan**, **The Movie Database**, and **TVMaze**. It maps this data into easy-to-use, structured class providers.You might want to visit  <strong> [Docs 🤷](https://github.com/middlegear/documentation) </strong>
+**Hakai Extensions** is a  **TypeScript** package that simplifies fetching detailed **media data** from popular APIs like **Anilist**, **Jikan**, **The Movie Database**, and **TVMaze**. It maps this data into easy-to-use, structured class providers.You might want to visit. <strong> [Docs](https://github.com/middlegear/documentation) </strong>
 
 > **Disclaimer:**
 > This package is **unofficial** and has **no affiliation** with Anilist, Jikan, The Movie Database, TVMaze, or any third-party providers. It does not host, own, or distribute content. All data remains the property of its respective owners.
