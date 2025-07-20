@@ -1,7 +1,7 @@
 import { providerClient, USER_AGENT_HEADER, zoroBaseUrl } from '../provider/index.js';
 import type { ASource } from '../types/types.js';
 import { getClientKey } from '../utils/getClientKey.js';
-import { Decrypter } from '../utils/decrypt.js';
+import { MegacloudDecryptor } from '../utils/megaclouddecrypt.js';
 
 class MegaCloud {
   readonly referer: string = `${zoroBaseUrl}/`;
@@ -31,7 +31,7 @@ class MegaCloud {
     const sourceId = match?.[1];
     if (!sourceId) {
       console.error('Failed to extract source ID from:', videoUrl.href);
-      // return { error: 'Could not extract source ID from video URL.' };
+      return { error: 'Could not extract source ID from video URL.' };
     }
 
     const fullPathname = videoUrl.pathname;
@@ -50,13 +50,13 @@ class MegaCloud {
       console.log('API Response:', initialResponse);
 
       if (initialResponse.encrypted) {
-        const secret = '';
-        ///broken again fk this shit
-        const decryptor = new Decrypter(clientkey, secret);
-        const decrypted = decryptor.decrypt(initialResponse.sources);
-        console.log(decrypted);
+        const decode = new MegacloudDecryptor();
+        const secret = ''; /// idk this shit
+        const nonce = ''; ///
+        const keyphrase = secret + nonce;
+        const decoded = decode.decrypt(initialResponse.sources, keyphrase);
 
-        const sources = JSON.parse(decrypted);
+        const sources = JSON.parse(decoded);
 
         if (!Array.isArray(sources)) {
           console.error('Decrypted sources is not an array:', sources);

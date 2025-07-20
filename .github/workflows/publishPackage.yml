@@ -1,38 +1,29 @@
-name: Publish Release # Consistent capitalization for clarity
+name: Publish Release 
 
 on:
-  workflow_dispatch: # Allows manual triggering of the workflow
+  workflow_dispatch:
 
 jobs:
-  run-tests: # Job names should be kebab-case for consistency
-    name: Run Tests # More descriptive name for the job
+  run-tests: 
+    name: Run Tests 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Ensures full history for tools like semantic-release if used later
+          fetch-depth: 0 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # registry-url is not needed here unless you're installing from a private registry
-          # but harmless if left for consistency with publish job
+        
 
       - name: Install pnpm
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: |
-          # The 'rm -f pnpm-lock.yaml' and '--no-frozen-lockfile' are generally
-          # discouraged in CI unless you specifically know why you need them.
-          # For reproducible builds, you typically want to use the lockfile.
-          # If you *must* delete it, ensure it's intentional.
-          # For typical install, just 'pnpm install' is enough.
-          # I'm keeping your original logic for now, but consider removing rm -f.
-          # rm -f pnpm-lock.yaml # Consider removing this line for reproducible builds
-          pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Run test Anilist
         run: pnpm test-anilist
@@ -43,7 +34,7 @@ jobs:
       - name: Run test Hianime
         run: pnpm test-hianime
 
-      # Uncomment if you want to run this test
+      
       # - name: Run test Animekai
       #   run: pnpm test-animekai
 
@@ -54,7 +45,7 @@ jobs:
   publish-npm-package: # Corrected indentation and kebab-case name
     name: Publish NPM Package
     runs-on: ubuntu-latest
-    needs: run-tests # This is crucial: ensures tests pass before attempting to publish
+    needs: run-tests 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -65,7 +56,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org' # Essential for publishing to NPM
+          registry-url: 'https://registry.npmjs.org' 
        
 
       - name: Install pnpm
@@ -73,8 +64,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Again, consider removing 'rm -f' if you want reproducible builds.
-          # rm -f pnpm-lock.yaml
+         
           pnpm install --no-frozen-lockfile
 
       - name: Lint

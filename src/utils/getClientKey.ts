@@ -19,6 +19,8 @@ export async function getClientKey(embedUrl: string, Referer: string): Promise<s
       });
 
       const html = response.data;
+      console.log(html);
+
       const $ = load(html);
 
       // 1. Check for 48-character alphanumeric nonce in HTML

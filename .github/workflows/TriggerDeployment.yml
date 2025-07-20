@@ -1,0 +1,55 @@
+name: Build, Test & Trigger API Deploy
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build-and-dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+
+    steps:
+    - name: Checkout Scraper Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22' 
+        cache: 'pnpm'
+
+    - name: Install pnpm 
+      run: npm install -g pnpm
+
+    - name: Install Scraper Dependencies
+      run: pnpm install
+
+    - name: Lint
+      run: pnpm lint
+      
+    - name: Build 
+      run: pnpm run build
+
+    - name: Run Anilist Test
+      run:  pnpm test-anilist
+    
+    - name: Run Jikan Test
+      run : pnpm test-jikan
+    
+    - name: Run Test Hianime
+      run : pnpm test-hianime
+    
+    - name: Run FlixHQ Test
+      run : pnpm test-flixhq
+
+    - name: Trigger API Deployment Workflow
+      uses: peter-evans/repository-dispatch@v3 
+      with:
+        token: ${{ secrets.PAT_FOR_API_DISPATCH }} 
+        repository: middlegear/hakai-api 
+        event-type: dependency-updated 
+        client-payload: '{"sha": "${{ github.sha }}", "message": "${{ github.event.head_commit.message }}"}' # Pass scraper commit info

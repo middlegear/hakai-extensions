@@ -49,17 +49,18 @@ class VidCloud {
     if (!clientkey) {
       return { error: 'Could not obtain client key.' };
     }
-    console.log(clientkey);
-
+    console.log(videoUrl.href);
     const sourcesUrl = `${videoUrl.origin}${basePathname}/getSources?id=${sourceId}&_k=${clientkey}`;
+    console.log(sourcesUrl);
 
     try {
       const { data: initialResponse } = await providerClient.get(sourcesUrl, Options);
-      console.log('API Response:', initialResponse);
 
       if (initialResponse.encrypted) {
         // implement keyfetching avoid static stuff
-        const secret = 'PeLEW04UckjTFKg0x5xKO1WdhtDxvHBTxwiUWrztwWs3O7dc8cd9w';
+        console.log(initialResponse);
+
+        const secret = 'GA579EK2q4zAOldiOEmd5ytsgmeLj6mDlJkr5mvhSHZjpk4dAc5rCJE';
         const decryptor = new Decrypter(clientkey, secret);
         const decrypted = decryptor.decrypt(initialResponse.sources);
         const sources = JSON.parse(decrypted);

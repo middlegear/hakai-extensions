@@ -1,0 +1,83 @@
+The given function `p = (P7, p4) => { ... }` implements a **columnar transposition cipher**.
+
+Here's why:
+
+1.  **Key-based Columnar Arrangement:** The `p4` parameter acts as the key. The grid is filled column-wise based on the *sorted order* of the characters in `p4`. This is a hallmark of columnar transposition, where the key determines the order in which columns are written or read.
+
+2.  **Filling Column by Column:** Step 3 explicitly states: "Fill B7 grid column-wise using sorted order of p4's characters." This is the core mechanism of columnar transposition during encryption (or decryption, depending on the specific implementation).
+
+3.  **Reading Row by Row:** Step 4 then reads the grid row-wise to construct the final string. This reordering of the characters from a column-wise input to a row-wise output (or vice-versa in decryption) is characteristic of this cipher.
+
+In essence, the `P7` (plaintext) is written into a grid column by column, but the order of the columns is determined by the sorted key `p4`. Then, the ciphertext (`f5`) is read out row by row.
+
+
+
+
+
+function p3(inputStr, key = "[object Object][object Object]") {
+  // 1. Initialize PRNG
+  let state = BigInt(0);
+  for (let i = 0; i < key.length; i++) {
+    state = (state * 31n + BigInt(key.charCodeAt(i))) & 0xFFFFFFFFn;
+  }
+
+  // 2. Replace each char in inputStr with random char from D
+  let transformed = inputStr.split("").map(char => {
+    const pos = D.indexOf(char);
+    if (pos === -1) return char;
+    state = (state * 1103515245n + 12345n) & 0x7FFFFFFFn;
+    const randomPos = Number(state % 95n);
+    return D[randomPos];
+  }).join("");
+
+  // 3. Apply transposition cipher
+  transformed = p(transformed, key);
+
+  // 4. Shuffle D and apply substitution
+  const shuffledD = h(D, key);
+  const substitutionTable = {};
+  D.forEach((char, idx) => { substitutionTable[char] = shuffledD[idx]; });
+
+  return transformed.split("").map(char => substitutionTable[char] || char).join("");
+}
+
+
+
+function m(encodedStr, iterations = 3) {
+  // 1. Decode Base64
+  let l3 = atob(encodedStr);
+
+  // 2. Apply transformations 'iterations' times
+  for (let i = 0; i < iterations; i++) {
+    // PRNG setup (seeded with "[object Object][object Object]")
+    let state = 0n;
+    for (let c of "[object Object][object Object]") {
+      state = (state * 31n + BigInt(c.charCodeAt(0))) & 0xFFFFFFFFn;
+    }
+
+    // Character substitution
+    l3 = l3.split("").map(char => {
+      const pos = D.indexOf(char);
+      if (pos === -1) return char;
+      state = (state * 1103515245n + 12345n) & 0x7FFFFFFFn;
+      const randomPos = Number(state % 95n);
+      return D[randomPos];
+    }).join("");
+
+    // Transposition cipher
+    l3 = p(l3, "[object Object][object Object]");
+
+    // Shuffle D and substitute again
+    const shuffledD = h(D, "[object Object][object Object]");
+    const substitutionTable = {};
+    D.forEach((char, idx) => { substitutionTable[char] = shuffledD[idx]; });
+    l3 = l3.split("").map(char => substitutionTable[char] || char).join("");
+  }
+
+  // 3. Return sliced result (skip first 4 chars)
+  return l3.slice(4);
+}
+///sample data
+Ixp84Xh06nn3TEA7TsNfNTGPBxeHIdV5Y8568QfobBJNoIHz   is the key from DOm
+
+  sources: 'M3JOYTcwPnYnIn18ZTQ1U28xJkAqIExTLVMqczslUEA8LD5RM1o8UCZ3UVhvJCg1PVVAWTt6ezhAOi1qJUJ1Mz0oMSxcR1xLVih5cnZaJCQiRFByW1xCWm4tOHV6cmFtUyAxOnImUCpCVy4hOHJ4c1RnZ2hhd1lUfGs5RzllKjJWUFJneypbMV1iIGsuZic8KiBESzgtZ0REeW5tVHIqdl1+aCczO1AlNGlQeTkxeCBPRUo/R0h5dHxDN05bVSlrIntxZSdsKW0lWno7a1xNNVM1W2VNIWMzbjoud2FHT1hsQ2MmQSRPMVteIjNCJDpdeDombFNFXiVfbDVcQFJULHMoOHcjTiowV3cyTjRNTTM/S3hSVStueXRAdT0ie15RMHQhLTMiJSV5QkwwJSx2QEB6QjwhNX0+ZTlHaT8rPVJoe3RzVGgiMCI/SSpdPyE8LV1Pfnl2NFFwVHNuWDowJyl7

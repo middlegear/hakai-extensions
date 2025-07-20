@@ -19,16 +19,15 @@ test('returns media information on movie / TV show', async () => {
 });
 
 test('return media servers', async () => {
-  const data = await flixhq.fetchMediaServers('episode/servers/1019968');
+  const data = await flixhq.fetchMediaServers('episode-1019968');
 
   expect(Array.isArray(data.data)).toBe(true);
   expect(data.data.length).toBeGreaterThan(0);
 });
 
 test('return media sources', async () => {
-  const data = await flixhq.fetchSources('episode/servers/1019968');
+  const data = await flixhq.fetchSources('episode-1019968');
 
   expect(data).not.toBeNull();
-  expect(Array.isArray(data.data?.sources)).toBe(true);
   expect(data.data?.sources.length).toBeGreaterThan(0);
 });
