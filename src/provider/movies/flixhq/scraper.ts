@@ -43,12 +43,12 @@ export function scrapeMediaInfo($: cheerio.CheerioAPI) {
     duration: null,
     rating: null,
   };
-  mediaInfo.id = $('h2.heading-name > a').attr('href')?.slice(1) || null;
+  mediaInfo.id = $('h2.heading-name > a').attr('href')?.slice(1).replace('/', '-') || null;
   mediaInfo.cover = $('div.w_b-cover').attr('style')?.slice(22).replace(')', '').replace(';', '') || null;
   mediaInfo.title = $('.heading-name > a:nth-child(1)').text() || null;
   mediaInfo.image = $('.m_i-d-poster > div:nth-child(1) > img:nth-child(1)').attr('src') || null;
   mediaInfo.description = $('.description').text();
-  mediaInfo.type = mediaInfo.id ? (mediaInfo.id.split('/')[0] === 'tv' ? 'TV' : 'Movie') : null;
+  mediaInfo.type = mediaInfo.id ? (mediaInfo.id.split('-')[0] === 'tv' ? 'TV' : 'Movie') : null;
   mediaInfo.releaseDate = $('div.row-line:nth-child(3)').text().replace('Released: ', '').trim();
   mediaInfo.genres = $('div.row-line:nth-child(2) > a')
     .map((i, el) => $(el).text().split('&'))

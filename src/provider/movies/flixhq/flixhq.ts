@@ -42,21 +42,21 @@ interface ErrorFlixInfo {
 }
 export type FLixInfoRes = SuccessFlixInfo | ErrorFlixInfo;
 export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
-  const newId = mediaId.replace('-', '/');
-
   if (!mediaId) {
     return { data: null, episodes: [], error: 'Missing required parameter mediaId!' };
   }
-  if (!mediaId.startsWith(flixhqBaseUrl)) {
-    mediaId = `${flixhqBaseUrl}/${newId}`;
-  }
+  const newId = mediaId.replace('-', '/');
+  const finalMediaId = `${flixhqBaseUrl}/${newId}`;
+  console.log(finalMediaId);
 
   try {
-    const response = await providerClient.get(mediaId);
+    const response = await providerClient.get(finalMediaId);
     const data$ = cheerio.load(response.data);
     const res = scrapeMediaInfo(data$);
 
     const uid = data$('.watch_block').attr('data-id')!;
+    console.log(uid);
+
     const ajaxReqUrl = (id: string, type: string, isSeasons: boolean = false) =>
       `${flixhqBaseUrl}/ajax/${type === 'movie' ? type : `v2/${type}`}/${isSeasons ? 'seasons' : 'episodes'}/${id}`;
     let episodes:
@@ -64,6 +64,7 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
       | { episodeId: string; title: string | null }[] = [];
     if (res.type === 'TV') {
       const { data } = await providerClient.get(ajaxReqUrl(uid, 'tv', true));
+
       const $$ = cheerio.load(data);
       const seasonsIds = $$('.dropdown-menu > a')
         .map((i, el) => data$(el).attr('data-id'))

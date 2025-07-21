@@ -31,4 +31,8 @@ export {
   StreamingServers,
   AnimeProvider,
 };
+// const flixhq = new FlixHQ();
+//movie/final-destination-bloodlines-124888'
+// const data = await flixhq.fetchMediaInfo('movie-final-destination-bloodlines-124888');
+// console.log(data);
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
