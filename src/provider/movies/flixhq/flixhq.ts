@@ -47,7 +47,6 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
   }
   const newId = mediaId.replace('-', '/');
   const finalMediaId = `${flixhqBaseUrl}/${newId}`;
-  console.log(finalMediaId);
 
   try {
     const response = await providerClient.get(finalMediaId);
@@ -55,7 +54,6 @@ export async function _getInfo(mediaId: string): Promise<FLixInfoRes> {
     const res = scrapeMediaInfo(data$);
 
     const uid = data$('.watch_block').attr('data-id')!;
-    console.log(uid);
 
     const ajaxReqUrl = (id: string, type: string, isSeasons: boolean = false) =>
       `${flixhqBaseUrl}/ajax/${type === 'movie' ? type : `v2/${type}`}/${isSeasons ? 'seasons' : 'episodes'}/${id}`;

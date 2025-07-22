@@ -21,7 +21,7 @@
         "outDir": "dist",
         "rootDir": "./",
         "sourceMap": false,
-        "removeComments": true,
+        "removeComments": false,
         "strictFunctionTypes": true,
         "forceConsistentCasingInFileNames": true
     
