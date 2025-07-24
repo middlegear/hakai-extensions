@@ -350,6 +350,68 @@ export async function getTvEpisodes(tmdbId: number, season: number, apiKey: stri
     return { data: [], error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
+export type EpisodeInfo = {
+  airDate: string | null;
+  title: string | null;
+  summary: string | null;
+  rating: number | null;
+  seasonNumber: number | null;
+  id: number | null;
+  runtime: string | null;
+  images: {
+    small: string | null;
+    medium: string | null;
+    large: string | null;
+    original: string | null;
+  };
+};
+interface errorEpisodesResInfo {
+  data: null;
+  error: string;
+}
+interface successEpisodesResInfo {
+  data: EpisodeInfo;
+}
+export type EpisodeInfoRes = successEpisodesResInfo | errorEpisodesResInfo;
+export async function _getEpisodeDetails(
+  tmdbId: number,
+  season: number,
+  episodeNumber: number,
+  apiKey: string,
+): Promise<EpisodeInfoRes> {
+  try {
+    const response = await axios.get(`${tmdbUrl}/tv/${tmdbId}/season/${season}/episode/${episodeNumber}?api_key=${apiKey}`);
+    if (!response.data)
+      return {
+        data: null,
+        error: response.statusText,
+      };
+    const episode = {
+      airDate: response.data.air_date || null,
+      title: response.data.name || null,
+      summary: response.data.overview || null,
+      rating: response.data.vote_average || null,
+      seasonNumber: response.data.season_number || null,
+      id: response.data.id || null,
+      runtime: response.data.runtime || null,
+      images: {
+        small: `https://image.tmdb.org/t/p/w185${response.data.still_path}` || null,
+        medium: `https://image.tmdb.org/t/p/w342${response.data.still_path}` || null,
+        large: `https://image.tmdb.org/t/p/w780${response.data.still_path}` || null,
+        original: `https://image.tmdb.org/t/p/original${response.data.still_path}` || null,
+      },
+    };
+    return {
+      data: episode,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown err',
+    };
+  }
+}
+
 export type tmdbMovie = SuccessMovieRes | ErrorMovieRes;
 export async function searchTmdbMovie(query: string, page: number, apiKey: string): Promise<tmdbMovie> {
   if (!query) {

@@ -1,4 +1,4 @@
-import type { TvEpisodes, ShowInfo, tmdbTV, tmdbMovie, MovieInfoRes } from './tmdb.js';
+import type { TvEpisodes, ShowInfo, tmdbTV, tmdbMovie, MovieInfoRes, EpisodeInfoRes } from './tmdb.js';
 import { TimeWindow } from '../../../types/types.js';
 import { _getMovieProviderId, _getTvProviderId, type TvProviderId, type MovieProviderId } from './mapping.js'; // Added _getMovieProviderId and MovieProviderId imports
 import {
@@ -16,6 +16,7 @@ import {
   _getTopRatedMovies,
   _getReleasingMovies,
   _getUpcomingMovies,
+  _getEpisodeDetails,
 } from './tmdb.js';
 
 /**
@@ -52,6 +53,17 @@ class TheMovieDatabase {
    */
   async fetchTvEpisodes(tmdbId: number, season: number = 1): Promise<TvEpisodes> {
     return getTvEpisodes(tmdbId, season, this.apiKey);
+  }
+
+  /**
+   * Fetches episode information avalaible in a specific season of a TV show
+   * @param {number} tmdbId - The unique TMDb ID for the TV show (required)
+   * @param {number} season - The season number for which to fetch episodes (optional, defaults to 1)
+   * @param {number} episodeNumber - The episode number for which to fetch episode information (optional, defaults to 1)
+   * @returns {Promise<EpisodeInfoRes>} A promise that resolves to an object containing episode information.
+   */
+  async fetchEpisodeInfo(tmdbId: number, season: number = 1, episodeNumber: number = 1): Promise<EpisodeInfoRes> {
+    return _getEpisodeDetails(tmdbId, season, episodeNumber, this.apiKey);
   }
 
   /**
