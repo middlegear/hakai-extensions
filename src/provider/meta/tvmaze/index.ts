@@ -1,5 +1,5 @@
-import { getExternal, getInfoDetailed, searchImdb, searchShows, searchTvdb } from './tvmaze.js';
-import type { ExternalDbRes, ExternalIdPromise, ShowInfo, TvMazeRes } from './tvmaze.js';
+import { getExternal, getInfoDetailed, getShowEpisodes, searchImdb, searchShows, searchTvdb } from './tvmaze.js';
+import type { ExternalDbRes, ExternalIdPromise, ShowEpisodes, ShowInfo, TvMazeRes } from './tvmaze.js';
 
 /**
  * A class for interacting with the TVMaze API to search for TV shows and fetch
@@ -40,6 +40,14 @@ class TvMaze {
    */
   async fetchInfo(tvMazeId: number): Promise<ShowInfo> {
     return getInfoDetailed(tvMazeId);
+  }
+  /**
+   * Look up a show episodes information using its TVMaze ID
+   * @param {number} tvmazeId The TVMaze ID of the show (required).
+   * @returns {Promise<ShowEpisodes>} A promise that resolves to an array containing detailed episodeInfo
+   */
+  async fetchEpisodes(tvmazeId: number): Promise<ShowEpisodes> {
+    return getShowEpisodes(tvmazeId);
   }
 
   /**

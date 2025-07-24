@@ -13,13 +13,13 @@ interface SuccessProviderIdRes {
 }
 interface ErrorProviderIdRes {
   data: null;
-  seasons: null;
+  seasons: [];
   providerResult: null;
   error: string;
 }
 export type TvProviderId = SuccessProviderIdRes | ErrorProviderIdRes;
 export async function _getTvProviderId(tmdbId: number): Promise<TvProviderId> {
-  if (!tmdbId) return { data: null, seasons: null, providerResult: null, error: 'Missing required params ProviderId' };
+  if (!tmdbId) return { data: null, seasons: [], providerResult: null, error: 'Missing required params ProviderId' };
   try {
     const data = await getTvShowInfo(tmdbId, apiKey);
 
@@ -46,7 +46,7 @@ export async function _getTvProviderId(tmdbId: number): Promise<TvProviderId> {
   } catch (error) {
     return {
       data: null,
-      seasons: null,
+      seasons: [],
       providerResult: null,
       error: error instanceof Error ? error.message : 'Unknown Error',
     };
