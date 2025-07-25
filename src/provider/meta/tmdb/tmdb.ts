@@ -293,7 +293,7 @@ type Episodes = {
   airDate: string | null;
   episodeNumber: number | null;
   episodeType: string | null;
-  episodeId: number | null;
+  tmdbEpisodeId: number | null;
   title: string | null;
   summary: string | null;
   rating: number | null;
@@ -331,7 +331,7 @@ export async function getTvEpisodes(tmdbId: number, season: number, apiKey: stri
       airDate: item.air_date || null,
       episodeNumber: item.episode_number || null,
       episodeType: item.episode_type || null,
-      episodeId: item.id || null,
+      tmdbEpisodeId: item.id || null,
       title: item.name || null,
       summary: item.overview || null,
       rating: item.vote_average || null,
@@ -356,7 +356,7 @@ export type EpisodeInfo = {
   summary: string | null;
   rating: number | null;
   seasonNumber: number | null;
-  id: number | null;
+  tmdbEpisodeId: number | null;
   runtime: string | null;
   images: {
     small: string | null;
@@ -392,7 +392,7 @@ export async function _getEpisodeDetails(
       summary: response.data.overview || null,
       rating: response.data.vote_average || null,
       seasonNumber: response.data.season_number || null,
-      id: response.data.id || null,
+      tmdbEpisodeId: response.data.id || null,
       runtime: response.data.runtime || null,
       images: {
         small: `https://image.tmdb.org/t/p/w185${response.data.still_path}` || null,
