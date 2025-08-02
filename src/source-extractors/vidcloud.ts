@@ -23,7 +23,6 @@ export type ExtractedData = {
 
 class VidCloud {
   private primaryKeyUrl = 'https://raw.githubusercontent.com/yogesh-hacker/MegacloudKeys/refs/heads/main/keys.json';
-  private secondaryKeyUrl = 'https://raw.githubusercontent.com/middlegear/keys/refs/heads/main/keys.json';
 
   async fetchKey(url: string): Promise<string | null> {
     try {
@@ -82,8 +81,8 @@ class VidCloud {
         let sources;
         let key = await this.fetchKey(this.primaryKeyUrl);
         if (key) {
-          const decryptor = new Decrypter(clientkey, key as string);
-          const decrypted = decryptor.decrypt(initialResponse.sources);
+          const decryptor = new Decrypter();
+          const decrypted = decryptor.decrypt(initialResponse.sources, clientkey, key);
           try {
             sources = JSON.parse(decrypted);
             if (Array.isArray(sources)) {

@@ -33,6 +33,8 @@ export {
 };
 // const flixhq = new FlixHQ();
 //movie/final-destination-bloodlines-124888'
-// const data = await flixhq.fetchMediaInfo('movie-final-destination-bloodlines-124888');
-// console.log(data);
+// const data = await flixhq.fetchSources('episode-1019968');
+// const hianime = new HiAnime();
+// const data = await hianime.fetchSources('solo-leveling-18718-episode-119497', HiAnimeServers.HD2, SubOrDub.DUB);
+// console.log(JSON.stringify(data));
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
