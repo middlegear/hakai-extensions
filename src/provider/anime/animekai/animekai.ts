@@ -1,5 +1,3 @@
-/// Gratitude goes to consumet
-
 import * as cheerio from 'cheerio';
 import { gotScraping } from 'got-scraping';
 import { animekaiBaseUrl } from '../../../utils/constants.js';

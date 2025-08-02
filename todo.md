@@ -1,4 +1,4 @@
-// 
+//  "prepare": "pnpm run build",
 '
 // import { _getsources } from './provider/movies/flixhq/flixhq.js';
 
