@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "pnpm build && node dist/main.js",
-    "commit": "cz",
+    "commit": "pnpm lint && cz",
     "test-jikan": "vitest jikan.test.ts   --config vitest.config.ts",
     "test-anilist": "vitest anilist.test.ts  --config vitest.config.ts",
     "test-hianime": "vitest hianime.test.ts  --config vitest.config.ts",
