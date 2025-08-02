@@ -104,11 +104,3 @@ export class MegacloudDecryptor {
     return data.slice(4, 4 + length);
   }
 }
-
-//
-// const decryptor = new MegacloudDecryptor();
-// const sources = decryptor.decrypt(
-//   'qG2bX1DaU4iVlbZVB291UyUwwmp0eIQG6VFg2VmE9S2KznZieE', // secret
-//   'tTJIdwuxn2qST1ozBxhQbuSUzBMifAQkhRxxXbYM3qTa9NVj', // nonce(dom)
-//   'dT5xTlNsJXwufmtPPCR+WnV9LWcsYGFCI3VKXV5JZnIrajRPMSdXRU0ucS81Jm81Lyw+RltcZzctVD5HU2RpRSRqTjNUdGdHbU9uWWlXQ2pqa1NnLkR4LXd9Y3xSdV1mVFk8a3x7NU9QYHU/dntSUV9vImxnc1E6UWUgLVE8LlUnZ187Z005TWg+OTEvIV09KGtCbnFGcHw4M0gpdm8+MldxYCVjenpFKVl6IFc7RnV8JXcydUcjIiBmYV8+bz4oNn51dS42Uix8bDg9bkBFTn02bi0zfTs+eEFjbjc9Qk9ZPXVMUzp+biFxKidvWVZKVGY/a2dgOS9kd2RwaFcxXmhCKVQ/XWY0PmImWHhbZFcpI3JqTWQ9K1tCXEhkdEFhbmxuRXZjJiVLQGZLY2FhSkVtUEJHRzNXcF1hJ1Y1Tjc5bGNbZmhIQHwna293amc0MmsuWCIrQ35gUGJzZmR4ZzdyJjp7SSpvfFs4Jik+QCl0Uyh7PmM4LGd0I0xlPFEqWTdPcVlcTkp0XWNrXkFlLU41XjRQUVlFUlk1Rz5TZGtWS250SihEcDonNXtyYCwockd1IDUvV3FadW4nVXReY3htMSB5MSw1SXVVfGp3c1R2a01iWUBcNUZ4VWx2LUcmQlsqXCVbOSwxIHZObTNsJyBHZGU=',
-// );
