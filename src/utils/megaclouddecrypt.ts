@@ -6,14 +6,14 @@ export class MegacloudDecryptor {
     let hash = 0n;
 
     for (let i = 0; i < input.length; i++) {
-      hash += hash * 173n + BigInt(input.charCodeAt(i));
+      hash = BigInt(input.charCodeAt(i)) + hash * 31n + (hash << 7n) - hash;
     }
 
     const modHash = hash % 0x7fffffffffffffffn;
 
-    const xorProcessed = [...input].map(char => String.fromCharCode(char.charCodeAt(0) ^ (15835827 & 0xff))).join('');
+    const xorProcessed = [...input].map(char => String.fromCharCode(char.charCodeAt(0) ^ 247)).join('');
 
-    const shift = (Number(modHash) % xorProcessed.length) + 7;
+    const shift = (Number(modHash) % xorProcessed.length) + 5;
     const rotated = xorProcessed.slice(shift) + xorProcessed.slice(0, shift);
 
     const reversedNonce = [...nonce].reverse().join('');

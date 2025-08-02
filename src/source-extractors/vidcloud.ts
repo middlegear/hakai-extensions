@@ -81,7 +81,7 @@ class VidCloud {
         const sources = JSON.parse(decrypted);
 
         if (!Array.isArray(sources)) {
-          throw new Error('Decrypted sources is not a valid array');
+          throw new Error('Decrypted sources is not a valid array').message;
         }
 
         extractedData.sources = sources.map((s: any) => ({
