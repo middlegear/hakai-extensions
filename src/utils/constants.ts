@@ -10,3 +10,7 @@ export const animekaiBaseUrl = 'https://animekai.to' as const;
 
 //flixhq
 export const flixhqBaseUrl = 'https://flixhq.to' as const;
+
+/// vidsrc
+
+export const vidsrcBaseUrl = 'https://vidsrc.io/embed' as const;
