@@ -78,7 +78,7 @@ async function _getTvHash(tmdbId: number, season: number, episodeNumber: number,
     if (!rcpData) {
       throw new Error('Failed to retrieve rcp data').message;
     }
-    if (server === EmbedServers.CloudStreamPro) {
+    if (server === EmbedServers.CloudStream) {
       // early return for cloudstream
       return rcpData;
       //
@@ -119,7 +119,7 @@ export async function getMovieUrl(tmdbId: number, server: EmbedServers): Promise
 
     const data$: cheerio.CheerioAPI = cheerio.load(data);
     switch (server) {
-      case EmbedServers.CloudStreamPro:
+      case EmbedServers.CloudStream:
         return { data: new CloudStreamPro().extract(data$) as ExtractedData };
 
       case EmbedServers.TwoEmbed:
@@ -153,7 +153,7 @@ export async function getTvUrl(
 
     const data$: cheerio.CheerioAPI = cheerio.load(data);
     switch (server) {
-      case EmbedServers.CloudStreamPro:
+      case EmbedServers.CloudStream:
         return { data: new CloudStreamPro().extract(data$) as ExtractedData };
 
       case EmbedServers.TwoEmbed:

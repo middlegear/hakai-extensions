@@ -5,7 +5,11 @@ export function getServersHash($: cheerio.CheerioAPI) {
   const servers: vidServers[] = [];
 
   $('div.serversList > div.server').each((i, element) => {
-    const name = $(element).text().trim().toLowerCase();
+    const name = $(element)
+      .text()
+      .toLowerCase()
+      .replace(/\s*pro/i, '')
+      .trim();
     const hash = $(element).attr('data-hash');
 
     servers.push({

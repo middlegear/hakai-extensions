@@ -10,7 +10,7 @@ export type vidServers = {
 };
 
 export const EmbedServers = {
-  CloudStreamPro: 'cloudstream pro',
+  CloudStream: 'cloudstream',
   TwoEmbed: '2embed',
   // SuperEmbed: 'superembed',
 } as const;
