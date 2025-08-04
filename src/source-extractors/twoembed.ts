@@ -25,11 +25,17 @@ class TwoEmbed {
   private readonly baseUrl: string = 'https://yesmovies.baby';
 
   async fetch(data: cheerio.CheerioAPI): Promise<string> {
-    const swishUrl = ScrapeSwishId(data) as string;
+    const swishUrl = ScrapeSwishId(data);
+    if (!swishUrl || typeof swishUrl !== 'string') {
+      throw new Error('Invalid swishUrl from ScrapeSwishId').message;
+    }
+
     const id = swishUrl.split('=').at(1);
+    if (!id) {
+      throw new Error(`Invalid swishUrl format: ${swishUrl}`).message;
+    }
 
     const referer = new URL(swishUrl);
-
     const response = await providerClient(`${this.baseUrl}/e/${id}`, {
       headers: {
         Referer: `${referer.origin}/`,
@@ -41,16 +47,19 @@ class TwoEmbed {
 
     data$('script').each((_, el) => {
       const code = data$(el).html();
-      if (code && code.includes('eval(function(p,a,c,k,e,d)')) {
+      if (code?.includes('eval(function(p,a,c,k,e,d)')) {
         packedScript = code;
       }
     });
 
-    if (!packedScript) throw new Error('No packed script found.').message;
+    if (!packedScript) {
+      throw new Error('No packed script found.');
+    }
+
     return packedScript;
   }
+
   async extract(data: cheerio.CheerioAPI): Promise<ExtractedData | string> {
-    //
     const extractedData: ExtractedData = {
       subtitles: [],
       sources: [],
@@ -60,61 +69,69 @@ class TwoEmbed {
       const evaluate = await this.fetch(data);
       const final = unpack(evaluate);
 
-      const linksRegex = /var links=({.+?});/;
-      const linksMatch = final?.match(linksRegex);
-
-      if (!linksMatch || !linksMatch[1]) {
-        throw new Error('Could not find the links object.').message;
+      if (!final) {
+        throw new Error('Unpacking failed or returned empty.');
       }
 
-      const linksJsonString = linksMatch[1];
-      let linksObject;
+      const linksRegex = /var\s+links\s*=\s*({.+?});/;
+      const linksMatch = final.match(linksRegex);
 
-      linksObject = JSON.parse(linksJsonString);
+      if (!linksMatch || !linksMatch[1]) {
+        throw new Error('Could not find the links object.');
+      }
+
+      let linksObject: Record<string, string>;
+      try {
+        linksObject = JSON.parse(linksMatch[1]);
+      } catch {
+        throw new Error('Failed to parse links JSON.');
+      }
 
       const domain = this.baseUrl;
 
       for (const key in linksObject) {
-        if (linksObject.hasOwnProperty(key) && linksObject[key]) {
-          let url = linksObject[key];
+        if (!Object.prototype.hasOwnProperty.call(linksObject, key)) continue;
 
-          if (url.includes('.m3u8')) {
-            if (url.startsWith('/')) {
-              url = `${domain}${url}`;
-            }
+        const rawUrl = linksObject[key];
+        if (typeof rawUrl !== 'string') continue;
 
-            extractedData.sources.push({
-              url: url,
-              isM3U8: url.includes('m3u8'),
-              type: url.includes('m3u8') ? 'hls' : 'raise issue for investigation',
-              default: url.includes(domain),
-            });
-          }
+        let url = rawUrl;
+        if (!url.includes('.m3u8')) continue;
+
+        if (url.startsWith('/')) {
+          url = `${domain}${url}`;
         }
+
+        extractedData.sources.push({
+          url,
+          isM3U8: true,
+          type: 'hls',
+          default: url.includes(domain),
+        });
       }
 
-      const subtitleMatches = final?.match(/{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g) || [];
+      const subtitleMatches = final.match(/{file:"([^"]+)",(label:"([^"]+)",)?kind:"(thumbnails|captions)"/g) || [];
 
-      extractedData.subtitles = subtitleMatches.map(item => {
-        const lang = item?.match(/label:"([^"]+)"/)?.[1] ?? '';
-        const url = item?.match(/file:"([^"]+)"/)?.[1] ?? '';
-        const kind = item?.match(/kind:"([^"]+)"/)?.[1] ?? '';
-        if (kind.includes('thumbnail')) {
+      extractedData.subtitles = subtitleMatches
+        .map(item => {
+          const lang = item?.match(/label:"([^"]+)"/)?.[1] ?? '';
+          const url = item?.match(/file:"([^"]+)"/)?.[1] ?? '';
+          const kind = item?.match(/kind:"([^"]+)"/)?.[1] ?? '';
+
+          const isThumbnail = kind.includes('thumbnail');
+
           return {
-            lang: kind,
-            url: `https://streamhg.com${url}`,
+            lang: lang || kind,
+            url: isThumbnail ? `https://streamhg.com${url}` : url,
           };
-        }
-        return {
-          lang: lang,
-          url: url,
-        };
-      });
+        })
+        .filter(sub => !!sub.url);
+
       return extractedData;
     } catch (error) {
       return error instanceof Error ? error.message : 'Fatal Error';
     }
   }
-  async extracttv(data: cheerio.CheerioAPI) {}
 }
+
 export default TwoEmbed;

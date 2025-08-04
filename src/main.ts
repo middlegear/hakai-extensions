@@ -32,7 +32,7 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-// const data = await getMovieUrl(1146972, 'cloudstream');
+// const data = await getMovieUrl(1146972, '2embed');
 // const data = await getTvUrl(90228, 1, 5, '2embed');
 // console.log(data.data);
 
