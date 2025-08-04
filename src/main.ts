@@ -16,7 +16,7 @@ import {
   HiAnimeServers,
   AnimeProvider,
 } from './types/index.js';
-import { _getMovieHash, _getTvHash } from './provider/movies/vidsrc/vidsrc.js';
+import { _getMovieHash, _getTvHash, getMovieUrl } from './provider/movies/vidsrc/vidsrc.js';
 import { Base64 } from './provider/movies/vidsrc/utils.js';
 
 export {
@@ -33,8 +33,8 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-const data = await _getMovieHash(573435, 'cloudstream pro');
+const data = await getMovieUrl(573435, 'cloudstream pro');
 // const data = await _getTvHash(1399, 1, 1);
-console.log(data);
+console.log(data.data);
 
 // export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };

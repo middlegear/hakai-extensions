@@ -1,10 +1,12 @@
 import * as cheerio from 'cheerio';
 import { providerClient } from '../../../config/clients.js';
 import { vidsrcBaseUrl } from '../../../utils/constants.js';
-import { VidSRCServers, type MediaType, type vidServers } from './types.js';
+import { VidSRCServers, type MediaType } from './types.js';
 import { getFrame, getServersHash } from './scraper.js';
 import { USER_AGENT_HEADER } from '../../index.js';
 import axios from 'axios';
+import CloudStreamPro from '../../../source-extractors/cloudstreampro.js';
+import TwoEmbed from '../../../source-extractors/twoembed.js';
 
 async function _getRCP(hash: string) {
   try {
@@ -86,28 +88,47 @@ export async function _getTvHash(tmdbId: number, season: number, episodeNumber: 
 export async function getMovieUrl(tmdbId: number, server: VidSRCServers) {
   try {
     const data = await _getMovieHash(tmdbId, server);
-    if ('error' in data) {
-      throw new Error(data.error).message;
-    }
+    // if ('error' in data) {
+    //   throw new Error(data.error).message;
+    // }
 
+    const data$: cheerio.CheerioAPI = cheerio.load(data);
     switch (server) {
       case VidSRCServers.CloudStreamPro:
-        // Add your extraction logic here for CloudStreamPro
-        // Example: return extractCloudStreamProUrl(data);
-        return { message: 'CloudStreamPro method not implemented' };
+        return { data: new CloudStreamPro().extract(data$) };
 
       case VidSRCServers.TwoEmbed:
-        // Add your extraction logic here for TwoEmbed
-        // Example: return extractTwoEmbedUrl(data);
-        return { message: 'TwoEmbed method not implemented' };
+        return { data: await new TwoEmbed().extract(data$) };
 
       case VidSRCServers.SuperEmbed:
-        // Add your extraction logic here for SuperEmbed
-        // Example: return extractSuperEmbedUrl(data);
         return { message: 'SuperEmbed method not implemented' };
 
       default:
-        // Return a default error if the server is not supported
+        return { error: `Server ${server} is not supported` };
+    }
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Unknown Err' };
+  }
+}
+
+export async function getTvUrl(tmdbId: number, server: VidSRCServers, season: number, episodeNumber: number) {
+  try {
+    const data = await _getTvHash(tmdbId, season, episodeNumber, server);
+    // if ('error' in data) {
+    //   throw new Error(data.error).message;
+    // }
+    const data$: cheerio.CheerioAPI = cheerio.load(data);
+    switch (server) {
+      case VidSRCServers.CloudStreamPro:
+        return { data: new CloudStreamPro().extract(data$) };
+
+      case VidSRCServers.TwoEmbed:
+        return { message: 'TwoEmbed method not implemented' };
+
+      case VidSRCServers.SuperEmbed:
+        return { message: 'SuperEmbed method not implemented' };
+
+      default:
         return { error: `Server ${server} is not supported` };
     }
   } catch (error) {

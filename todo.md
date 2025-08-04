@@ -19,3 +19,4 @@
 1. Threshold score for the providerId result 
 2. map episodes using string similairty. If the id provider result is an exact match take for example the rookie whats the most viable solution?
 3. Scrape vidsrc
+4. what are the referer headers for streamwish

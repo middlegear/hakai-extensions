@@ -37,3 +37,36 @@ export function getFrame($: cheerio.CheerioAPI): string | null {
 
   return null;
 }
+
+export function ScrapeCloudStreampro($: cheerio.CheerioAPI) {
+  const playerScript = $('script').filter((_, el) => {
+    const content = $(el).html();
+    return content?.includes('new Playerjs') ?? false;
+  });
+
+  const scriptContent = playerScript.length > 0 ? playerScript.html() : null;
+
+  if (!scriptContent) {
+    return {
+      file: null,
+      cuid: null,
+    };
+  }
+
+  const fileRegex = /file:\s*'(.*?)'/;
+  const cuidRegex = /cuid:\s*"(.*?)"/;
+  const posterRegex = /poster:\s*"(.*?)"/;
+
+  const fileMatch = scriptContent.match(fileRegex);
+  const cuidMatch = scriptContent.match(cuidRegex);
+
+  return {
+    file: fileMatch?.[1] ?? null,
+    cuid: cuidMatch?.[1] ?? null,
+  };
+}
+
+export function ScrapeSwishId($: cheerio.CheerioAPI) {
+  const id = $('#iframesrc').attr('data-src');
+  return id;
+}

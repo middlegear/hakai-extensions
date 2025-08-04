@@ -162,7 +162,10 @@ export async function _getsources(episodeId: string, server: StreamingServers): 
       case StreamingServers.VidCloud:
       case StreamingServers.Upcloud:
       case StreamingServers.Akcloud:
-
+        return {
+          headers: { Referer: `${serverUrl.origin}/` },
+          data: (await new VidCloud().extract(serverUrl)) as ExtractedData,
+        };
       default:
         return {
           headers: { Referer: `${serverUrl.origin}/` },
