@@ -2,7 +2,7 @@ import * as cheerio from 'cheerio';
 import { providerClient } from '../../../config/clients.js';
 import { vidsrcBaseUrl } from '../../../utils/constants.js';
 import { VidSRCServers, type MediaType } from './types.js';
-import { getFrame, getServersHash } from './scraper.js';
+import { getFrame, getServersHash, Scrape2EmbedIframe } from './scraper.js';
 import { USER_AGENT_HEADER } from '../../index.js';
 import axios from 'axios';
 import CloudStreamPro from '../../../source-extractors/cloudstreampro.js';
@@ -33,7 +33,7 @@ async function _getRCP(hash: string) {
     return { error: error instanceof Error ? error.message : 'Unknown Err' };
   }
 }
-export async function _getMovieHash(tmdbId: number, server: VidSRCServers) {
+async function _getMovieHash(tmdbId: number, server: VidSRCServers) {
   try {
     const response = await providerClient.get(`${vidsrcBaseUrl}/${tmdbId}/`);
     const data$ = cheerio.load(response.data);
@@ -59,7 +59,7 @@ export async function _getMovieHash(tmdbId: number, server: VidSRCServers) {
     return { error: error instanceof Error ? error.message : 'Unknown Err' };
   }
 }
-export async function _getTvHash(tmdbId: number, season: number, episodeNumber: number, server: VidSRCServers) {
+async function _getTvHash(tmdbId: number, season: number, episodeNumber: number, server: VidSRCServers) {
   try {
     const response = await providerClient.get(`${vidsrcBaseUrl}/${tmdbId}/${season}-${episodeNumber}/`);
     const data$ = cheerio.load(response.data);
@@ -78,8 +78,26 @@ export async function _getTvHash(tmdbId: number, season: number, episodeNumber: 
     if (!rcpData) {
       throw new Error('Failed to retrieve rcp data').message;
     }
+    if (server === VidSRCServers.CloudStreamPro) {
+      // early return
+      return rcpData;
+      //
+    }
+    if (server === VidSRCServers.TwoEmbed) {
+      const iframe$ = cheerio.load(rcpData);
+      const data3 = Scrape2EmbedIframe(iframe$) as string;
 
-    return rcpData;
+      const res = await axios.get(data3, {
+        headers: {
+          'User-Agent': USER_AGENT_HEADER,
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          Referer: `https://cloudnestra.com/rcp/${serverId}`,
+          'Content-Encoding': 'gzip, deflate, br, zstd',
+        },
+      });
+
+      return res.data;
+    }
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unknown Err' };
   }
@@ -112,18 +130,22 @@ export async function getMovieUrl(tmdbId: number, server: VidSRCServers) {
 }
 
 export async function getTvUrl(tmdbId: number, server: VidSRCServers, season: number, episodeNumber: number) {
+  if (!tmdbId) {
+    return {
+      data: [],
+      error: 'Missing required params: tmdbId! ',
+    };
+  }
   try {
     const data = await _getTvHash(tmdbId, season, episodeNumber, server);
-    // if ('error' in data) {
-    //   throw new Error(data.error).message;
-    // }
+
     const data$: cheerio.CheerioAPI = cheerio.load(data);
     switch (server) {
       case VidSRCServers.CloudStreamPro:
         return { data: new CloudStreamPro().extract(data$) };
 
       case VidSRCServers.TwoEmbed:
-        return { message: 'TwoEmbed method not implemented' };
+        return { data: await new TwoEmbed().extract(data$) };
 
       case VidSRCServers.SuperEmbed:
         return { message: 'SuperEmbed method not implemented' };

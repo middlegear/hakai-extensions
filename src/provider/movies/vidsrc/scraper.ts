@@ -70,3 +70,13 @@ export function ScrapeSwishId($: cheerio.CheerioAPI) {
   const id = $('#iframesrc').attr('data-src');
   return id;
 }
+
+export function Scrape2EmbedIframe($: cheerio.CheerioAPI) {
+  const iframe = $('#cptxt').attr('value');
+  const regex = /src="(.*?)"/;
+  const match = iframe?.match(regex);
+
+  if (match && match[1]) {
+    return match[1];
+  }
+}

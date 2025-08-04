@@ -119,5 +119,6 @@ class TwoEmbed {
       return error instanceof Error ? error.message : 'Fatal Error';
     }
   }
+  async extracttv(data: cheerio.CheerioAPI) {}
 }
 export default TwoEmbed;

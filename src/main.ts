@@ -16,8 +16,7 @@ import {
   HiAnimeServers,
   AnimeProvider,
 } from './types/index.js';
-import { _getMovieHash, _getTvHash, getMovieUrl } from './provider/movies/vidsrc/vidsrc.js';
-import { Base64 } from './provider/movies/vidsrc/utils.js';
+import { getMovieUrl, getTvUrl } from './provider/movies/vidsrc/vidsrc.js';
 
 export {
   Seasons,
@@ -33,8 +32,8 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-const data = await getMovieUrl(573435, 'cloudstream pro');
-// const data = await _getTvHash(1399, 1, 1);
-console.log(data.data);
+// const data = await getMovieUrl(1146972, '2embed');
+// const data = await getTvUrl(90228, 'cloudstream pro', 1, 5);
+// console.log(data.data);
 
-// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
+export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
