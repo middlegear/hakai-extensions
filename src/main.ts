@@ -32,8 +32,8 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-// const data = await getMovieUrl(1146972, '2embed');
-// const data = await getTvUrl(90228, 'cloudstream pro', 1, 5);
-// console.log(data.data);
+const data = await getMovieUrl(1146972, '2embed');
+// const data = await getTvUrl(90228, 1, 5, '2embed');
+console.log(data.data);
 
 export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };

@@ -24,7 +24,7 @@ export type ExtractedData = {
 class TwoEmbed {
   private readonly baseUrl: string = 'https://yesmovies.baby';
 
-  async fetch(data: cheerio.CheerioAPI) {
+  async fetch(data: cheerio.CheerioAPI): Promise<string> {
     const swishUrl = ScrapeSwishId(data) as string;
     const id = swishUrl.split('=').at(1);
 
@@ -49,7 +49,7 @@ class TwoEmbed {
     if (!packedScript) throw new Error('No packed script found.').message;
     return packedScript;
   }
-  async extract(data: cheerio.CheerioAPI) {
+  async extract(data: cheerio.CheerioAPI): Promise<ExtractedData | string> {
     //
     const extractedData: ExtractedData = {
       subtitles: [],
@@ -69,12 +69,8 @@ class TwoEmbed {
 
       const linksJsonString = linksMatch[1];
       let linksObject;
-      try {
-        linksObject = JSON.parse(linksJsonString);
-      } catch (e) {
-        console.error('Failed to parse the links object JSON:', e);
-        return;
-      }
+
+      linksObject = JSON.parse(linksJsonString);
 
       const domain = this.baseUrl;
 

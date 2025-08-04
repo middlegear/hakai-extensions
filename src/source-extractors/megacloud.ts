@@ -109,7 +109,6 @@ class MegaCloud {
 
       return extractedData;
     } catch (error) {
-      console.error('Extraction error:', error);
       return error instanceof Error ? error.message : 'Fatal Error';
     }
   }

@@ -12,6 +12,6 @@ export type vidServers = {
 export const VidSRCServers = {
   CloudStreamPro: 'cloudstream pro',
   TwoEmbed: '2embed',
-  SuperEmbed: 'superembed',
+  // SuperEmbed: 'superembed',
 } as const;
 export type VidSRCServers = (typeof VidSRCServers)[keyof typeof VidSRCServers];

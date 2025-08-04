@@ -1,3 +1,5 @@
+///nothing much here
+
 export class Base64 {
   private _keyStr: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
