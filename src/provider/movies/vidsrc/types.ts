@@ -9,9 +9,9 @@ export type vidServers = {
   hash: string;
 };
 
-export const VidSRCServers = {
+export const EmbedServers = {
   CloudStreamPro: 'cloudstream pro',
   TwoEmbed: '2embed',
   // SuperEmbed: 'superembed',
 } as const;
-export type VidSRCServers = (typeof VidSRCServers)[keyof typeof VidSRCServers];
+export type EmbedServers = (typeof EmbedServers)[keyof typeof EmbedServers];
