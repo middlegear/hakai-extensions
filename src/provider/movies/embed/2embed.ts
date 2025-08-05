@@ -20,11 +20,13 @@ export async function _getEmbedMovieUrl(tmdbId: number) {
       throw new Error(`Invalid swishUrl format: ${swishUrl}`).message;
     }
     const referer = new URL(swishUrl);
-    const packedScriptUrl = await providerClient(`${embedUrl}/e/${id}`, {
+    const packedScriptUrl = await providerClient.get(`${embedUrl}/e/${id}`, {
       headers: {
         Referer: `${referer.origin}/`,
       },
     });
+
+    if (!packedScriptUrl.data) throw new Error('Missing the packedScript Url Html').message;
 
     const packedScript$ = cheerio.load(packedScriptUrl.data);
     let packedScript: string | null = null;

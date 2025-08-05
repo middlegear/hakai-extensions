@@ -32,7 +32,7 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-const tmdb = new TheMovieDatabase();
+// const tmdb = new TheMovieDatabase();
 // const data = await tmdb.fetchTvSources(90228, 1, 4);
 // const data = await tmdb.fetchMovieSources(1146972, '2embed');
 // const data = await _getEmbedMovieUrl(1146972);

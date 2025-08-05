@@ -26,7 +26,7 @@ class StreamWish {
       subtitles: [],
       sources: [],
     };
-
+    if (!data) throw new Error('Missing data to unpack').message;
     try {
       const final = unpack(data);
 
