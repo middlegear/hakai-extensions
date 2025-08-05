@@ -34,9 +34,9 @@ export {
 };
 const tmdb = new TheMovieDatabase();
 // const data = await tmdb.fetchTvSources(90228, 1, 4);
-const data = await tmdb.fetchMovieSources(1146972, '2embed');
+// const data = await tmdb.fetchMovieSources(1146972, '2embed');
 // const data = await _getEmbedMovieUrl(1146972);
 
-console.log(data.data);
+// console.log(data.data);
 
-// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
+export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
