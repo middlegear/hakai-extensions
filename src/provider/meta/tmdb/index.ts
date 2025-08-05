@@ -18,8 +18,9 @@ import {
   _getUpcomingMovies,
   _getEpisodeDetails,
 } from './tmdb.js';
-import { getMovieUrl, getTvUrl, type VidSrcResponse } from '../../movies/vidsrc/vidsrc.js';
-import { EmbedServers } from '../../movies/vidsrc/types.js';
+import { getMovieUrl, type EmbedSrcResponse } from '../../movies/embed/index.js';
+import { EmbedServers } from '../../movies/embed/types.js';
+import { _getVidSrcTvUrl } from '../../movies/embed/vidsrc.js';
 
 /**
  * A class for interacting with The Movie Database (TMDb) API to search for and retrieve
@@ -114,23 +115,19 @@ class TheMovieDatabase {
   async fetchTvProviderId(tmdbId: number): Promise<TvProviderId> {
     return _getTvProviderId(tmdbId);
   }
+
   /**
    * Fetches TV show streaming sources using TMDB ID
    *
    * @param {number} tmdbId - The unique TMDb ID for the TV show (required).
    * @param {number} season - The season number for which to fetch episodes (optional, defaults to 1)
    * @param {number} episodeNumber - The episode number for which to fetch streaming sources (optional, defaults to 1)
-   * @param {EmbedServers} server - The streaming server to use (optional, defaults to EmbedServers.CloudStream)
-   * @returns {Promise<VidSrcResponse>} A promise that resolves to an object containing array of available streaming sources.
+   * @returns {Promise<EmbedSrcResponse>} A promise that resolves to an object containing array of available streaming sources.
    */
-  async fetchTvSources(
-    tmdbId: number,
-    season: number = 1,
-    episodeNumber: number = 1,
-    server: EmbedServers = EmbedServers.CloudStream,
-  ): Promise<VidSrcResponse> {
-    return getTvUrl(tmdbId, season, episodeNumber, server);
+  async fetchTvSources(tmdbId: number, season: number = 1, episodeNumber: number = 1): Promise<EmbedSrcResponse> {
+    return _getVidSrcTvUrl(tmdbId, season, episodeNumber);
   }
+
   /**
    * Searches for movies based on the provided query string.
    * @param {string} query - The search query string (required).
@@ -200,9 +197,9 @@ class TheMovieDatabase {
    * Fetches movie streaming sources using TMDB ID
    * @param {number} tmdbId - The unique TMDb ID for the movie (required).
    * @param {EmbedServers} server - The streaming server to use (optional, defaults to EmbedServers.CloudStream )
-   * @returns {Promise<VidSrcResponse>} A promise that resolves to an object containing array of available streaming sources.
+   * @returns {Promise<EmbedSrcResponse>} A promise that resolves to an object containing array of available streaming sources.
    */
-  async fetchMovieSources(tmdbId: number, server: EmbedServers = EmbedServers.CloudStream): Promise<VidSrcResponse> {
+  async fetchMovieSources(tmdbId: number, server: EmbedServers = EmbedServers.CloudStream): Promise<EmbedSrcResponse> {
     return getMovieUrl(tmdbId, server);
   }
 

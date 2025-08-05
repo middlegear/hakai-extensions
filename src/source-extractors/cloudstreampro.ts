@@ -1,5 +1,5 @@
 import type { CheerioAPI } from 'cheerio';
-import { ScrapeCloudStreampro } from '../provider/movies/vidsrc/scraper.js';
+import { ScrapeCloudStreampro } from '../provider/movies/embed/scraper.js';
 
 type sources = {
   url: string;

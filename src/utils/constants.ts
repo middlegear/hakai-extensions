@@ -14,3 +14,6 @@ export const flixhqBaseUrl = 'https://flixhq.to' as const;
 /// vidsrc
 
 export const vidsrcBaseUrl = 'https://vidsrc.io/embed' as const;
+
+// 2emed
+export const embedBaseUrl = 'https://www.2embed.cc' as const;

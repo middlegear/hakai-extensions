@@ -16,7 +16,7 @@ import {
   HiAnimeServers,
   AnimeProvider,
 } from './types/index.js';
-import { getMovieUrl, getTvUrl } from './provider/movies/vidsrc/vidsrc.js';
+import { _getEmbedMovieUrl } from './provider/movies/embed/2embed.js';
 
 export {
   Seasons,
@@ -32,8 +32,11 @@ export {
   StreamingServers,
   AnimeProvider,
 };
-// const data = await getMovieUrl(1146972, '2embed');
-// const data = await getTvUrl(90228, 1, 5, '2embed');
-// console.log(data.data);
+const tmdb = new TheMovieDatabase();
+// const data = await tmdb.fetchTvSources(90228, 1, 4);
+const data = await tmdb.fetchMovieSources(1146972, '2embed');
+// const data = await _getEmbedMovieUrl(1146972);
 
-export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };
+console.log(data.data);
+
+// export { Anime, Meta, Anilist, Jikan, HiAnime, AnimeKai, FlixHQ, TheMovieDatabase, TvMaze };

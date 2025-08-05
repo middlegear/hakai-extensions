@@ -59,14 +59,13 @@ export function ScrapeCloudStreampro($: cheerio.CheerioAPI) {
 
   const fileRegex = /file:\s*'(.*?)'/;
   const cuidRegex = /cuid:\s*"(.*?)"/;
-  const posterRegex = /poster:\s*"(.*?)"/;
 
   const fileMatch = scriptContent.match(fileRegex);
-  const cuidMatch = scriptContent.match(cuidRegex);
+  // const cuidMatch = scriptContent.match(cuidRegex);
 
   return {
     file: fileMatch?.[1] ?? null,
-    cuid: cuidMatch?.[1] ?? null,
+    // cuid: cuidMatch?.[1] ?? null,
   };
 }
 
